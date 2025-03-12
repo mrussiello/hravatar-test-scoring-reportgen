@@ -1,0 +1,320 @@
+<project name="tm2score5" default="datetime" basedir="c:/work/tm2score5">
+
+	<property name="imo.hravatar.com" value="imo1.hravatar.com" />
+	<property name="ts.hravatar.com" value="ts.hravatar.com" />
+	<property name="ts2.hravatar.com" value="ts2.hravatar.com" />
+	<property name="web.dir" value="${basedir}/src/main/webapp" />
+	<property name="src.dir" value="${basedir}/src" />
+	<property name="dist.dir" value="${basedir}/target" />
+	<property name="bu.dir" value="${basedir}/backup" />
+	<!-- <property name="lib.dir" value="${basedir}/lib" /> -->
+	<!-- <property name="classes.dir" value="${build.dir}/classes" /> -->
+	<property name="backup.dir" value="C:/dev/stbackup/localsw" />
+    <property name="prod.username" value="ec2-user" />
+    <property name="prod.keyfile" value="C:/dev/AmazonAWS/ClicFlicKeyPair2.pem" />
+    <property name="prod.bu.dir" value="/backup/sw" />
+
+
+	<tstamp prefix="today">
+	        <format property="year" pattern="yy"/>
+            <format property="month" pattern="MMM"/>
+	         <format property="date" pattern="dd"/>
+    </tstamp>
+
+	<target name="showprops">
+	     <echoproperties/>
+	</target>
+
+
+	<target name="datetime">
+	    <tstamp prefix="start">
+	    <format property="TODAY" pattern="EEEE, MMM dd, yyyy"/>
+	    <format property="TIME" pattern="hh:mm a"/>
+	    </tstamp>
+	    <echo message="Completed: ${start.TIME} on ${start.TODAY}."/>
+	</target>
+
+	<target name="prepare">
+	</target>
+
+
+	<target name="zipit">
+		<mkdir dir="${bu.dir}" />
+		<delete file="${bu.dir}/tm2score5.zip" />
+		<zip file="${bu.dir}/tm2score5.zip">
+			<fileset dir="${basedir}">
+				<!-- <exclude name="**/*.class" /> -->
+				<!-- <exclude name="build/**" /> -->
+				<exclude name="backup/**" />
+				<exclude name="log/**" />
+				<exclude name="target/**" />
+			</fileset>
+		</zip>
+		<copy file="${bu.dir}/tm2score5.zip" todir="${backup.dir}" />
+		<antcall target="datetime" />
+	</target>
+
+
+     
+	<target name="zipscp" depends="zipit">
+
+		<sshexec host="${imo.hravatar.com}"
+					username="${prod.username}"
+					keyfile="${prod.keyfile}"
+					trust="true"
+			        failonerror="false"
+					command="mkdir ${prod.bu.dir}/${today.date}${today.month}${today.year}"/>
+
+		<scp file="${bu.dir}/tm2score5.zip" keyfile="${prod.keyfile}" todir="${prod.username}@${imo.hravatar.com}:${prod.bu.dir}/${today.date}${today.month}${today.year}"
+						     trust="true">
+			    </scp>
+
+			    <antcall target="datetime" />
+	</target>
+
+
+
+	<target name="copystaticfilesfordeploy">
+
+      <delete dir="${basedir}/deploytemp/webmod" />
+      
+     <mkdir dir="${basedir}/deploytemp/webmod" />
+        
+	     <copy todir="${basedir}/deploytemp/webmod">
+			<fileset dir="${basedir}/src/main/webapp">
+			</fileset>
+	    </copy>
+                                                	    
+            <echo message="Copied static files locally" />
+            <antcall target="datetime" />
+	</target>
+
+
+
+
+
+	<!-- <target name="scpredeploy" depends="scpstaticfiles"> -->
+	<target name="scpredeploy" depends="scpstaticfiles">
+        <sshexec host="${ts.hravatar.com}"
+                    username="${prod.username}"
+                    keyfile="${prod.keyfile}"
+                    trust="true"
+                    failonerror="false"
+                    command="mkdir ${prod.bu.dir}/${today.date}${today.month}${today.year}"/>
+		<scp file="${dist.dir}/tm2score5-1.0.war" keyfile="${prod.keyfile}" todir="${prod.username}@${ts.hravatar.com}:${prod.bu.dir}/${today.date}${today.month}${today.year}"
+				     trust="true">
+    </scp>
+		<sshexec host="${ts.hravatar.com}"
+            username="${prod.username}"
+            keyfile="${prod.keyfile}"
+                trust="true"
+                command="/usr/pgms/payara6.2023.9/payara6/glassfish/bin/asadmin --user admin --passwordfile /home/payara/passwd.gf undeploy tm2score5-1.0"/>
+		<sshexec host="${ts.hravatar.com}"
+            username="${prod.username}"
+            keyfile="${prod.keyfile}"
+			      trust="true"
+			      command="/usr/pgms/payara6.2023.9/payara6/glassfish/bin/asadmin --user admin --passwordfile /home/payara/passwd.gf deploy --virtualservers server --contextroot ts --force=true --deploymentorder 150 ${prod.bu.dir}/${today.date}${today.month}${today.year}/tm2score5-1.0.war"/>
+			<antcall target="datetime" />
+	</target>
+
+
+	<target name="scpundeploy">
+        <sshexec host="${ts.hravatar.com}"
+                    username="${prod.username}"
+                    keyfile="${prod.keyfile}"
+                    trust="true"
+                    failonerror="false"
+                    command="mkdir ${prod.bu.dir}/${today.date}${today.month}${today.year}"/>
+		<sshexec host="${ts.hravatar.com}"
+            username="${prod.username}"
+            keyfile="${prod.keyfile}"
+                trust="true"
+                command="/usr/pgms/payara6.2023.9/payara6/glassfish/bin/asadmin --user admin --passwordfile /home/payara/passwd.gf undeploy tm2score5-1.0"/>
+	<antcall target="datetime" />
+	</target>
+
+
+	<!-- <target name="scpdeploy" depends="scpstaticfiles"> -->
+	<target name="scpdeploy" depends="scpstaticfiles">
+        <sshexec host="${ts.hravatar.com}"
+                    username="${prod.username}"
+                    keyfile="${prod.keyfile}"
+                    trust="true"
+                    failonerror="false"
+                    command="mkdir ${prod.bu.dir}/${today.date}${today.month}${today.year}"/>
+		<scp file="${dist.dir}/tm2score5-1.0.war" keyfile="${prod.keyfile}" todir="${prod.username}@${ts.hravatar.com}:${prod.bu.dir}/${today.date}${today.month}${today.year}"
+				     trust="true">
+    </scp>
+		<sshexec host="${ts.hravatar.com}"
+            username="${prod.username}"
+            keyfile="${prod.keyfile}"
+			      trust="true"
+			      command="/usr/pgms/payara6.2023.9/payara6/glassfish/bin/asadmin --user admin --passwordfile /home/payara/passwd.gf deploy --virtualservers server --contextroot ts --force=true --deploymentorder 150 ${prod.bu.dir}/${today.date}${today.month}${today.year}/tm2score5-1.0.war"/>
+			<antcall target="datetime" />
+	</target>
+
+
+	<target name="scpstaticfiles">
+
+            <!--
+	     <scp keyfile="${prod.keyfile}" todir="${prod.username}@${ts.hravatar.com}:/work/tm2score5/webmod/ts" trust="true">
+			<fileset dir="${basedir}/web">
+			</fileset>
+	    </scp>
+            -->
+
+            <scp keyfile="${prod.keyfile}" todir="${prod.username}@${ts.hravatar.com}:/work/tm2score5/webmod" trust="true">
+			<fileset dir="${basedir}/src/main/webapp">
+				<!-- <exclude name="**/*.xhtml" /> -->
+				<!-- <exclude name="**/*.jsp" /> -->
+				<!-- <exclude name="WEB-INF/*" /> -->
+				<!-- <include name="index.html" /> -->
+			</fileset>
+	    </scp>
+			<antcall target="datetime" />
+	</target>
+
+
+
+	<!-- <target name="scpredeploy" depends="scpstaticfiles"> -->
+	<target name="scpredeployts2" depends="scpstaticfilests2">
+        <sshexec host="${ts2.hravatar.com}"
+                    username="${prod.username}"
+                    keyfile="${prod.keyfile}"
+                    trust="true"
+                    failonerror="false"
+                    command="mkdir ${prod.bu.dir}/${today.date}${today.month}${today.year}"/>
+		<scp file="${dist.dir}/tm2score5-1.0.war" keyfile="${prod.keyfile}" todir="${prod.username}@${ts2.hravatar.com}:${prod.bu.dir}/${today.date}${today.month}${today.year}"
+				     trust="true">
+    </scp>
+		<sshexec host="${ts2.hravatar.com}"
+            username="${prod.username}"
+            keyfile="${prod.keyfile}"
+                trust="true"
+                command="/usr/pgms/payara6.2023.9/payara6/glassfish/bin/asadmin --user admin --passwordfile /home/payara/passwd.gf undeploy tm2score5-1.0"/>
+		<sshexec host="${ts2.hravatar.com}"
+            username="${prod.username}"
+            keyfile="${prod.keyfile}"
+			      trust="true"
+			      command="/usr/pgms/payara6.2023.9/payara6/glassfish/bin/asadmin --user admin --passwordfile /home/payara/passwd.gf deploy --virtualservers server --contextroot ts --force=true --deploymentorder 150 ${prod.bu.dir}/${today.date}${today.month}${today.year}/tm2score5-1.0.war"/>
+			<antcall target="datetime" />
+	</target>
+
+
+	<target name="scpundeployts2">
+        <sshexec host="${ts2.hravatar.com}"
+                    username="${prod.username}"
+                    keyfile="${prod.keyfile}"
+                    trust="true"
+                    failonerror="false"
+                    command="mkdir ${prod.bu.dir}/${today.date}${today.month}${today.year}"/>
+		<sshexec host="${ts2.hravatar.com}"
+            username="${prod.username}"
+            keyfile="${prod.keyfile}"
+                trust="true"
+                command="/usr/pgms/payara6.2023.9/payara6/glassfish/bin/asadmin --user admin --passwordfile /home/payara/passwd.gf undeploy tm2score5-1.0"/>
+	<antcall target="datetime" />
+	</target>
+
+
+	<!-- <target name="scpdeploy" depends="scpstaticfiles"> -->
+	<target name="scpdeployts2" depends="scpstaticfilests2">
+        <sshexec host="${ts2.hravatar.com}"
+                    username="${prod.username}"
+                    keyfile="${prod.keyfile}"
+                    trust="true"
+                    failonerror="false"
+                    command="mkdir ${prod.bu.dir}/${today.date}${today.month}${today.year}"/>
+		<scp file="${dist.dir}/tm2score5-1.0.war" keyfile="${prod.keyfile}" todir="${prod.username}@${ts2.hravatar.com}:${prod.bu.dir}/${today.date}${today.month}${today.year}"
+				     trust="true">
+    </scp>
+		<sshexec host="${ts2.hravatar.com}"
+            username="${prod.username}"
+            keyfile="${prod.keyfile}"
+			      trust="true"
+			      command="/usr/pgms/payara6.2023.9/payara6/glassfish/bin/asadmin --user admin --passwordfile /home/payara/passwd.gf deploy --virtualservers server --contextroot ts --force=true --deploymentorder 150 ${prod.bu.dir}/${today.date}${today.month}${today.year}/tm2score5-1.0.war"/>
+			<antcall target="datetime" />
+	</target>
+
+
+	<target name="scpstaticfilests2">
+
+            <scp keyfile="${prod.keyfile}" todir="${prod.username}@${ts2.hravatar.com}:/work/tm2score5/webmod" trust="true">
+			<fileset dir="${basedir}/src/main/webapp">
+                        </fileset>
+	    </scp>
+			<antcall target="datetime" />
+	</target>
+
+
+
+
+
+
+	<target name="scpredeploystage" depends="scpstaticfilesstage">
+        <sshexec host="stage.hravatar.com"
+                    username="${prod.username}"
+                    keyfile="${prod.keyfile}"
+                    trust="true"
+                    failonerror="false"
+                    command="mkdir ${prod.bu.dir}/${today.date}${today.month}${today.year}"/>
+		<scp file="${dist.dir}/tm2score5-1.0.war" keyfile="${prod.keyfile}" todir="${prod.username}@stage.hravatar.com:${prod.bu.dir}/${today.date}${today.month}${today.year}"
+				     trust="true">
+    </scp>
+		<sshexec host="stage.hravatar.com"
+            username="${prod.username}"
+            keyfile="${prod.keyfile}"
+                trust="true"
+                command="/usr/pgms/payara6.2023.9/payara6/glassfish/bin/asadmin --user admin --passwordfile /home/payara/passwd.gf undeploy tm2score5-1.0"/>
+		<sshexec host="stage.hravatar.com"
+            username="${prod.username}"
+            keyfile="${prod.keyfile}"
+			      trust="true"
+			      command="/usr/pgms/payara6.2023.9/payara6/glassfish/bin/asadmin --user admin --passwordfile /home/payara/passwd.gf deploy --virtualservers server --contextroot ts --force=true --deploymentorder 150 ${prod.bu.dir}/${today.date}${today.month}${today.year}/tm2score5-1.0.war"/>
+			<antcall target="datetime" />
+	</target>
+
+
+	<target name="scpdeploystage" depends="scpstaticfilesstage">
+        <sshexec host="stage.hravatar.com"
+                    username="${prod.username}"
+                    keyfile="${prod.keyfile}"
+                    trust="true"
+                    failonerror="false"
+                    command="mkdir ${prod.bu.dir}/${today.date}${today.month}${today.year}"/>
+		<scp file="${dist.dir}/tm2score5-1.0.war" keyfile="${prod.keyfile}" todir="${prod.username}@stage.hravatar.com:${prod.bu.dir}/${today.date}${today.month}${today.year}"
+				     trust="true">
+    </scp>
+		<sshexec host="stage.hravatar.com"
+            username="${prod.username}"
+            keyfile="${prod.keyfile}"
+			      trust="true"
+			      command="/usr/pgms/payara6.2023.9/payara6/glassfish/bin/asadmin --user admin --passwordfile /home/payara/passwd.gf deploy --virtualservers server --contextroot ts --force=true --deploymentorder 150 ${prod.bu.dir}/${today.date}${today.month}${today.year}/tm2score5-1.0.war"/>
+			<antcall target="datetime" />
+	</target>
+
+
+	<target name="scpstaticfilesstage">
+
+            <scp keyfile="${prod.keyfile}" todir="${prod.username}@stage.hravatar.com:/work/tm2score5/webmod" trust="true">
+			<fileset dir="${basedir}/src/main/webapp">
+				<!-- <exclude name="**/*.xhtml" /> -->
+				<!-- <exclude name="**/*.jsp" /> -->
+				<!-- <exclude name="WEB-INF/*" /> -->
+				<!-- <include name="index.html" /> -->
+			</fileset>
+	    </scp>
+			<antcall target="datetime" />
+	</target>
+
+
+
+
+
+
+
+
+
+</project>
+
+

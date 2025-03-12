@@ -1,0 +1,309 @@
+<?xml version="1.0"?>
+<!-- Generated using Flame-Ware Solutions XML-2-XSD v2.0 at http://www.flame-ware.com/Products/XML-2-XSD/ -->
+<xs:schema xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xs:element name="clicflic">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="event" minOccurs="1" maxOccurs="1">
+          <xs:complexType>
+            <xs:sequence>
+               <xs:element name="dlydintns" type="xs:string" minOccurs="0" />
+               <xs:element name="intnsshown" type="xs:string" minOccurs="0" />
+               <xs:element name="upperlayer" type="xs:string" minOccurs="0" />
+               <xs:element name="initvals" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+            <xs:attribute name="acc1" type="xs:string" />
+            <xs:attribute name="acc2" type="xs:string" />
+            <xs:attribute name="acc3" type="xs:string" />
+            <xs:attribute name="acc4" type="xs:string" />
+            <xs:attribute name="acc5" type="xs:string" />
+            <xs:attribute name="acc6" type="xs:string" />
+            <xs:attribute name="acc7" type="xs:string" />
+            <xs:attribute name="acc8" type="xs:string" />
+            <xs:attribute name="acc9" type="xs:string" />
+            <xs:attribute name="acc10" type="xs:string" />
+            <xs:attribute name="acc11" type="xs:string" />
+            <xs:attribute name="acc12" type="xs:string" />
+            <xs:attribute name="altevtref" type="xs:string" />
+            <xs:attribute name="audcap" type="xs:int" default="0" />
+            
+            
+            <xs:attribute name="frclowbwvid" type="xs:int" default="0" />
+
+                        
+            <xs:attribute name="gum" type="xs:int" default="0" />
+            <xs:attribute name="hstpgurl" type="xs:string" />
+            <xs:attribute name="id" type="xs:string" />
+            <xs:attribute name="imgcap" type="xs:int" default="0" />
+            
+            <xs:attribute name="lastresordr" type="xs:int" default="0" />
+            <xs:attribute name="lastrnseq" type="xs:int" default="0" />
+            <xs:attribute name="majver" type="xs:int" default="0" />
+            <xs:attribute name="minver" type="xs:int" default="0" />
+            <xs:attribute name="minverhistory" type="xs:string" />
+            <xs:attribute name="mrec" type="xs:int" default="0" />
+            <xs:attribute name="points" type="xs:int" default="0" />
+            <xs:attribute name="pctcomplete" type="xs:float" default="0" />
+            <xs:attribute name="recdev" type="xs:int" default="0" />
+            
+            <xs:attribute name="resorder" type="xs:int" default="0" />
+            <xs:attribute name="rstrtndseqlst" type="xs:string" />
+            <xs:attribute name="rstrttmstmplst" type="xs:string" />
+            <xs:attribute name="tmrmax" type="xs:float" default="0" />
+            <xs:attribute name="tmstmp" type="xs:int" default="0" />
+            <xs:attribute name="ttime" type="xs:float" default="0" />
+	    <xs:attribute name="uahistory" type="xs:string" />
+            <xs:attribute name="upldsucsct" type="xs:int" default="0" />  <!-- Upload Success Count -->
+            <xs:attribute name="uplderractv" type="xs:int" default="0" />  <!-- Active Upload Error -->
+            
+            <xs:attribute name="xref" type="xs:string" />
+
+            <!-- Added 2/28/2023 to track overall timeouts -->
+            <xs:attribute name="tmout" type="xs:int" default="0" />
+                        
+            
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="user" minOccurs="1" maxOccurs="1">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="cmpny" type="xs:string" minOccurs="0" />
+              <xs:element name="ctry" type="xs:string" minOccurs="0" />
+              <xs:element name="cty" type="xs:string" minOccurs="0" />
+              <xs:element name="fn" type="xs:string" minOccurs="0" />
+              <xs:element name="em" type="xs:string" minOccurs="0" />
+              <xs:element name="ln" type="xs:string" minOccurs="0" />
+              <xs:element name="name" type="xs:string" minOccurs="0" />
+              <xs:element name="ph" type="xs:string" minOccurs="0" />
+              <xs:element name="ques" type="xs:string" minOccurs="0" />
+              <xs:element name="resume" type="xs:string" minOccurs="0" />
+              <xs:element name="st" type="xs:string" minOccurs="0" />
+              <xs:element name="st2" type="xs:string" minOccurs="0" />
+              <xs:element name="state" type="xs:string" minOccurs="0" />
+              <xs:element name="zip" type="xs:string" minOccurs="0" />
+              <xs:element name="cust1" type="xs:string" minOccurs="0" />
+              <xs:element name="cust2" type="xs:string" minOccurs="0" />
+              <xs:element name="cust3" type="xs:string" minOccurs="0" />
+              <xs:element name="cust4" type="xs:string" minOccurs="0" />
+              <xs:element name="cust5" type="xs:string" minOccurs="0" />
+              <xs:element name="cust6" type="xs:string" minOccurs="0" />
+              <xs:element name="cust7" type="xs:string" minOccurs="0" />
+              <xs:element name="cust8" type="xs:string" minOccurs="0" />
+              <xs:element name="cust9" type="xs:string" minOccurs="0" />
+              <xs:element name="cust10" type="xs:string" minOccurs="0" />
+              <xs:element name="cust11" type="xs:string" minOccurs="0" />
+              <xs:element name="cust12" type="xs:string" minOccurs="0" />
+              <xs:element name="cust13" type="xs:string" minOccurs="0" />
+              <xs:element name="cust14" type="xs:string" minOccurs="0" />
+              <xs:element name="cust15" type="xs:string" minOccurs="0" />
+              <xs:element name="cust16" type="xs:string" minOccurs="0" />
+              <xs:element name="cust17" type="xs:string" minOccurs="0" />
+              <xs:element name="cust18" type="xs:string" minOccurs="0" />
+              <xs:element name="cust19" type="xs:string" minOccurs="0" />
+              <xs:element name="cust20" type="xs:string" minOccurs="0" />
+              <xs:element name="cust21" type="xs:string" minOccurs="0" />
+              <xs:element name="cust22" type="xs:string" minOccurs="0" />
+              <xs:element name="cust23" type="xs:string" minOccurs="0" />
+              <xs:element name="cust24" type="xs:string" minOccurs="0" />
+              <xs:element name="cust25" type="xs:string" minOccurs="0" />
+              <xs:element name="cust26" type="xs:string" minOccurs="0" />
+              <xs:element name="cust27" type="xs:string" minOccurs="0" />
+              <xs:element name="cust28" type="xs:string" minOccurs="0" />
+              <xs:element name="cust29" type="xs:string" minOccurs="0" />
+              <xs:element name="cust30" type="xs:string" minOccurs="0" />
+              <xs:element name="cust31" type="xs:string" minOccurs="0" />
+              <xs:element name="cust32" type="xs:string" minOccurs="0" />
+              <xs:element name="cust33" type="xs:string" minOccurs="0" />
+              <xs:element name="cust34" type="xs:string" minOccurs="0" />
+              <xs:element name="cust35" type="xs:string" minOccurs="0" />
+              <xs:element name="cust36" type="xs:string" minOccurs="0" />
+              <xs:element name="cust37" type="xs:string" minOccurs="0" />
+              <xs:element name="cust38" type="xs:string" minOccurs="0" />
+              <xs:element name="cust39" type="xs:string" minOccurs="0" />
+              <xs:element name="cust40" type="xs:string" minOccurs="0" />
+              <xs:element name="cust41" type="xs:string" minOccurs="0" />
+              <xs:element name="cust42" type="xs:string" minOccurs="0" />
+              <xs:element name="cust43" type="xs:string" minOccurs="0" />
+              <xs:element name="cust44" type="xs:string" minOccurs="0" />
+              <xs:element name="cust45" type="xs:string" minOccurs="0" />
+              <xs:element name="cust46" type="xs:string" minOccurs="0" />
+              <xs:element name="cust47" type="xs:string" minOccurs="0" />
+              <xs:element name="cust48" type="xs:string" minOccurs="0" />
+              <xs:element name="cust49" type="xs:string" minOccurs="0" />
+              <xs:element name="cust50" type="xs:string" minOccurs="0" />
+              <xs:element name="cust51" type="xs:string" minOccurs="0" />
+              <xs:element name="cust52" type="xs:string" minOccurs="0" />
+              <xs:element name="cust53" type="xs:string" minOccurs="0" />
+              <xs:element name="cust54" type="xs:string" minOccurs="0" />
+              <xs:element name="cust55" type="xs:string" minOccurs="0" />
+              <xs:element name="cust56" type="xs:string" minOccurs="0" />
+              <xs:element name="cust57" type="xs:string" minOccurs="0" />
+              <xs:element name="cust58" type="xs:string" minOccurs="0" />
+              <xs:element name="cust59" type="xs:string" minOccurs="0" />
+              <xs:element name="cust60" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="history" minOccurs="1" maxOccurs="1">
+          <xs:complexType>
+              <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="intn" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>                
+                  <xs:simpleContent msdata:ColumnName="intn_Text">
+                    <xs:extension base="xs:string">
+                      <xs:attribute name="chcclk" type="xs:int" default="0" />
+                      <xs:attribute name="clkaction" type="xs:int" default="0" /><!-- Test Mode Only -->
+                      <xs:attribute name="desired" type="xs:int" default="0" />
+                      <xs:attribute name="id" type="xs:string" />
+                      <xs:attribute name="pass" type="xs:int" default="0" />
+                      <xs:attribute name="tmstmp" type="xs:int" default="0" /><!-- Test Mode Only -->
+                      
+                      <!-- NEW Attributes (6/18/2019) -->
+                      <xs:attribute name="ct" type="xs:float" default="0" /><!-- REPLACES  ctime -->
+                      <xs:attribute name="crct" type="xs:int" default="0" /><!-- REPLACES  correct --> 
+                      <xs:attribute name="cg" type="xs:string" /><!-- REPLACES  clipgroup -->
+                      <xs:attribute name="ian" type="xs:int" default="0" /><!-- REPLACES  itmsanswd -->
+                      <xs:attribute name="isc" type="xs:float" default="0" /><!-- REPLACES  itmscr -->
+                      <xs:attribute name="ito" type="xs:int" default="0" /><!-- REPLACES  itmsttl -->
+                      <xs:attribute name="ns" type="xs:int" default="0" /><!-- REPLACES  ndseq -->
+                      <xs:attribute name="nns" type="xs:int" default="0" /><!-- REPLACES  nextndseq -->
+                      <xs:attribute name="pc" type="xs:float" default="0" /><!-- REPLACES  pctc -->
+                      <xs:attribute name="pts" type="xs:int" default="0" /><!-- REPLACES  points -->
+                      <xs:attribute name="pss" type="xs:string" /><!-- REPLACES  prvsubseqs -->
+                      <xs:attribute name="sq" type="xs:int" default="0" /><!-- REPLACES  seq -->
+                      <xs:attribute name="ss" type="xs:int" default="0" /><!-- REPLACES  snseq -->
+                      <xs:attribute name="sv" type="xs:string" /><!-- REPLACES  sv1 thru sv12 -->
+                      <xs:attribute name="t" type="xs:string" /><!-- REPLACES  type -->
+                      <xs:attribute name="u" type="xs:string" /><!-- REPLACES  unqid -->
+
+                      <!-- NEW Attributes (10/31/2022) -->
+                      <xs:attribute name="ck" type="xs:int" default="0" />
+                      <xs:attribute name="cx" type="xs:int" default="0" />
+
+                      
+                      <!-- NEW Attributes (11/13/2024) -->
+                      <xs:attribute name="af" type="xs:int" default="0" /><!-- Accessible Form -->
+                      
+                      <!-- Legacy Attributes Added back fro PSI (8/30/2023) -->
+                      <xs:attribute name="ctime" type="xs:float" default="0" /><!-- Deprecated. Renamed (see below) -->
+                      <xs:attribute name="unqid" type="xs:string" /><!-- Deprecated. Renamed (see below) -->
+                      <xs:attribute name="ndseq" type="xs:int" default="0" /><!-- Deprecated. Renamed (see below) -->
+                      <xs:attribute name="seq" type="xs:int" default="0" /><!-- Deprecated. Renamed (see below) -->
+                      <xs:attribute name="snseq" type="xs:int" default="0" /><!-- Deprecated. Renamed (see below) -->
+                      <xs:attribute name="type" type="xs:int" default="0" /><!-- Removed Completely - redundant -->
+                      
+                      
+                    </xs:extension>
+                  </xs:simpleContent>                
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="clip" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+
+                  <xs:attribute name="id" type="xs:string" />
+                  <xs:attribute name="pass" type="xs:int" default="0" />
+                  <xs:attribute name="tmstmp" type="xs:int" default="0" /><!-- Test Mode Only -->
+                                    		               
+                 <!-- NEW Attributes (6/18/2019) -->
+                 <xs:attribute name="cg" type="xs:string" /><!-- REPLACES  clipgroup -->
+                 <xs:attribute name="h" type="xs:float" default="0" /><!-- REPLACES  hang -->
+                 <xs:attribute name="ns" type="xs:int" default="0" /><!-- REPLACES  ndseq -->
+                 <xs:attribute name="nns" type="xs:int" default="0" /><!-- REPLACES  nextndseq -->
+                 <xs:attribute name="o" type="xs:int" default="0" /><!-- REPLACES  ordrdo -->
+                 <xs:attribute name="pc" type="xs:float" default="0" /><!-- REPLACES  pctc -->
+                 <xs:attribute name="pts" type="xs:int" default="0" /><!-- REPLACES  points -->
+                 <xs:attribute name="pss" type="xs:string" /><!-- REPLACES  prvsubseqs -->
+                 <xs:attribute name="sq" type="xs:int" default="0" /><!-- REPLACES  seq -->
+                 <xs:attribute name="ss" type="xs:int" default="0" /><!-- REPLACES  snseq -->
+                 <xs:attribute name="sv" type="xs:string" /><!-- REPLACES  sv1 thru sv12 -->
+                 <xs:attribute name="t" type="xs:string" /><!-- REPLACES  type -->
+                 <xs:attribute name="u" type="xs:string" /><!-- REPLACES  unqid -->
+
+                 <!-- NEW Attributes (10/31/2022) 
+                    0 means no timeout
+                    1 means overall time-limit reached
+                 -->
+                 <xs:attribute name="cx" type="xs:int" default="0" />
+                                    
+                   
+                </xs:complexType>
+              </xs:element>
+            </xs:choice>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="cronhist" minOccurs="1" maxOccurs="1">
+          <xs:complexType>
+              <xs:choice minOccurs="0" maxOccurs="unbounded">
+            
+              <xs:element name="itn" nillable="true" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                
+                  <xs:simpleContent msdata:ColumnName="itn_Text">
+                    <xs:extension base="xs:string">
+                      <xs:attribute name="ctime" type="xs:float" default="0" /><!-- Deprecated. Renamed (see below) -->
+                      <xs:attribute name="ndseq" type="xs:int" default="0" /><!-- Deprecated. Renamed (see below) -->
+                      <xs:attribute name="note" type="xs:string" />
+                      <xs:attribute name="pctc" type="xs:float" default="0" /><!-- Deprecated. Renamed (see below) -->
+                      <xs:attribute name="snseq" type="xs:int" default="0" /><!-- Deprecated. Renamed (see below) -->
+                      <xs:attribute name="src" type="xs:string" />
+                      <xs:attribute name="svs" type="xs:string" /><!-- Deprecated. Renamed (see below) -->
+                      <xs:attribute name="tmstmp" type="xs:int" default="0" /><!-- Test Mode Only -->
+                      <xs:attribute name="unqid" type="xs:string" /><!-- Deprecated. Renamed (see below) -->
+                      
+                      <!-- NEW Attributes (6/18/2019) -->
+                      <xs:attribute name="ct" type="xs:float" default="0" /><!-- REPLACES ctime -->
+                      <xs:attribute name="ns" type="xs:int" default="0" /><!-- REPLACES  ndseq -->
+                      <xs:attribute name="pc" type="xs:float" default="0" /><!-- REPLACES  pctc -->
+                      <xs:attribute name="ss" type="xs:int" default="0" /><!-- REPLACES  snseq -->
+                      <xs:attribute name="sv" type="xs:string" /><!-- REPLACES  svs -->
+                      <xs:attribute name="u" type="xs:string" /><!-- REPLACES  unqid -->
+                      
+                      
+                    </xs:extension>
+                  </xs:simpleContent>
+		
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="clp" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+               
+                  <xs:attribute name="unqid" type="xs:string" /><!-- Deprecated. Renamed (see below) -->
+                  <xs:attribute name="hang" type="xs:float" default="0" /><!-- Deprecated. Renamed (see below) -->
+                  <xs:attribute name="ndseq" type="xs:int" default="0" /><!-- Deprecated. Renamed (see below) -->
+                  <xs:attribute name="note" type="xs:string" />
+                  <xs:attribute name="pctc" type="xs:float" default="0" /><!-- Deprecated. Renamed (see below) -->
+                  <xs:attribute name="snseq" type="xs:int" default="0" /><!-- Deprecated. Renamed (see below) -->
+                  <xs:attribute name="src" type="xs:string" />
+                  <xs:attribute name="svs" type="xs:string" /><!-- Deprecated. Renamed (see below) -->
+                  <xs:attribute name="tmstmp" type="xs:int" default="0" /><!-- Test Mode Only -->
+                  
+                  <!-- NEW Attributes (6/18/2019) -->
+                  <xs:attribute name="h" type="xs:float" default="0" /><!-- REPLACES  hang -->
+                  <xs:attribute name="ns" type="xs:int" default="0" /><!-- REPLACES  ndseq -->
+                  <xs:attribute name="pc" type="xs:float" default="0" /><!-- REPLACES  pctc -->
+                  <xs:attribute name="ss" type="xs:int" default="0" /><!-- REPLACES  snseq -->
+                  <xs:attribute name="sv" type="xs:string" /><!-- REPLACES  svs str -->
+                  <xs:attribute name="u" type="xs:string" /><!-- REPLACES  unqid -->
+                  
+                  
+                
+                </xs:complexType>
+              </xs:element>
+            </xs:choice>
+            
+          </xs:complexType>
+        </xs:element>
+
+
+      </xs:sequence>
+
+
+      <xs:attribute name="id" type="xs:string" />
+      <xs:attribute name="imonum" type="xs:int" default="0" />
+      <xs:attribute name="name" type="xs:string" />
+      <xs:attribute name="swpltfrm" type="xs:string" />
+      <xs:attribute name="swpltfrmversion" type="xs:string" />
+      <xs:attribute name="ua" type="xs:int" default="0" />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

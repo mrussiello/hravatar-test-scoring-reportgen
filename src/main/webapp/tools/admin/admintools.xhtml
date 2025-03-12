@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:session="http://xmlns.jcp.org/jsf/composite/session">
+
+    <ui:composition template="/skin/default/template.xhtml">
+
+        <ui:define name="coreinnersection">
+
+            <session:idle-monitor />
+
+            <script type="text/javascript">
+                function rfrshurl()
+                {
+                    document.getElementById('refrshlnk').href = '/ts/tools/admin/admintools.xhtml?r=' + Math.random();
+                }
+            </script>
+
+
+            <div style="width:850px;margin-left: auto;margin-right: auto">
+
+                <div style="text-align:center"><h2>Scoring App - Control Center</h2>
+                </div>
+
+                <br />
+
+                <ui:fragment rendered="#{not userBean.userLoggedOnAsAdmin}">
+
+                    <h:form id="logonform1" prependId="false">
+
+                        <p:panel header="Logon Form" style="width:500px;margin-left:auto;margin-right:auto">
+
+                            <p:focus for="username"/>
+
+                            <h:panelGrid columns="3">
+                                <h:outputText styleClass="titletext1" value="Please Sign In:" escape="false"/>
+                                <h:panelGroup></h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:outputLabel for="username" value="Email/Username:" />
+
+                                <p:inputText id="username" value="#{userUtils.logonName}" autocomplete="username" label="username" validatorMessage="Username is required.">
+                                    <f:validateLength minimum="2" />
+                                </p:inputText>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:outputLabel for="password" value="Password:" />
+                                <p:password id="password" value="#{userUtils.logonKey}" autocomplete="current-password" label="password"  validatorMessage="Password is required." feedback="false">
+                                    <f:validateLength minimum="4" maximum="20" />
+                                </p:password>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup></h:panelGroup>
+                                <p:commandButton ajax="false" action="#{userUtils.processLogonAttempt}" title="Sign In" value="Sign In">
+                                </p:commandButton>
+                                <h:panelGroup></h:panelGroup>
+
+                            </h:panelGrid>
+
+                        </p:panel>
+
+                        <br />&#160;
+
+                    </h:form>
+                </ui:fragment>
+
+                <ui:fragment rendered="#{userBean.userLoggedOnAsAdmin}">
+
+                    
+                    <p:panel header="Links and Functions" toggleable="true" closable="true" style="margin-left:auto;margin-right:auto">
+                        
+                        <h:form prependId="false">
+
+                        <ui:fragment rendered="#{fn:length(userBean.resultStr1) gt 0}">
+
+                            <p:inputTextarea cols="80" rows="3" autoResize="true" value="#{userBean.resultStr1}"/>
+                            <br />
+                            <p:commandLink ajax="false" action="#{userUtils.processClearResults}">Clear Results</p:commandLink>
+                        </ui:fragment>
+                            
+                            
+                            
+                            <h:panelGrid cellpadding="3"
+                                         cellspacing="0"
+                                         border="0"
+                                         columns="3">
+
+
+                                <h:commandLink action="#{userUtils.processToggleNewBatchProcessing}">Toggle ALL Auto Batches On/Off</h:commandLink>
+
+                                <h:commandLink action="#{userUtils.processClearAllForNewBatches}">Clear Status For New</h:commandLink>
+
+
+                                <h:commandLink action="#{userUtils.processClearPartialScores}">Clear Partially Scored Objects</h:commandLink>
+
+                                <h:commandLink action="#{userUtils.processPerformScoreBatch}" title="Process A Score Batch">Process A Score Batch</h:commandLink>
+                                <h:commandLink action="#{userUtils.processPerformReportBatch}">Process A Report Batch</h:commandLink>
+                                <h:commandLink action="#{userUtils.processPerformDistributeBatch}">Process A Distribution Batch</h:commandLink>
+
+                                <h:commandLink action="#{userUtils.processPerformScoreBatchArchive}" title="Process A Score Batch">Score Batch w/Archive</h:commandLink>
+                                <h:commandLink action="#{userUtils.processPerformReportBatchArchive}">Process A Report Batch w/Archive</h:commandLink>
+                                <h:commandLink action="#{userUtils.processPerformDistributeBatchArchive}">Process A Distribution Batch w/Archive</h:commandLink>
+
+
+                                <h:commandLink action="#{userUtils.processClearDmbsCache}" title="Clear dbms cache">Clear DBMS Cache</h:commandLink>
+                                <h:commandLink action="#{userUtils.processToggleScoreDebug}" title="Toggle Debug Scoring.">Toggle Debug Scoring</h:commandLink>
+                                <h:commandLink action="#{userUtils.processToggleReportDebug}" title="Toggle Debug Reporting.">Toggle Debug Reporting</h:commandLink>
+                                <h:commandLink action="#{userUtils.processToggleDistDebug}" title="Toggle Debug Dist.">Toggle Debug Dist</h:commandLink>
+                                <h:panelGroup>
+                                    <h:outputLink id="refrshlnk" value="/ts/tools/admin/admintools.xhtml" onclick="return rfrshurl()">Refresh</h:outputLink>
+                                </h:panelGroup>
+
+                                <h:outputLink value="essaytest.xhtml">Essay Test Functions</h:outputLink>
+                                <h:outputLink value="plagtest.xhtml">Plagiarism Functions</h:outputLink>
+
+                                <h:commandLink action="#{userUtils.processReminderBatch}" title="Reminder Batch">Reminder Batch</h:commandLink>
+                                <h:commandLink action="#{userUtils.processInvitationBatch}" title="Invitation Batch">Invitation Batch</h:commandLink>
+                                <h:commandLink action="#{userUtils.processOrgAutoTestExpireBatch}" title="OrgAutoTest Expire Batch">OrgAutoTest Expire Batch</h:commandLink>
+                                <h:commandLink action="#{userUtils.processOrgSubscriptionExpireBatch}" title="Org Subscription Expire Warning Batch">Subscription Expire Batch</h:commandLink>
+                                <h:commandLink action="#{userUtils.processCreditsExpireBatch}" title="Org Candidate Credits Expire Warning Batch">Credits Expire Batch</h:commandLink>
+                                <h:commandLink action="#{userUtils.processTkExpireWarningBatch}" title="TestKey Expire Warning Batch">TestKey Expire Warning Batch</h:commandLink>
+
+
+
+                                <!--
+                                <p:commandButton ajax="false" action="#{userUtils.processPerformScoreBatch}" value="Score Batch"/>
+                                <h:outputText value="&#160;" escape="false"/>
+                                -->
+
+                            </h:panelGrid>
+
+                        </h:form>
+
+                        <br />
+
+                        <h:form prependId="false">
+                            <h:panelGrid cellpadding="1"
+                                         cellspacing="0"
+                                         border="0"
+                                         columns="3">
+
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right">TestKey Event Selection:</div>
+                                </h:panelGroup>
+                                <p:selectOneMenu value="#{userBean.testKeyEventSelectionTypeId}">
+                                    <f:selectItems value="#{userUtils.testKeyEventSelectItemList}"/>
+                                </p:selectOneMenu>
+                                <h:panelGroup>
+                                    <p:commandButton ajax="false" action="#{userUtils.processChangeTestKeyEventSelectionType}" value="Change Type"/>
+                                </h:panelGroup>
+
+
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right">Rescore TestKeyIds:</div>
+                                </h:panelGroup>
+                                <p:inputText value="#{userBean.testKeyIdsStr}" size="20">
+                                </p:inputText>
+                                <h:panelGroup>
+                                    <p:commandButton ajax="false" action="#{userUtils.processRescoreTestKeyIds}" value="Rescore"/> &#160;range or comma delim list.
+                                </h:panelGroup>
+
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right">Score Incomplete Battery TestKeyId:</div>
+                                </h:panelGroup>
+                                <p:inputText value="#{userBean.testKeyId5}" size="6">
+                                    <f:convertNumber integerOnly="true"/>
+                                </p:inputText>
+                                <h:panelGroup>
+                                    <p:commandButton ajax="false" action="#{userUtils.processScorePartiallyCompletedBattery}" value="Score Partially Completed Battery" title="This will score all test events in the battery that are complete and ignore/archive the rest."/>
+                                </h:panelGroup>
+
+                                <!--
+                                <h:panelGroup>&#160;</h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+                                -->
+
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right">Rescore PIN:</div>
+                                </h:panelGroup>
+                                <p:inputText value="#{userBean.pin}" size="20"/>
+                                <p:commandButton ajax="false" action="#{userUtils.processRescorePin}" value="Rescore"/>
+
+                                <!--
+                                <h:panelGroup>&#160;</h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+                                -->
+
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right">Rescore TestEventIds or SurveyEventIds:</div>
+                                </h:panelGroup>
+                                <p:inputText value="#{userBean.testEventIds}" size="20">
+                                </p:inputText>
+                                <h:panelGroup>range or comma delim list.</h:panelGroup>
+
+                                <h:panelGroup>
+                                    <div style="text-align: right">SimDescrip Xml:</div>
+                                </h:panelGroup>
+                                <p:inputTextarea value="#{userBean.simDescripXml}" style="width:270px;height:15px" autoResize="true"/>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup></h:panelGroup>
+                                <h:panelGroup>
+                                    <p:selectBooleanCheckbox value="#{userBean.skipVersionCheck}"/>&#160;Skip version check
+                                </h:panelGroup>
+                                <h:panelGroup>Applies only when SimDescrip XML present.</h:panelGroup>
+
+
+                                <h:panelGroup></h:panelGroup>
+                                <h:panelGroup>
+                                    <p:selectBooleanCheckbox value="#{userBean.clearExternal}"/>&#160;Clear external scores
+                                </h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+
+                                <h:panelGroup></h:panelGroup>
+                                <h:panelGroup>
+                                    <p:selectBooleanCheckbox value="#{userBean.resetSpeechText}"/>&#160;Reset Speech-2-Text processing.
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:commandButton ajax="false" action="#{userUtils.processRescoreTestEvents}" value="Rescore TestEvent(s)"/>
+                                    &#160;
+                                    <div style="padding-top:2px">
+                                        <p:commandButton ajax="false" action="#{userUtils.processRescoreSurveyEvents}" value="Rescore SurveyEvent(s)"/>
+                                    </div>
+                                </h:panelGroup>
+
+
+
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right">Rescore SimId/VersionId:</div>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:inputText value="#{userBean.simId}" size="3" placeholder="Id"/>&#160;
+                                    <p:inputText value="#{userBean.simVersionId}" size="3" placeholder="Ver"/>
+                                </h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right">OrgId/SuborgId:</div>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:inputText value="#{userBean.simOrgId}" size="3" />&#160;
+                                    <p:inputText value="#{userBean.simSuborgId}" size="3" />
+                                </h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right">Date Range:</div>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:calendar timeZone="GMT" value="#{userBean.startDate}" pattern="MM/dd/yyyy" size="18"/>
+                                    &#160;
+                                    <p:calendar timeZone="GMT" value="#{userBean.endDate}" pattern="MM/dd/yyyy" size="18"/>
+                                    &#160;
+                                    GMT
+                                </h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup></h:panelGroup>
+                                <h:panelGroup>
+                                    <p:selectBooleanCheckbox value="#{userBean.clearExternal2}"/>&#160;Clear external scores.
+                                </h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+
+
+                                <h:panelGroup></h:panelGroup>
+                                <h:panelGroup>
+                                    <p:selectBooleanCheckbox value="#{userBean.booleanParam1}"/>&#160;Percentiles Only.
+                                </h:panelGroup>
+                                <p:commandButton ajax="false" action="#{userUtils.processRescoreSimOrOrg}" value="Rescore Sim / Org"/>
+
+
+
+                                <h:panelGroup><br />&#160;</h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right">Gen/Regen Reports for TestKeyIds:</div>
+                                </h:panelGroup>
+                                <p:inputText value="#{userBean.testKeyIdz2}" size="30"/>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:selectBooleanCheckbox value="#{userBean.forceCalcSection}"/>&#160;Force to include Calculation Section.
+                                </h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:selectBooleanCheckbox value="#{userBean.sendResendCandidateReportEmails}" />&#160;Send/Resend Candidate Reports via Email.
+                                </h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right">Last Candidate Send Date Before (GMT):</div>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:calendar timeZone="GMT" value="#{userBean.maxLastSendDate}" pattern="MM/dd/yyyy" size="18"/>
+                                </h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+
+                                <h:panelGroup>
+                                    <div style="text-align: right">Report Id:</div>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:inputText value="#{userBean.reportId}" size="8">
+                                        <f:convertNumber integerOnly="true" minIntegerDigits="1"/>
+                                    </p:inputText> (999999=all existing feedback reports)
+                                </h:panelGroup>
+                                <p:commandButton ajax="false" action="#{userUtils.processGenRegenReportsTestKeyIds}" value="Gen/Regen Reports"/>
+
+
+
+
+                                <h:panelGroup><br />&#160;</h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+
+
+
+
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right">Gen/Regen Reports for TestEventIds:</div>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <h:panelGrid style="margin-left:0" columns="2">
+                                        <p:inputText value="#{userBean.testEventIdz2}" size="30" />
+
+                                        <p:inputText value="#{userBean.localeStr2}" size="5" placeholder="Locale"/>
+
+                                    </h:panelGrid>
+                                </h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:selectBooleanCheckbox value="#{userBean.forceCalcSection2}"/>&#160;Force to include Calculation Section.
+                                </h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:selectBooleanCheckbox value="#{userBean.sendResendCandidateReportEmails2}" />&#160;Send/Resend Candidate Reports via Email.
+                                </h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right">Last Send Date Before (GMT):</div>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:calendar timeZone="GMT" value="#{userBean.maxLastSendDate2}" pattern="MM/dd/yyyy" size="18"/>
+                                </h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+
+                                <h:panelGroup>
+                                    <div style="text-align: right">Report Id:</div>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:inputText value="#{userBean.reportId2}" size="5">
+                                        <f:convertNumber integerOnly="true" minIntegerDigits="1"/>
+                                    </p:inputText> (999999=all existing feedback reports)
+                                </h:panelGroup>
+                                <p:commandButton ajax="false" action="#{userUtils.processGenRegenReportsTestEventIds}" value="Gen/Regen Reports"/>
+
+
+
+
+
+
+
+
+                                <h:panelGroup><br />&#160;</h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right">Gen/Regen Reports for Sim:</div>
+                                </h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right">SimId/VersionId:</div>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:inputText value="#{userBean.simId2}" size="3" placeholder="Id"/>&#160;
+                                    <p:inputText value="#{userBean.simVersionId2}" size="3" placeholder="Ver"/>
+                                </h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right">OrgId/SuborgId:</div>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:inputText value="#{userBean.simOrgId2}" size="3" />&#160;
+                                    <p:inputText value="#{userBean.simSuborgId2}" size="3" />
+                                </h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right">Date Range (GMT):</div>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:calendar timeZone="GMT" value="#{userBean.startDate3}" pattern="MM/dd/yyyy" size="18"/>
+                                    &#160;
+                                    <p:calendar timeZone="GMT" value="#{userBean.endDate3}" pattern="MM/dd/yyyy" size="18"/>
+                                    &#160;
+                                    GMT
+                                </h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right">Min TestEventId:</div>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:inputText value="#{userBean.minTestEventId}" size="12">
+                                        <f:convertNumber integerOnly="true"/>
+                                    </p:inputText>
+                                </h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:selectBooleanCheckbox value="#{userBean.forceCalcSection3}" />&#160;Force to include Calculation Section.
+                                </h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:selectBooleanCheckbox value="#{userBean.sendResendCandidateReportEmails3}" />&#160;Send/Resend Candidate Reports via Email.
+                                </h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right">Last Send Date Before (GMT):</div>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:calendar timeZone="GMT" value="#{userBean.maxLastSendDate3}" pattern="MM/dd/yyyy" size="18"/>
+                                </h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup>
+                                    <div style="text-align: right">Report Id:</div>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:inputText value="#{userBean.reportId4}" size="5">
+                                        <f:convertNumber integerOnly="true" minIntegerDigits="1"/>
+                                    </p:inputText> (999999=all existing feedback reports)
+                                </h:panelGroup>
+                                <p:commandButton ajax="false" action="#{userUtils.processRegenReportsSimSimVersionId}" value="Gen/Regen Reports for Sim / Org"/>
+
+                                <h:panelGroup>&#160;</h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+
+
+
+
+
+
+
+
+
+
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right">Re-Distribute TestKeyIds:</div>
+                                </h:panelGroup>
+                                <p:inputText value="#{userBean.testKeyIdsStr2}" size="30"/>
+                                <p:commandButton ajax="false" action="#{userUtils.processRedistributeTestKeyIds}" value="Re-Distribute TestKeys"/>
+
+
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right">Re-Distribute TestEvent Ids:</div>
+                                </h:panelGroup>
+                                <p:inputText value="#{userBean.testEventIds2}" size="30"/>
+                                <p:commandButton ajax="false" action="#{userUtils.processRedistributeTestEventIds}" value="Re-Distribute TestEvents" title="Will look up matching test keys and redistribute each."/>
+
+
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right"><br />Generate API AssessmentResult XML:</div>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                </h:panelGroup>
+
+                                <h:panelGroup><div class="bodysmallbold" style="text-align: right">TestKeyId:</div>
+                                </h:panelGroup>
+                                <p:inputText value="#{userBean.testKeyId6}" size="10" placeholder="TestKey Id">
+                                    <f:convertNumber integerOnly="true"/>
+                                </p:inputText>
+                                <h:panelGroup>
+                                </h:panelGroup>
+
+                                <h:panelGroup><div class="bodysmallbold" style="text-align: right">Include Score Code:</div>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:selectOneMenu value="#{userBean.intParam1}">
+                                        <f:selectItem itemLabel="Score Only" itemValue="1"/>
+                                        <f:selectItem itemLabel="Score and PDF" itemValue="2"/>
+                                    </p:selectOneMenu>
+                                </h:panelGroup>
+                                <p:commandButton ajax="false" action="#{userUtils.processGenerateAssessmentResultXml}" value="Generate XML" title="Test key must be in Reports Complete status or higher."/>
+
+
+                                
+                                <h:panelGroup>&#160;</h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+                                
+
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right">Send Test Text:</div>
+                                </h:panelGroup>
+                                <p:inputText value="#{userBean.textRecipPh}" size="15"/>
+                                <p:commandButton ajax="false" action="#{userUtils.processSendTestText}" value="Send Test Message"/>
+
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right">Send Reminder for TestKeyId:</div>
+                                </h:panelGroup>
+                                <p:inputText value="#{userBean.testKeyId4}" size="12">
+                                    <f:convertNumber integerOnly="true" minIntegerDigits="1"/>
+                                </p:inputText>
+                                <p:commandButton ajax="false" action="#{userUtils.processSendTestKeyReminder}" value="Send Reminder Email"/>
+
+
+                                <h:panelGroup>&#160;</h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right">Sample Report Product Id:</div>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:inputText value="#{userBean.productId3}" size="5">
+                                        <f:convertNumber integerOnly="true" minIntegerDigits="1"/>
+                                    </p:inputText>
+                                </h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup>
+                                    <div style="text-align: right">Report Id (0 for default):</div>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:inputText value="#{userBean.reportId3}" size="5">
+                                        <f:convertNumber integerOnly="true" minIntegerDigits="1"/>
+                                    </p:inputText>
+                                </h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+
+                                <h:panelGroup>
+                                    <div style="text-align: right">Locale:</div>
+                                </h:panelGroup>
+                                <p:inputText value="#{userBean.localeStr3}" size="5"/>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup>
+                                    <div style="text-align: right">With Profile:</div>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:selectBooleanCheckbox value="#{userUtils.booleanParam1}"/>
+                                </h:panelGroup>
+                                <p:commandButton ajax="false" action="#{userUtils.processGenSampleReport}" value="Gen Sample Report"/>
+
+
+                                <h:panelGroup>&#160;</h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+
+
+
+                                <h:panelGroup>
+                                    <div style="text-align: right">Parse Num:</div>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:inputText size="10" value="#{userUtils.strParam1}"/>
+                                </h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup>
+                                    <div style="text-align: right">Locale:</div>
+                                </h:panelGroup>
+                                <p:inputText value="#{userBean.localeStr4}" size="5"/>
+                                <p:commandButton ajax="false" action="#{userUtils.processParseNum}" value="Parse"/>
+
+
+                                <h:panelGroup>&#160;</h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+
+                                <h:panelGroup>
+                                    <div style="text-align: right">Set Runtime Constant:</div>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:inputText size="20" placeholder="Field NAME" value="#{userUtils.strParam2}"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                </h:panelGroup>
+
+                                <h:panelGroup>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:inputText size="20" placeholder="Field VALUE" value="#{userUtils.strParam3}"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:commandButton ajax="false" action="#{userUtils.processSetRuntimeConstant}" value="Set RT Constant"/>
+                                </h:panelGroup>
+
+
+                            </h:panelGrid>
+                        </h:form>
+
+
+                    </p:panel>
+
+
+                    <br />
+
+                    <h:form prependId="false">
+                        <p:panel rendered="#{fn:length(userBean.reportTestEventScoreList) gt 0}" header="Reports" style="width:750px;margin-left:auto;margin-right:auto;margin-top:12px">
+
+
+                            <p:dataTable value="#{userBean.reportTestEventScoreList}" var="testEventScore">
+
+                                <p:column>
+                                    <p:commandLink ajax="true" value="Download">
+                                        <f:param name="tesid" value="#{testEventScore.testEventScoreId}" />
+                                        <p:fileDownload value="#{reportDownloadBean.reportFileForDownload}"/>
+                                    </p:commandLink>
+
+                                    <!--
+                                    <h:commandLink>
+                                        <h:graphicImage library="images" name="report.png" style="width:20px" />
+                                        <f:setPropertyActionListener target="#{userBean.testEventScore}" value="#{testEventScore}"/>
+                                        <p:fileDownload value="#{userUtils.reportFileToDownload}">
+                                        </p:fileDownload>
+                                    </h:commandLink>
+                                    -->
+                                </p:column>
+
+                                <p:column>
+                                    <f:facet name="header">Report Name</f:facet>
+                                    <h:outputText value="#{testEventScore.name}"/>
+                                    <br />
+                                    <h:outputText value="#{testEventScore.createDate}">
+                                        <f:convertDateTime type="both" dateStyle="short" timeStyle="long" timeZone="#{userBean.user.timeZoneId}"/>
+                                    </h:outputText>
+                                </p:column>
+
+                                <p:column>
+                                    <f:facet name="header">TestEventId</f:facet>
+                                    <h:outputText value="#{testEventScore.testEventId}"/>
+                                </p:column>
+
+                            </p:dataTable>
+
+
+                        </p:panel>
+                    </h:form>
+                    <br />
+
+                    <p:panel header="System Status"  toggleable="true" closable="true" style="width:750px;margin-left:auto;margin-right:auto">
+
+
+                        <table cellpadding="2" cellspacing="0">
+
+                            <tr>
+                                <td>Start Date:</td>
+                                <td>
+                                    <h:outputText value="#{userUtils.systemStartDate}">
+                                        <f:convertDateTime dateStyle="long" timeStyle="long" type="both"/>
+                                    </h:outputText>
+                                </td>
+                            </tr>
+
+
+
+                            <tr>
+                                <td><h:outputText rendered="#{fn:length(userUtils.orgIdsToSkip) gt 0}" style="color:red;font-size:1.15rem;font-weight:bold" value="OrgIds Currently SKIPPED:"/>
+                                    <h:outputText rendered="#{fn:length(userUtils.orgIdsToSkip) le 0}" value="OrgIds Skipped"/>
+                                </td>
+                                <td>
+                                    <h:outputText rendered="#{fn:length(userUtils.orgIdsToSkip) gt 0}" style="color:red;font-size:1.15rem;font-weight:bold" value="#{userUtils.orgIdsToSkip}"/>
+                                    <h:outputText rendered="#{fn:length(userUtils.orgIdsToSkip) le 0}" value="None"/>
+                                </td>
+                            </tr>
+
+
+
+                            <tr>
+                                <td>New Batch Processing:</td>
+                                <td>
+                                    <h:outputText rendered="#{userUtils.newBatchProcessingOn}" value="On"/>
+                                    <h:outputText rendered="#{not userUtils.newBatchProcessingOn}" value="Off"/>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>Score Batch In Progress:</td>
+                                <td>
+                                    <h:outputText value="#{userUtils.scoreBatchInProgress}" />
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>Report Batch In Progress:</td>
+                                <td>
+                                    <h:outputText value="#{userUtils.reportBatchInProgress}" />
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>Distribution Batch In Progress:</td>
+                                <td>
+                                    <h:outputText value="#{userUtils.distributionBatchInProgress}" />
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>Scoring Debug Activated:</td>
+                                <td>
+                                    <h:outputText value="#{userBean.scoringDebug}" />
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>Reporting Debug Activated:</td>
+                                <td>
+                                    <h:outputText value="#{userBean.reportingDebug}" />
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>Distribution Debug Activated:</td>
+                                <td>
+                                    <h:outputText value="#{userBean.distDebug}" />
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td width="50%">Current Date:</td>
+                                <td width="50%"><h:outputText value="#{userUtils.currentDateTime}">
+                                        <f:convertDateTime type="both" dateStyle="long" timeStyle="long"/>
+                                    </h:outputText></td>
+                            </tr>
+
+
+                            <ui:repeat value="#{userUtils.statusList}" var="stat">
+                                <tr>
+                                    <td width="50%"><h:outputText value="#{stat[0]}"/></td>
+                                    <td width="50%"><h:outputText value="#{stat[1]}"/></td>
+                                </tr>
+                            </ui:repeat>
+
+                            <ui:repeat value="#{userUtils.statusMap}" var="stat">
+                                <tr>
+                                    <td width="50%"><h:outputText value="#{stat[0]}"/></td>
+                                    <td width="50%"><h:outputText value="#{stat[1]}"/></td>
+                                </tr>
+                            </ui:repeat>
+
+
+                        </table>
+
+                    </p:panel>
+
+                </ui:fragment>
+
+            </div>
+
+        </ui:define>
+
+    </ui:composition>
+
+</html>
+

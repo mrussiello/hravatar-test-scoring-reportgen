@@ -1,0 +1,152 @@
+<project name="tm2score4" default="datetime" basedir="c:/work/tm2score4">
+
+	<property name="web.dir" value="${basedir}/src/main/webapp" />
+	<property name="src.dir" value="${basedir}/src" />
+	<property name="dist.dir" value="${basedir}/target" />
+	<property name="bu.dir" value="${basedir}/backup" />
+	<!-- <property name="lib.dir" value="${basedir}/lib" /> -->
+	<!-- <property name="classes.dir" value="${build.dir}/classes" /> -->
+	<property name="backup.dir" value="C:/dev/stbackup/localsw" />
+    <property name="prod.username" value="ec2-user" />
+    <property name="prod.keyfile" value="C:/dev/AmazonAWS/ClicFlicKeyPair2.pem" />
+    <property name="prod.bu.dir" value="/backup/sw" />
+
+
+	<tstamp prefix="today">
+	        <format property="year" pattern="yy"/>
+            <format property="month" pattern="MMM"/>
+	         <format property="date" pattern="dd"/>
+    </tstamp>
+
+	<target name="showprops">
+	     <echoproperties/>
+	</target>
+
+
+	<target name="datetime">
+	    <tstamp prefix="start">
+	    <format property="TODAY" pattern="EEEE, MMM dd, yyyy"/>
+	    <format property="TIME" pattern="hh:mm a"/>
+	    </tstamp>
+	    <echo message="Completed: ${start.TIME} on ${start.TODAY}."/>
+	</target>
+
+	<target name="prepare">
+	</target>
+
+
+	<target name="zipit">
+		<mkdir dir="${bu.dir}" />
+		<delete file="${bu.dir}/tm2score4.zip" />
+		<zip file="${bu.dir}/tm2score4.zip">
+			<fileset dir="${basedir}">
+				<!-- <exclude name="**/*.class" /> -->
+				<!-- <exclude name="build/**" /> -->
+				<exclude name="backup/**" />
+				<exclude name="log/**" />
+				<exclude name="target/**" />
+			</fileset>
+		</zip>
+		<copy file="${bu.dir}/tm2score4.zip" todir="${backup.dir}" />
+		<antcall target="datetime" />
+	</target>
+
+
+     
+	<target name="zipscp" depends="zipit">
+
+		<sshexec host="imo.hravatar.com"
+					username="${prod.username}"
+					keyfile="${prod.keyfile}"
+					trust="true"
+			        failonerror="false"
+					command="mkdir ${prod.bu.dir}/${today.date}${today.month}${today.year}"/>
+
+		<scp file="${bu.dir}/tm2score4.zip" keyfile="${prod.keyfile}" todir="${prod.username}@imo.hravatar.com:${prod.bu.dir}/${today.date}${today.month}${today.year}"
+						     trust="true">
+			    </scp>
+
+			    <antcall target="datetime" />
+	</target>
+
+
+
+
+
+	<!-- <target name="scpredeploy" depends="scpstaticfiles"> -->
+	<target name="scpredeploy" depends="scpstaticfiles">
+        <sshexec host="ts.hravatar.com"
+                    username="${prod.username}"
+                    keyfile="${prod.keyfile}"
+                    trust="true"
+                    failonerror="false"
+                    command="mkdir ${prod.bu.dir}/${today.date}${today.month}${today.year}"/>
+		<scp file="${dist.dir}/tm2score4-1.0.war" keyfile="${prod.keyfile}" todir="${prod.username}@ts.hravatar.com:${prod.bu.dir}/${today.date}${today.month}${today.year}"
+				     trust="true">
+    </scp>
+		<sshexec host="ts.hravatar.com"
+            username="${prod.username}"
+            keyfile="${prod.keyfile}"
+                trust="true"
+                command="/usr/pgms/payara41/glassfish/bin/asadmin --user admin --passwordfile /home/ec2-user/gfpasswords.txt undeploy tm2score4-1.0"/>
+		<sshexec host="ts.hravatar.com"
+            username="${prod.username}"
+            keyfile="${prod.keyfile}"
+			      trust="true"
+			      command="/usr/pgms/payara41/glassfish/bin/asadmin --user admin --passwordfile /home/ec2-user/gfpasswords.txt deploy --virtualservers server --contextroot ts --force=true --deploymentorder 150 ${prod.bu.dir}/${today.date}${today.month}${today.year}/tm2score4-1.0.war"/>
+			<antcall target="datetime" />
+	</target>
+
+
+	<!-- <target name="scpdeploy" depends="scpstaticfiles"> -->
+	<target name="scpdeploy" depends="scpstaticfiles">
+        <sshexec host="ts.hravatar.com"
+                    username="${prod.username}"
+                    keyfile="${prod.keyfile}"
+                    trust="true"
+                    failonerror="false"
+                    command="mkdir ${prod.bu.dir}/${today.date}${today.month}${today.year}"/>
+		<scp file="${dist.dir}/tm2score4-1.0.war" keyfile="${prod.keyfile}" todir="${prod.username}@ts.hravatar.com:${prod.bu.dir}/${today.date}${today.month}${today.year}"
+				     trust="true">
+    </scp>
+		<sshexec host="ts.hravatar.com"
+            username="${prod.username}"
+            keyfile="${prod.keyfile}"
+			      trust="true"
+			      command="/usr/pgms/payara41/glassfish/bin/asadmin --user admin --passwordfile /home/ec2-user/gfpasswords.txt deploy --virtualservers server --contextroot ts --force=true --deploymentorder 150 ${prod.bu.dir}/${today.date}${today.month}${today.year}/tm2score4-1.0.war"/>
+			<antcall target="datetime" />
+	</target>
+
+
+	<target name="scpstaticfiles">
+
+            <!--
+	     <scp keyfile="${prod.keyfile}" todir="${prod.username}@ts.hravatar.com:/work/tm2score4/webmod/ts" trust="true">
+			<fileset dir="${basedir}/web">
+			</fileset>
+	    </scp>
+            -->
+
+            <scp keyfile="${prod.keyfile}" todir="${prod.username}@ts.hravatar.com:/work/tm2score4/webmod" trust="true">
+			<fileset dir="${basedir}/src/main/webapp">
+				<!-- <exclude name="**/*.xhtml" /> -->
+				<!-- <exclude name="**/*.jsp" /> -->
+				<!-- <exclude name="WEB-INF/*" /> -->
+				<!-- <include name="index.html" /> -->
+			</fileset>
+	    </scp>
+			<antcall target="datetime" />
+	</target>
+
+
+
+
+
+
+
+
+
+
+</project>
+
+

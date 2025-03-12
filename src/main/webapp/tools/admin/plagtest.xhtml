@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:session="http://xmlns.jcp.org/jsf/composite/session">
+
+<ui:composition template="/skin/default/template.xhtml">
+
+    <ui:define name="coreinnersection">
+
+        <session:idle-monitor />
+
+	<div style="width:750px;margin-left: auto;margin-right: auto">
+
+            <div style="text-align:center"><h2>Web Duplicate Content Tester Test</h2>
+            </div>
+
+	<br />
+	<br />
+
+        <ui:fragment rendered="#{not userBean.userLoggedOnAsAdmin}">
+
+        <h:form id="logonform1" prependId="false">
+
+        <p:panel header="Logon Form" style="width:500px;margin-left:auto;margin-right:auto">
+
+        <p:focus for="username"/>
+
+        <h:panelGrid columns="3">
+            <h:outputText styleClass="titletext1" value="Please Sign In:" escape="false"/>
+            <h:panelGroup></h:panelGroup>
+            <h:panelGroup></h:panelGroup>
+
+             <h:outputLabel for="username" value="Email/Username:" />
+
+             <p:inputText id="username" value="#{userUtils.logonName}" label="username" validatorMessage="Username is required.">
+                <f:validateLength minimum="2" />
+            </p:inputText>
+            <h:panelGroup></h:panelGroup>
+
+             <h:outputLabel for="password" value="Password:" />
+             <p:password id="password" value="#{userUtils.logonKey}" label="password"  validatorMessage="Password is required." feedback="false">
+                <f:validateLength minimum="4" maximum="20" />
+            </p:password>
+            <h:panelGroup></h:panelGroup>
+
+            <h:panelGroup></h:panelGroup>
+            <p:commandButton ajax="false" action="#{userUtils.processLogonAttempt}" title="Sign In" value="Sign In">
+	    </p:commandButton>
+            <h:panelGroup></h:panelGroup>
+
+        </h:panelGrid>
+
+        </p:panel>
+
+	<br />&#160;
+
+        </h:form>
+        </ui:fragment>
+
+        <ui:fragment rendered="#{userBean.userLoggedOnAsAdmin}">
+
+            <p:panel header="Plagiarism Functions" toggleable="true" closable="true" style="margin-left:auto;margin-right:auto">
+                <h:form prependId="false">
+
+                    <h:panelGrid cellpadding="2"
+                                 cellspacing="0"
+                                 border="0"
+                                 columns="2">
+
+                        <h:outputText value="Essay to Submit:"/>
+                        <p:inputTextarea cols="60" rows="3" autoResize="true" value="#{adminEssayBean.str1}"/>
+
+                        <h:outputText value="Locale:"/>
+                        <p:inputText size="5" value="#{adminEssayBean.localeStr}"/>
+
+                        <h:panelGroup></h:panelGroup>
+                        <h:panelGroup>
+                            <p:commandButton ajax="false" action="#{adminEssayUtils.processSubmitTextToPlagCheck}" value="Submit To CopyScan"/>
+                        </h:panelGroup>
+
+                        <h:outputText value="Hash:"/>
+                        <p:inputText size="10" value="#{adminEssayBean.str2}"/>
+
+                        <h:panelGroup></h:panelGroup>
+                        <h:panelGroup>
+                            <p:commandButton ajax="false" action="#{adminEssayUtils.processGetPlagCheckStatus}" value="Get Hash Status"/>
+                        </h:panelGroup>
+
+                        <h:panelGroup></h:panelGroup>
+                        <h:panelGroup>
+                            <p:commandButton ajax="false" action="#{adminEssayUtils.processGetPlagPercent}" value="Get Hash Percent"/>
+                        </h:panelGroup>
+
+                    </h:panelGrid>
+
+
+
+                </h:form>
+            </p:panel>
+        </ui:fragment>
+
+	</div>
+
+	</ui:define>
+
+</ui:composition>
+
+</html>
+

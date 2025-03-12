@@ -1,0 +1,39 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="MetricValue">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element type="xs:int" name="NumScales" maxOccurs="1" minOccurs="0"/>
+        <xs:element name="Scale" maxOccurs="unbounded" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:string" name="Name"/>
+              <xs:element type="xs:float" name="Score"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element type="xs:int" name="NumItems" maxOccurs="1" minOccurs="0"/>
+        <xs:element name="Item" maxOccurs="unbounded" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:int" name="Qnum" maxOccurs="1" minOccurs="0"/>
+              <xs:element type="xs:float" name="Qtime" maxOccurs="1" minOccurs="0"/>
+              <xs:element type="xs:string" name="Qnid" maxOccurs="1" minOccurs="0"/>
+              <xs:element type="xs:string" name="Name" maxOccurs="1" minOccurs="0"/>
+              <xs:element type="xs:string" name="Final" maxOccurs="1" minOccurs="0"/>
+              <xs:element type="xs:string" name="Wrong" maxOccurs="1" minOccurs="0"/>
+              <xs:element type="xs:string" name="Level" maxOccurs="1" minOccurs="0"/>
+              <xs:element type="xs:string" name="Topic" maxOccurs="1" minOccurs="0"/>
+              <xs:element type="xs:string" name="Comments" maxOccurs="1" minOccurs="0"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element type="xs:float" name="ScoreBeg" maxOccurs="1" minOccurs="0"/>
+        <xs:element type="xs:float" name="ScoreInt" maxOccurs="1" minOccurs="0"/>
+        <xs:element type="xs:float" name="ScoreAdv" maxOccurs="1" minOccurs="0"/>
+        <xs:element type="xs:float" name="Percentile" maxOccurs="1" minOccurs="0"/>
+        <xs:element type="xs:int" name="NumScoresUsed" maxOccurs="1" minOccurs="0"/>
+        <xs:element type="xs:float" name="AvgScore" maxOccurs="1" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,2001 @@
+<?xml version="1.0"?>
+<xs:schema xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+
+  <!-- Sim  - A Sim is an IMO that was built by ClicFlic. Sims
+      can be used to collect unscored data from viewers, or to
+      administer test items to users. When used for testing, a
+      Sim is designed to measure any number of Sim Comptencies
+      and Sim Tasks.
+
+      Every Sim is a combination of one or more Simlets (defined
+      below). Each Simlet produces any number of competencyscores
+      and up to two taskscores. These competencyscores and taskscores
+      are combined to compute a score for each Sim Competency and
+      each Sim Task.
+
+      Each Sim Competency and Sim Task can also collect unscored input
+      from the user, which can be included in the report. These items can
+      be designated to produce a red flag on the report if a certain response
+      is selected by the user.
+
+      Additionaly,
+      Sim Competency and Sim Task elements can also have interview questions
+      assigned which can be included in a report.
+
+      The scores for each Sim Competency and each Sim Task are combined
+      to produce an overall score.
+
+      Overall, Sim Competency, and Sim Task Scores can all be classified into
+      Green, Yellow, or Red range, and conditional text can be provided to include
+      in a score report depending on what range the score lies within.
+
+      In addition to unscored responses collected for Sim Competencies and Sim Tasks,
+      a sim can also collect two other categories of unscored responses to include
+      in a report. These are the Min Quals and Applicant Info areas.
+
+      -->
+  <xs:element name="simJ">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="meta" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:sequence>
+              <!-- Sim Description -->
+              <xs:element name="descrip" type="xs:string" minOccurs="0" />
+
+              <!-- Full URL to an image icon or thumbnail associated with this Sim -->
+              <xs:element name="iconurl" type="xs:string" minOccurs="0" />
+
+              <!-- HTML for deploying the Sim. Embed this HTML in a webpage -->
+              <xs:element name="deploy" type="xs:string" minOccurs="0" />
+
+              <!-- Full URL to test the Sim without recording anything. -->
+              <xs:element name="testurl" type="xs:string" minOccurs="0" />
+
+              <!-- Full URL to view the Sim in a ClicFlic-branded webpage (records results on ClicFlic) -->
+              <xs:element name="clicflicurl" type="xs:string" minOccurs="0" />
+
+              <!-- Full URL to view the sim in a generic webpage (records results on ClicFlic) -->
+              <xs:element name="blankurl" type="xs:string" minOccurs="0" />
+
+              <!-- SimImageIds of all screen shot images associated with this Sim -->
+              <xs:element name="screenshotimageids" type="xs:string" minOccurs="0" />
+
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <!-- CT5 Config JSON.  Used by specific test types to convey test-level information. -->
+        <xs:element name="ct5configjson" type="xs:string" minOccurs="0" />
+
+        <!-- Text for score report to show if person's overall score in yellow-green range. -->
+        <xs:element name="whitetext" type="xs:string" minOccurs="0" msdata:Ordinal="1" />
+
+        <!-- Text for score report to show if person's overall score in green range. -->
+        <xs:element name="greentext" type="xs:string" minOccurs="0" msdata:Ordinal="2" />
+
+        <!-- String instructing system to set initial valuesused for various logic functions for this sim. Format is index,value,index,value .. etc.
+        Init values are used to provide one additional source of logic to either the IMO or to the scoring system for this sim.
+
+        Generally, init values 0-999 are used for IMO instructions and init values 1000 and up are used for scoring system instructions.
+
+        Typical uses include setting an init value accessed by a Clip during Clip Segment selection. Another use is init value 1001 which tells the
+        standard HR Avatar scoring system to include item responses for items that have zero max points.
+        -->
+        <xs:element name="initvals" type="xs:string"  minOccurs="0" msdata:Ordinal="11"/>
+
+
+        <!-- Text for score report to show if person's overall score in yellow-green range. -->
+        <xs:element name="yellowgreentext" type="xs:string" minOccurs="0" msdata:Ordinal="3" />
+
+        <!-- Text for score report to show if person's overall score in yellow range. -->
+        <xs:element name="yellowtext" type="xs:string" minOccurs="0" msdata:Ordinal="4" />
+
+        <!-- Text for score report to show if person's overall score in red-yellow range. -->
+        <xs:element name="redyellowtext" type="xs:string" minOccurs="0" msdata:Ordinal="5" />
+
+        <!-- Text for score report to show if person's overall score in red range. -->
+        <xs:element name="redtext" type="xs:string" minOccurs="0" msdata:Ordinal="6" />
+
+        <!-- Text for score report to show if person's overall score in yellow-green range. -->
+        <xs:element name="blacktext" type="xs:string" minOccurs="0" msdata:Ordinal="7" />
+
+
+        <!-- Comma-delimited series of value pairs, X1,Y1, X2,Y2, X3,Y3, etc. Interpreted from the left as:
+             if raw score is less than X1, then the final score is Y1, else go to next pair.
+        -->
+        <xs:element name="lookuptable" type="xs:string" minOccurs="0" msdata:Ordinal="8" />
+
+        <!-- Descriptive text to be included in the overview portion of the report. -->
+        <xs:element name="reportoverviewtext" type="xs:string" minOccurs="0" msdata:Ordinal="9" />
+
+        <!-- String instructing system to set initial values of specific state variables and custom fields SV1-SV12 and CUST1 - CUST100. State variable values should be numeric while CUST values should be URL-encoded. -->
+        <xs:element name="statevariableinitvalues" type="xs:string"  minOccurs="0" msdata:Ordinal="10"/>
+
+
+
+        <!-- A Sim Competency Element is a competency that produces a score
+            (in most cases) that is presented to the user in a report. A Sim
+            Competency Score is computed by combining the competencyscore element
+            scores together for the specific sim competency id according to rules
+            defined within the parameters. -->
+        <xs:element name="simcompetency" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+
+            <xs:element name="ct5configjson" type="xs:string" minOccurs="0"  msdata:Ordinal="0"/>
+
+            <!-- Description -->
+            <xs:element name="descrip" type="xs:string" minOccurs="0" msdata:Ordinal="1" />
+
+            <!-- Text for score report to show if competency score in the high cliff range. -->
+            <xs:element name="highclifftext" type="xs:string" minOccurs="0" msdata:Ordinal="2" />
+
+            <!-- Text for score report to show if competency score in green range. -->
+            <xs:element name="whitetext" type="xs:string" minOccurs="0" msdata:Ordinal="3" />
+
+            <!-- Text for score report to show if competency score in green range. -->
+            <xs:element name="greentext" type="xs:string" minOccurs="0" msdata:Ordinal="4" />
+
+            <!-- Text for score report to show if competency score in yellow-green range. -->
+            <xs:element name="yellowgreentext" type="xs:string" minOccurs="0" msdata:Ordinal="5" />
+
+            <!-- Text for score report to show if competency score in yellow range. -->
+            <xs:element name="yellowtext" type="xs:string" minOccurs="0" msdata:Ordinal="6" />
+
+            <!-- Text for score report to show if competency score in red-yellow range. -->
+            <xs:element name="redyellowtext" type="xs:string" minOccurs="0" msdata:Ordinal="7" />
+
+            <!-- Text for score report to show if competency score in red range. -->
+            <xs:element name="redtext" type="xs:string" minOccurs="0" msdata:Ordinal="8" />
+
+            <!-- Text for score report to show if competency score in red range. -->
+            <xs:element name="blacktext" type="xs:string" minOccurs="0" msdata:Ordinal="9" />
+
+            <!-- Comma-delimited series of value pairs, X1,Y1, X2,Y2, X3,Y3, etc. Interpreted from the left as:
+                 if raw score is less than X1, then the final score is Y1, else go to next pair.  Applied after
+                 conversion to z-scores, if specified.
+            -->
+            <xs:element name="lookuptable" type="xs:string" minOccurs="0" msdata:Ordinal="10" />
+
+            <!-- Complex Element - Interview Question and Anchors to ask for this sim competency -->
+            <xs:element name="interviewquestion" type="interviewQuestionObj" minOccurs="0" maxOccurs="unbounded"/>
+
+            <xs:element name="ct5subtopics"  minOccurs="0" maxOccurs="1">
+            <xs:complexType>
+              <xs:sequence>
+                  <xs:element name="ct5subtopic"  minOccurs="0" maxOccurs="unbounded">
+                      <xs:complexType>
+                          <xs:sequence>
+                            <xs:element name="descrip" type="xs:string" minOccurs="0" msdata:Ordinal="0" />
+                          </xs:sequence>
+                        <xs:attribute name="ct5subtopicid" type="xs:int" default="0" />
+                        <!-- Name URL Encoded -->
+                        <xs:attribute name="name" type="xs:string" />
+                        <xs:attribute name="weight" type="xs:float" default="0" />
+                        <xs:attribute name="displayorder" type="xs:int" default="0" />
+
+                        <!-- this value is used to force the max items reported in X of Y correct for a subtopic -->
+                        <xs:attribute name="frcmaxitems" type="xs:int" default="0" />
+                      </xs:complexType>
+                  </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+            </xs:element>
+
+          </xs:sequence>
+
+
+            <!-- When > 0, will cause the scoring engine to raise the score category up one level for this competency (towards green)
+                 when the score is equal to or below this value. This enables you to reduce the visual impact of a low weight competency
+                 in the reporting system.
+             -->
+            <xs:attribute name="categoryadjustmentthreshold" type="xs:float" default="0" />
+
+
+            <!-- Color Category Distribution Type 0=Linear (R-RY-Y-YG-G-Cliff), 1=Normal (R-Y-G-Y-R)
+                 Determines what color should be assigned to what score using cutoff values.
+             -->
+            <xs:attribute name="categorydisttype" type="xs:int" default="0" />
+
+            <!--
+                 0 = NONE
+                 1 = Include a competency Listening CEFR level in overall testeventscore (equal to CefrType)
+                 2 = Include a competency Reading CEFR level in overall testeventscore (equal to CefrType)
+            -->
+            <xs:attribute name="cefr" type="xs:int" default="0" />
+
+            <!-- ClassId HR Avatar SimCompetencyClass. 0=Non-Cognitive (Personality), 1=Ability, 2=Core Skill, 3=Knowledge, 100=Task, 150,151 combination types -->
+            <xs:attribute name="classid" type="xs:int" default="0" />
+
+            <!-- For Combination-Type Sim Competencies, which are just a combination of one or more other competency scores.
+                 0=average raw scores, 1=average score, 10=sum of raw scores, 11=sum of scores, 12=sum itemscores, 13=items correct, 21=percent avail points,
+                 101=item-level sum of item scores, 102=avg item scores, 103=Item-level items correct, 104=Item-level average manual user ratings,
+                 120=item level percent correct  -->
+            <xs:attribute name="combinationtype" type="xs:int" default="0" />
+
+            <!-- For Combination-Type Sim Competencies that use INDIVIDUAL ITEMS.
+                 comma-delimited list of Interaction Unique Ids and interaction item sequence ids to be combined to calculate this score. Interaction item sequence id=0 means interaction level. -->
+            <xs:attribute name="combinationitemuniqueids" type="xs:string"/>
+
+            <!-- For Combination-Type Sim Competencies, which are just a combination of one or more other competency scores.
+                 comma-delimited list of sim competencies to be combined to calculate this score. -->
+            <xs:attribute name="combinationsimcompetencyids" type="xs:string"/>
+
+            <!-- For Combination-Type Sim Competencies, which are just a combination of one or more other competency scores.
+                 comma-delimited list of weights corresponding to the competencies in the combinationsimcompetencyids field. -->
+            <xs:attribute name="combinationsimcompetencyweights" type="xs:string"/>
+
+            <!-- database id for the custom test builder topic that defines this sim competency -->
+            <xs:attribute name="ct5topicid" type="xs:int" default="0" />
+
+
+            <!-- display order to show in report starting at 1 -->
+            <xs:attribute name="disporder" type="xs:int" default="0" />
+
+            <!-- this value is used to force the max items reported in X of Y correct no subtopics present -->
+            <xs:attribute name="frcmaxitems" type="xs:int" default="0" />
+
+            <!-- 0=Do not hide (default)
+                 1=indicates that this sim competency should be hidden from report but still used to compute the overall score
+                 2=calculate and present even if there are no item responses and the score is essentially 0.
+            -->
+            <xs:attribute name="hide" type="xs:int" default="0" />
+
+            <!-- highendname
+                 For Spectrum Presentation Type, this is the text (name) to show at the high end of the scale.
+            -->
+            <xs:attribute name="highendname" type="xs:string" />
+
+
+
+            <!-- id number -->
+            <xs:attribute name="id" type="xs:long" default="0" />
+
+            <!-- Used by CT5 Scoring Result XML Generator. Instructs the generator to ignore items that were not answered
+                 (skipped or timed out) during scoring by leaving them out of the Result XML.
+            -->
+            <xs:attribute name="ignoreunanswereditems" type="xs:int" default="0" />
+
+            <!-- includeinoverallifbelow - When greater than 0, this indicates that the score for this competency should ONLY be used in the overall score if
+                 the computed score is below this value. This allows you to have competencies that are virtually only red flags.
+            -->
+            <xs:attribute name="includeinoverallifbelow" type="xs:float" default="0" />
+
+            <!-- includeitemscorestype -
+                    0 = Do not include item scores
+                    1 = include numeric item scores
+                    2 = include alpha scores if possible (convert 1=A, 2=B, etc)
+            -->
+            <xs:attribute name="includeitemscorestype" type="xs:int" default="0" />
+
+
+            <!-- 0 - show interview questions in report only if there is a score available for this competency, 1 - do not show any interview questions in report, 3 - show no matter what  -->
+            <xs:attribute name="interviewquesdisptypeid" type="xs:int" default="0" />
+
+            <!--
+               Instructs the scoring system to invert the computed z score (multiply by minus 1) 0=do not invert, 1=invert
+            -->
+            <xs:attribute name="invertcomputedzscore" type="xs:int" default="0" />
+
+
+            <!-- The date of the last sim competency statistics update -->
+            <xs:attribute name="laststatupdate" type="xs:long" default="0"/>
+
+            <!-- lowendname
+                 For Spectrum Presentation Type, this is the text (name) to show at the low end of the scale.
+            -->
+            <xs:attribute name="lowendname" type="xs:string" />
+
+
+
+
+            <!-- indicates the max points associated with this sim competency if it is a scored task, or an aggregate,
+                 or if competencies are set to be scored across all simlets. Formatted as a string to allow
+                 multi-competency points to be added in if necessary. P,K,S,A - comma delimited.
+            -->
+            <xs:attribute name="maxpoints" type="xs:string" />
+
+            <!-- indicates the min points associated with this sim competency if it is a scored task, or an aggregate,
+                 or if competencies are set to be scored across all simlets. Formatted as a string to allow
+                 multi-competency points to be added in if necessary. P,K,S,A - comma delimited.
+            -->
+            <xs:attribute name="minpoints" type="xs:string" />
+
+            <!-- This is the minimum number of questions answered to use when calculating average points or percent correct
+                 Used by tests that have an overall time limit or some other means of limiting the number of items that are
+                 actually exposed, but that use average points or percent correct as the scoring method. If you don't do this
+                 and you time out after one item the candidate can get a score of 1/1 = 100%.
+                 Set to 0 for this to be ignored.
+            -->
+            <xs:attribute name="minansweredcount" type="xs:int" default="0"/>
+
+            <!-- mean - used when competency scores are calculated across all simlets using a normalized scale. -->
+            <xs:attribute name="mean" type="xs:float" default="0" />
+
+            <!-- name -->
+            <xs:attribute name="name" type="xs:string" />
+
+            <!-- name in English. Useful when dealing with multiple languages -->
+            <xs:attribute name="nameenglish" type="xs:string" />
+
+            <!-- onet elementid for this competency if it is an onet-derived competency -->
+            <xs:attribute name="onetelementid" type="xs:string" />
+
+            <!-- 0=na, 1=ability,2=knowledge, 3=skill, 4=wk style, 5=wk activity, 6=task -->
+            <xs:attribute name="onetelementtypeid" type="xs:int" default="0" />
+
+            <!-- This is the numeric id of an ElementGroup defined as a group of Onet competency elements -->
+            <xs:attribute name="onetelementgroupid" type="xs:int" default="0" />
+
+            <!-- importance value from onet -->
+            <xs:attribute name="onetimportance" type="xs:float" default="0" />
+
+            <!-- Presentation Type 0=Default, 1=Spectrum
+                 Determines how the graphical representation is presented. Default - simple graph. Spectrum - shows a low and high text value left and right.
+             -->
+            <xs:attribute name="presentationtype" type="xs:int" default="0" />
+
+            <!-- rank value from onet -->
+            <xs:attribute name="rankvalue" type="xs:float" default="0" />
+
+            <!-- Raw Score Calculation Type
+               0 = Derive from Simlet Competency Score Type(default)
+               1 = Z-Score using total correct or points values (Reqs a mean and standard deviation)
+            -->
+            <xs:attribute name="rawscorecalctypeid" type="xs:int" default="0" />
+
+            <!-- Scaled Score Mean Value to use for Transformation -->
+            <xs:attribute name="scaledmean" type="xs:float" default="0" />
+
+
+            <!-- Scaled Score Calculation Type
+               0 = Derive from Simlet Competency Score Type(default)
+               1 = Transformed Z Score (requires a scaled mean and scaled stdev)
+            -->
+            <xs:attribute name="scaledscorecalctypeid" type="xs:int" default="0" />
+
+            <!-- Scaled Score Standard Deviation to use for Transformation -->
+            <xs:attribute name="scaledstddeviation" type="xs:float" default="0" />
+
+            <!-- Indicates that the scoring system should score this SimCompetency even if there are no scorable item responses present. -->
+            <xs:attribute name="scoreifnoresponses" type="xs:int" default="0" />
+
+            <!-- indicates the source of sim competency stats used for this sim competency
+                 0 = None
+                 1 = Manual entry
+                 2 = Simlet Competency Stats
+            -->
+            <xs:attribute name="statsourcetypeid" type="xs:int" default="0" />
+
+            <!-- stddeviation - used when competency scores are calculated across all simlets using a normalized scale. -->
+            <xs:attribute name="stddeviation" type="xs:float" default="0" />
+
+            <!-- ClassId -1=None assigned, 0=Non-Cognitive (Personality), 1=Ability, 2=Core Skill, 3=Knowledge, 100=Task, 150,151 combination types -->
+            <xs:attribute name="subclassid" type="xs:int" default="-1" />
+
+            <!-- 0=onet-based, 1=not onet based, 2=onet element group -->
+            <xs:attribute name="type" type="xs:int" default="0" />
+
+            <!-- weight to attached to this sim competency score when calculating overall score (0=default or 1) -->
+            <xs:attribute name="weight" type="xs:float" default="0" />
+
+            <!-- color category to use for scores within the high cliff. 1=Red, 2=Red-Yellow, 3=Yellow, 4=Yellow-Green, 5=Green -->
+            <xs:attribute name="highclifflevel" type="xs:int" default="0" />
+
+            <!-- min score for high cliff range. Note that 0 means no high cliff. -->
+            <xs:attribute name="highcliffmin" type="xs:float" default="0" />
+
+            <!-- min score for white range. -->
+            <xs:attribute name="whitemin" type="xs:float" default="0" />
+
+            <!-- min score for green range. -->
+            <xs:attribute name="greenmin" type="xs:float" default="0" />
+
+            <!-- min score for yellow-green range. -->
+            <xs:attribute name="yellowgreenmin" type="xs:float" default="0" />
+
+            <!-- min score for yellow range (below this is red range) -->
+            <xs:attribute name="yellowmin" type="xs:float" default="0" />
+
+            <!-- min score for red-yellow range. -->
+            <xs:attribute name="redyellowmin" type="xs:float" default="0" />
+
+            <!-- min score for red range. -->
+            <xs:attribute name="redmin" type="xs:float" default="0" />
+
+            <!-- Indicates that the category score (color) should be used when computing the
+                 overall score, rather than the numeric scaled score. -->
+            <xs:attribute name="usecategforoverall" type="xs:int" default="0" />
+
+            <!-- User Rank  -->
+            <xs:attribute name="userrank" type="xs:int" default="0" />
+
+        </xs:complexType>
+        </xs:element>
+
+        <!-- A Simlet Element - A simlet is a subset of a sim, or a set of interactions that are
+             used to create competencyscores and taskscores and collect non-competency responses.
+             Simlets are developed independently of each other and are combined into a single sim
+             when the sim is built. Each simlet can produce any number of competencyscores and up
+             to 2 taskscores. These competencyscores and taskscores are then combined to create
+             scores for each sim competency and sim task. Simlets can also have interactions that
+             collect nonscored data, such as name, email, resume, etc. -->
+        <xs:element name="simlet" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+            <xs:sequence>
+
+            <!-- A set of parameters for creating a single score for a competency. Each competency score is indiependent of others and is attached to a Sim competency. The Sim Competency score is the combined values of all the cometencyscores for a given competency. -->
+            <xs:element name="competencyscore" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+
+                <!-- ClassId HR Avatar SimCompetencyClass identifier. 0=Non-Cognitive (Personality), 1=Ability, 2=Core Skill, 3=Knowledge, 100=Task -->
+                <xs:attribute name="classid" type="xs:int" default="0" />
+
+                <!-- indicates how well the comptency is covered.  0=none, 1=light ... 10= solid -->
+                <xs:attribute name="coverage" type="xs:int" default="0" />
+
+                <!-- database id for the custom test builder topic that defines this simlet competency -->
+                <xs:attribute name="ct5topicid" type="xs:int" default="0" />
+
+                <!-- 0 = Use total number of items answered.
+                     1 = Use total number of items in simlet.
+                     2 = Use number of required items.
+                -->
+                <xs:attribute name="dichotomousscoretypeid" type="xs:int" default="0" />
+
+                <!-- a multipurpose parameter. -->
+                <xs:attribute name="float1" type="xs:float" default="0" />
+
+                <!-- id -->
+                <xs:attribute name="id" type="xs:long" default="0" />
+
+                <!-- for points type competency scores, this is the max number of points possible.
+                     In the authoring system, this value can be manually set. Otherwise, it is set by
+                     calculating the max points for each member interaction. -->
+                <xs:attribute name="maxpoints" type="xs:float" default="0" />
+
+                <!-- for points type competency scores, this is the minimum number of points possible.
+                     In the authoring system, this value can be manually set. Otherwise, it is set by
+                     calculating the max points for each member interaction. -->
+                <xs:attribute name="minpoints" type="xs:float" default="0" />
+
+                <!-- max score allowed. Allows you to place a max score on a competency. -->
+                <xs:attribute name="maxscore" type="xs:float" default="0" />
+
+                <!-- mean - used for norming scores. -->
+                <xs:attribute name="meanscore" type="xs:float" default="0" />
+
+                <!-- for points type competency scores, this is the max number of points possible. -->
+                <!-- <xs:attribute name="minpoints" type="xs:float" default="0" /> -->
+
+                <!-- minimum score allowed. Allows you to place an artificial min score on a competency. -->
+                <xs:attribute name="minscore" type="xs:float" default="0" />
+
+                <!-- name -->
+                <xs:attribute name="name" type="xs:string" />
+
+                <!-- name in English. Useful when dealing with multiple languages -->
+                <xs:attribute name="nameenglish" type="xs:string" />
+
+                <!-- For competency scores that use correct items, this is the number of 'required' items
+                     (dichotomous interactions that have their required flag set for this competency).
+                     Note that this number can be bigger than the number of required interactions, since you can have
+                     multiple items within one interaction (using radio button groups, for instance).
+                     You can set the total number of items used for score calculation to number of required items,
+                     or total number of items, or number of items answered. .
+                -->
+                <xs:attribute name="rqditems" type="xs:int" default="0" />
+
+                <!-- For competencyScore elements that have item types that produce a score2 value, this is how the score values
+                     shoud be combined. 0=Do not combine, 1=Sum all scores, 11=average all non-sero scores, 12=average all scores
+                -->
+                <xs:attribute name="score2combinationtype" type="xs:int" default="0" />
+
+                <!-- For competencyScore elements that have item types that produce a score3 value, this is how the score values
+                     shoud be combined. 0=Do not combine, 1=Sum all scores, 11=average all non-sero scores, 12=average all scores
+                -->
+                <xs:attribute name="score3combinationtype" type="xs:int" default="0" />
+
+                <!-- For competencyScore elements that have item types that produce a score4 value, this is how the score values
+                     shoud be combined. 0=Do not combine, 1=Sum all scores, 11=average all non-sero scores, 12=average all scores
+                -->
+                <xs:attribute name="score4combinationtype" type="xs:int" default="0" />
+
+                <!-- For competencyScore elements that have item types that produce a score5 value, this is how the score values
+                     shoud be combined. 0=Do not combine, 1=Sum all scores, 11=average all non-sero scores, 12=average all scores
+                -->
+                <xs:attribute name="score5combinationtype" type="xs:int" default="0" />
+
+                <!-- For competencyScore elements that have item types that produce a score6 value, this is how the score values
+                     shoud be combined. 0=Do not combine, 1=Sum all scores, 11=average all non-sero scores, 12=average all scores
+                -->
+                <xs:attribute name="score6combinationtype" type="xs:int" default="0" />
+
+                <!-- For competencyScore elements that have item types that produce a score7 value, this is how the score values
+                     shoud be combined. 0=Do not combine, 1=Sum all scores, 11=average all non-sero scores, 12=average all scores
+                -->
+                <xs:attribute name="score7combinationtype" type="xs:int" default="0" />
+
+                <!-- For competencyScore elements that have item types that produce a score8 value, this is how the score values
+                     shoud be combined. 0=Do not combine, 1=Sum all scores, 11=average all non-sero scores, 12=average all scores
+                -->
+                <xs:attribute name="score8combinationtype" type="xs:int" default="0" />
+
+
+                <!-- For competencyScore elements that have item types that produce a score8 value, this is how the score values
+                     shoud be combined. 0=Do not combine, 1=Sum all scores, 11=average all non-sero scores, 12=average all scores
+                -->
+                <xs:attribute name="score9combinationtype" type="xs:int" default="0" />
+
+                <!-- For competencyScore elements that have item types that produce a score8 value, this is how the score values
+                     shoud be combined. 0=Do not combine, 1=Sum all scores, 11=average all non-sero scores, 12=average all scores
+                -->
+                <xs:attribute name="score10combinationtype" type="xs:int" default="0" />
+
+                <!-- For competencyScore elements that have item types that produce a score8 value, this is how the score values
+                     shoud be combined. 0=Do not combine, 1=Sum all scores, 11=average all non-sero scores, 12=average all scores
+                -->
+                <xs:attribute name="score11combinationtype" type="xs:int" default="0" />
+
+                <!-- For competencyScore elements that have item types that produce a score8 value, this is how the score values
+                     shoud be combined. 0=Do not combine, 1=Sum all scores, 11=average all non-sero scores, 12=average all scores
+                -->
+                <xs:attribute name="score12combinationtype" type="xs:int" default="0" />
+
+                <!-- 0=no score, 1=percent correct, 2=percent of total possible points, 3=normed -->
+                <xs:attribute name="scoretype" type="xs:int" default="0" />
+
+                <!-- score-type-specific parameter. For points type scoring setups, a 1 indicates that negative point totals are allowed. Default is to limit to 0 or above. -->
+                <xs:attribute name="scoringint1" type="xs:int" default="0" />
+
+                <!-- score-type-specific parameter. -->
+                <xs:attribute name="scoringint2" type="xs:int" default="0" />
+
+                <!-- score-type-specific parameter. -->
+                <xs:attribute name="scoringfloat1" type="xs:float" default="0" />
+
+                <!-- score-type-specific parameter. -->
+                <xs:attribute name="scoringfloat2" type="xs:float" default="0" />
+
+                <!-- the id of the Sim Competency that this competency score corresponds to. -->
+                <xs:attribute name="simcompetencyid" type="xs:long" default="0" />
+
+                <!-- stddeviation - standard deviation used for computing normed scores. -->
+                <xs:attribute name="stddeviation" type="xs:float" default="0" />
+
+                <!-- For competency scores that use correct items, this is the total number of items
+                     within the simlet that are dichotomous and that measure this simlet competency.
+                     You can set the total number of items used for score calculation to number of required items,
+                     or total number of items (this value), or number of items answered.
+                -->
+                <xs:attribute name="totalitems" type="xs:int" default="0" />
+
+                <!-- 0=onet-based, 1=not onet based -->
+                <xs:attribute name="type" type="xs:int" default="0" />
+                </xs:complexType>
+            </xs:element>
+            </xs:sequence>
+
+
+            <!-- id number for the clicflic IMO used in this simlet -->
+            <xs:attribute name="aid" type="xs:long" default="0" />
+
+            <!-- id number for the simlet -->
+            <xs:attribute name="id" type="xs:long" default="0" />
+
+            <!-- multi-purpose parameter -->
+            <xs:attribute name="int1" type="xs:int" default="0" />
+
+            <!-- name of the simlet -->
+            <xs:attribute name="name" type="xs:string" />
+
+            <!-- name in English. Useful when dealing with multiple languages -->
+            <xs:attribute name="nameenglish" type="xs:string" />
+
+            <!-- name to show the user while testing -->
+            <xs:attribute name="nameuser" type="xs:string" />
+
+            <!-- what version of onet was used in this Simlet -->
+            <xs:attribute name="onetversion" type="xs:string" />
+
+            <!-- a section identifier created when simlets were combined into this sim. Can be substituted into text show to the user. -->
+            <xs:attribute name="sectionid" type="xs:int" default="0" />
+
+            <!-- a section name created when simlets were combined into this sim. Can be substituted into text show to the user. -->
+            <xs:attribute name="sectionname" type="xs:string" />
+
+            <!-- the Onet Standard Occupational code this simlet is based on. -->
+            <xs:attribute name="soc" type="xs:string" />
+
+            <!-- 0=development, 1=onet,2=non-onet, 3=splash, 4=transition, 5=informational -->
+            <xs:attribute name="type" type="xs:int" default="0" />
+
+            <!-- version of this simlet being used in this sim -->
+            <xs:attribute name="version" type="xs:int" default="0" />
+        </xs:complexType>
+        </xs:element>
+
+        <!-- An interaction is a question or 'item' where the user produces a response that is recorded and either scored or presented in the report (such as for text-based responses) -->
+        <xs:element name="intn" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+            <xs:sequence>
+
+            <!-- This is a general text-based scoring parameter associated with this interaction at author time -->
+            <xs:element name="textscoreparam1" type="xs:string" minOccurs="0" msdata:Ordinal="1" />
+
+            <!-- CT5 - Anchor Strings -->
+            <xs:element name="anchorlow" type="xs:string" minOccurs="0" />
+            <xs:element name="anchorlowmed" type="xs:string" minOccurs="0" />
+            <xs:element name="anchormed" type="xs:string" minOccurs="0" />
+            <xs:element name="anchormedhigh" type="xs:string" minOccurs="0" />
+            <xs:element name="anchorhigh" type="xs:string" minOccurs="0" />
+
+            <!-- CT5 - Captions-->
+            <xs:element name="captions" type="xs:string" minOccurs="0" />
+
+            <!-- CT5 - clip play URL - full url to play clip -->
+            <xs:element name="clipplayurl" type="xs:string" minOccurs="0" />
+
+            <!-- CT5 - Direct param -->
+            <xs:element name="ct5str1" type="xs:string" minOccurs="0" />
+
+            <!-- CT5 - Direct param -->
+            <xs:element name="ct5str2" type="xs:string" minOccurs="0" />
+
+            <!-- CT5 - Direct param -->
+            <xs:element name="ct5str3" type="xs:string" minOccurs="0" />
+
+            <!-- CT5 - Direct param -->
+            <xs:element name="ct5str4" type="xs:string" minOccurs="0" />
+
+            <!-- CT5 - Direct param -->
+            <xs:element name="ct5str5" type="xs:string" minOccurs="0" />
+
+            <!-- CT5 - Direct param -->
+            <xs:element name="ct5str6" type="xs:string" minOccurs="0" />
+
+            <!-- CT5 - Direct param
+                Any intn with Gen File for Download - full url to file to download
+            -->
+            <xs:element name="ct5str7" type="xs:string" minOccurs="0" />
+
+            <!-- CT5 - Direct param
+                Any intn with Gen File for Download - Download button Text
+            -->
+            <xs:element name="ct5str8" type="xs:string" minOccurs="0" />
+
+            <!-- CT5 - Direct param
+            -->
+            <xs:element name="ct5str9" type="xs:string" minOccurs="0" />
+
+            <!-- CT5 - Direct param
+            -->
+            <xs:element name="ct5str10" type="xs:string" minOccurs="0" />
+
+            <!-- CT5 - Transcript - only used for item preview -->
+            <xs:element name="transcript" type="xs:string" minOccurs="0" />
+
+            <!-- An interaction can contain multiple radio button groups. Each group has several defining characteristics.
+                 Note: Scoring system only pays attention and authoring system only allows data entry when more than one group.
+                 Threfore, this element is only provided if there is at least one radio button group defined. If there is only one
+                 radio button group in use in the interaction, the values will mirror the interaction-level values.
+            -->
+            <xs:element name="radiobuttongroup" minOccurs="0" maxOccurs="unbounded">
+            <xs:complexType>
+                <xs:sequence>
+
+                    <!-- This is a general text-based scoring parameter associated with this radio button group at author time -->
+                    <xs:element name="textscoreparam1" type="xs:string" minOccurs="0" msdata:Ordinal="1" />
+
+                </xs:sequence>
+
+                <!-- CT5 - For CT5 Direct multi-radio items, this is the ct5itempart corresponding to this radio button group. -->
+                <xs:attribute name="ct5itempartid" type="xs:int" default="0" />
+
+                <!-- CT5 - CT5ItemTypeId. Used only in Ct5 Direct test -->
+                <xs:attribute name="ct5itemtypeid" type="xs:int" default="0" />
+
+                <!-- database id for the custom test builder subtopic that is connected with this item. Used only in Ct5 Direct test -->
+                <xs:attribute name="ct5subtopicid" type="xs:int" default="0" />
+
+                <!-- database id for the custom test builder topic that is connected with this item. Used only in Ct5 Direct test -->
+                <xs:attribute name="ct5topicid" type="xs:int" default="0" />
+
+                <!-- the competencyscore element that this radiobutton group is attached to. -->
+                <xs:attribute name="competencyscoreid" type="xs:long" default="0" />
+
+                <!-- Item characteristic parameter for this radio button group  -->
+                <xs:attribute name="difficulty" type="xs:float" default="0" />
+
+                <!-- Item characteristic parameter for this radio button group  -->
+                <xs:attribute name="discrimination" type="xs:float" default="0" />
+
+                <!-- Item characteristic parameter for this radio button group  -->
+                <xs:attribute name="guessing" type="xs:float" default="0" />
+
+                <!-- indicates the max points associated with this radio button group.
+                     Formatted as a string to allow multi-competency points to be added
+                     in if necessary. P,K,S,A - comma delimited.
+                -->
+                <xs:attribute name="maxpoints" type="xs:string"/>
+
+                <!-- indicates the min points associated with this radio button group.
+                     Formatted as a string to allow multi-competency points to be added
+                     in if necessary. P,K,S,A - comma delimited.
+                -->
+                <xs:attribute name="minpoints" type="xs:string" />
+
+                <!-- This is the id of the matching question stem interaction item for this radio button group -->
+                <xs:attribute name="questionid" type="xs:string" />
+
+                <!-- a designator that groups radio buttons -->
+                <xs:attribute name="radiobuttongroupid" type="xs:int" default="0" />
+
+                <!-- multi-use score parameter -->
+                <xs:attribute name="scoreparam1" type="xs:float" default="0" />
+
+                <!-- multi-use score parameter -->
+                <xs:attribute name="scoreparam2" type="xs:float" default="0" />
+
+                <!-- multi-use score parameter -->
+                <xs:attribute name="scoreparam3" type="xs:float" default="0" />
+
+                <!-- indicates the type of item, based on how it is scored. Values are
+                    NA(0,"NA - Not a Simlet Item" ),
+                    AUTO_DICHOTOMOUS(1,"(Auto) Dichotomous - Right or Wrong" ),
+                    AUTO_POINTS(2,"(Auto) Each Choice Has Points" ),
+                    MANUAL_TEXT(3, "(Manual) Text Choices Saved for Presentation" ),
+                    MANUAL_AUDIO(4, "(Manual) Voice/Audio Recording" ),
+                    MANUAL_UPLOAD(5, "(Manual) File Upload" ),
+                    OTHER_TRACK(99,"Other Trackable Response" )
+                -->
+                <xs:attribute name="scoretype" type="xs:int" default="0" />
+
+                <!-- the id of the Sim Competency that this radiobutton group is attached to. -->
+                <xs:attribute name="simcompetencyid" type="xs:long" default="0" />
+
+                <!-- multi-use score parameter, generally used to store true score but can be used for anything -->
+                <xs:attribute name="truescore" type="xs:float" default="0" />
+
+            </xs:complexType>
+            </xs:element>
+
+            <!-- An Interaction Item - which is a part of an interaction, like the question, or
+                 choice 1, or a checkbox, or a text input box, or a radio button -->
+            <xs:element name="intnitem" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                <xs:sequence>
+
+                    <!-- This is usually the text part of the item presented to the user.  Note - this value is URL-Encoded.  -->
+                    <xs:element name="content" type="xs:string" minOccurs="0" msdata:Ordinal="1" />
+
+                    <!-- CT5 - Direct param -->
+                    <xs:element name="ct5str1" type="xs:string" minOccurs="0" />
+
+                    <!-- CT5 - Direct param -->
+                    <xs:element name="ct5str2" type="xs:string" minOccurs="0" />
+
+                    <!-- CT5 - Direct param
+                       Any itempart with an image - alt text
+                    -->
+                    <xs:element name="ct5str3" type="xs:string" minOccurs="0" />
+
+
+
+                    <!-- CT5 - Test Box and Text Area Placeholder-->
+                    <xs:element name="placeholder" type="xs:string" minOccurs="0" />
+
+                    <!-- A supplementary field used to render the interaction item.  Note - this value is URL-Encoded. -->
+                    <xs:element name="text1" type="xs:string" minOccurs="0" msdata:Ordinal="0" />
+
+                    <!-- This is a general text-based scoring parameter associated with this interaction item at author time.  Note - this value is URL-Encoded.
+
+                        For Interaction Click Stream Items, this is [POINTS]Intn.uniqueid,intnitem.seq,points (float),Intn.uniqueid,intnitem.seq,points, Intn.uniqueid, ... etc.
+                    -->
+                    <xs:element name="textscoreparam1" type="xs:string" minOccurs="0" />
+
+                    <!-- CT5 - Thumb URL -->
+                    <xs:element name="thumburl" type="xs:string" minOccurs="0" />
+
+                    <!-- A supplementary field that should replace the content field in reports.  Note - this value is URL-Encoded.
+                         CT5 Info Items, this is the title string for the Info Item Part -->
+                    <xs:element name="title" type="xs:string" minOccurs="0" />
+                </xs:sequence>
+
+                <!-- The action to take if this interaction item is clicked. Values are:
+                        NOTHING(0,"nothing"  ),
+                        GOTORESPONSE(1,"gotoresponse" ),
+                        SHOWCHOICEPANEL(2,"showpanel"),
+                        EXTERNALLINK(3,"externlink" ),
+                        DOWNLOAD(4,"download"  ),
+                        JUMPTOTIME(5,"jumptotime"),
+                        SHAREPANEL(6,"sharepanel" ),
+                        JAVASCRIPT(7,"javascript" ),
+                        SHOWFEEDBACK(8,"feedback" ),
+                        HIDEINTERACTION(9,"hideinteraction" ),
+                        PAUSECLIP(10,"pauseclip"  ),
+                        COMMENTS(11,"commentspanel"  ),
+                        PREVIOUS(12,"previous"  ),
+                        NEXT(13,"next"  ),
+                        FFWD(14,"ffwd"  ),
+                        PLAY(15,"play" ),
+                        FULLSCREEN(16,"togfullscreen" ),
+                        CAPTIONS(17,"togcaptions" ),
+                        FONTSIZE(18,"togfontsize" ),
+                        HTTPGET(19,"silenthttp" ),
+                        SOUND(20,"sound" ),
+                        PREVIOUSINORDER(21,"previousinorder" ),
+                        NEXTINORDER(22,"nextinorder" ),
+                        REPLAYITEM(23,"playreplayitem" ),
+                        SHOWHIDEITEM(24,"showhideitem" ),
+                        PLAYSWF(25,"playswf" ),
+                        REPLAYCLIP(26,"replay" ),
+                        NEXTCLIPGROUP(27,"nextclipgroup" ),
+                        PREVCLIPGROUP(28,"prevclipgroup" ),
+                        LASTORDEREDRESP(29,"lastordrdresp" ),
+                        HIGHESTORDEREDRESP(30,"clickactiontype.highestordrdresp" ),
+                        GOTOCURRENTRESP(31,"clickactiontype.rerendercurrentclip" ),
+                        DISPLAYACTIONONLY(32,"clickactiontype.displayactiononly" ),
+                        VIDEOBUTTONPLAYPAUSE(33,"clickactiontype.vidbutplaypause" )
+                -->
+                <xs:attribute name="clickactiontypeid" type="xs:int" default="0" />
+
+                <!-- CT5 - Number of Columns for an essay or fill blank item. -->
+                <xs:attribute name="columns" type="xs:int" default="0" />
+
+                <!-- the competencyscore element that this interaction item is attached to.
+                    Only for interactio item formats that can produce different response
+                    values, like a combo box. -->
+                <xs:attribute name="competencyscoreid" type="xs:long" default="0" />
+
+                <!-- For slider interactions, value of 1 means that the slider uses a continuous scale. -->
+                <xs:attribute name="continuous" type="xs:int" default="0" />
+
+                <!-- indicates a 'conversion' when selected. Used in marketing applications only. -->
+                <xs:attribute name="conversion" type="xs:int" default="0" />
+
+                <!-- format-specific information used to help scoring system determine
+                     if this interaction item should be scored correctly. Currently only used for
+                     COMBO format interaction items to provide the value of the correct option.
+                -->
+                <xs:attribute name="correct" type="xs:string" default="0" />
+
+                 <!-- General param for Ct5Direct -->
+                <xs:attribute name="ct5float1" type="xs:float" default="0" />
+
+                 <!-- General param for Ct5Direct -->
+                <xs:attribute name="ct5float2" type="xs:float" default="0" />
+
+                <!-- General param for Ct5Direct -->
+                <xs:attribute name="ct5int1" type="xs:int" default="0" />
+
+                 <!-- General param for Ct5Direct -->
+                <xs:attribute name="ct5int2" type="xs:int" default="0" />
+
+                 <!-- General param for Ct5Direct
+
+                -->
+                <xs:attribute name="ct5int3" type="xs:int" default="0" />
+
+                 <!-- General param for Ct5Direct -->
+                <xs:attribute name="ct5int4" type="xs:int" default="0" />
+
+                 <!-- General param for Ct5Direct -->
+                <xs:attribute name="ct5int5" type="xs:int" default="0" />
+
+
+                <!-- database id for the custom test builder item part that defines this item. Used only in Ct5 Direct test -->
+                <xs:attribute name="ct5itempartid" type="xs:int" default="0" />
+
+                <!-- CT5 - CT5ItemPartTypeId. Used only in Ct5 Direct test -->
+                <xs:attribute name="ct5itemparttypeid" type="xs:int" default="0" />
+
+                <!-- database id for the custom test builder subtopic that is connected with this interaction item. Used only in Ct5 Direct test -->
+                <xs:attribute name="ct5subtopicid" type="xs:int" default="0" />
+
+                <!-- database id for the custom test builder topic that is connected with this item. Used only in Ct5 Direct test -->
+                <xs:attribute name="ct5topicid" type="xs:int" default="0" />
+
+                <!-- Item characteristic parameter for this item part if it represents a standalone item (mcorrect true false, multiple fill blank, etc.)  -->
+                <xs:attribute name="difficulty" type="xs:float" default="0" />
+
+                <!-- Item characteristic parameter for this item part if it represents a standalone item (mcorrect true false, multiple fill blank, etc.)  -->
+                <xs:attribute name="discrimination" type="xs:float" default="0" />
+
+                <!-- Item characteristic parameter  for this item part if it represents a standalone item (mcorrect true false, multiple fill blank, etc.)  -->
+                <xs:attribute name="guessing" type="xs:float" default="0" />
+
+                <!-- the order to present this interaction item to the user. -->
+                <xs:attribute name="disporder" type="xs:int" default="0" />
+
+                <!-- this interaction item is drag-able on screen. for drag drop formats only. -->
+                <xs:attribute name="dragable" type="xs:int" default="0" />
+
+                <!-- indicates this interaction item is a drag 'target' -
+                    a location to which other interaction items can be
+                    dragged. -->
+                <xs:attribute name="drgtgt" type="xs:int" default="0" />
+
+
+                <!-- indicates drag target should be treated like a checkbox for scoring purposes.
+                     If any correct drag item is a tenant, it will be treated as checked.
+                     If not it will be treated as not checked. Allows drag target to be treated like a true false item. -->
+                <xs:attribute name="drgtgtcheckbox" type="xs:int" default="0" />
+
+
+                <!-- semi-colon ; delimited list of sequence ids for interaction items that, if dragged
+                onto this interaction item would result in a correct score. -->
+                <xs:attribute name="drgtgt_correctseqids" type="xs:string" />
+
+                <!-- indicates that this interaction is a simlet endpoint.  -->
+                <xs:attribute name="endpoint" type="xs:int" default="0" />
+
+                <!-- indicates this is an experimental interaction item and should not be included in scoring algorithms. -->
+                <xs:attribute name="experimental" type="xs:int" default="0" />
+
+                <!-- External Item Id - this is an external identifier used by external scoring systems for identifying this interaction item as part of a test item.  -->
+                <xs:attribute name="extitemid" type="xs:string" />
+
+                <!-- External Item-Part Id - this is an external identifier used by external scoring systems for identifying this interaction item as a specific part of an item (ie a distractor).  -->
+                <xs:attribute name="extitempartid" type="xs:string" />
+
+                <!-- External Scored Response Id - This is a semi-consolidated version of External Item Id and External Item Part Id meant to assist IOs in analyzing reponses and finding the item response they are looking for.
+                    When set automatically, if is generally the External Item Id plus the External Item Part Id with a concatenator like a period. However, for Items with multiple radio buttons, it is the External Item Id only.  -->
+                <xs:attribute name="extscoredresponseid" type="xs:string" />
+
+                <!-- sequence id of the feedback clip to present to the user if this interaction item is selected.  -->
+                <xs:attribute name="fbknodeseq" type="xs:int" default="0" />
+
+                <!-- indicates the expected content type of a fill blank interaction item.
+                        STRING(0, "Any Alphanumeric"),
+                        EMAIL(1, "Email"),
+                        INTEGER(2, "Integer"),
+                        FLOAT(3, "Float Numeric");
+
+                        This allows the scoring system to recognize when fill blank items are numeric
+                -->
+                <xs:attribute name="fillblankcontenttype" type="xs:int" default="0"/>
+
+                <!-- Max number of words allowed for this interaction item. Scoring may truncate is above this value. -->
+                <xs:attribute name="fillblankmaxwords" type="xs:int" default="0"/>
+
+                <!-- Min number of words allowed for this interaction item. -->
+                <xs:attribute name="fillblankminwords" type="xs:int" default="0"/>
+
+
+
+                <!-- the visual/functional format of this interaction item. Formats are:
+                        BUTTON(0,"button" ),
+                        TEXT(1,"text"  ),
+                        HOTSPOT(2,"hotspot" ),
+                        TEXT_STATE_VAR(3,"text_statevarvalue" ),
+                        AUDIO_CHNL(4,"audiochannel" ),
+                        PERCENT_COMPLETE_BAR(5,"percentcompletebar" ),
+                        LIST_RQD_CLIPS(6,"comborequiredclips" ),
+                        TIMER(7,"timer" ),
+                        DRAG_TARGET(8,"dragtgt" ),
+                        CLIP_GROUP_STATUS(9,"clipgroupstatus" ),
+                        PREV_ENTERED_TEXT(10,"preventeredtxt" ),
+                        TEXT_BOX(100,"textbox" ),
+                        COMBO(101,"combo" ),
+                        CHECK_BOX(102,"checkbox" ),
+                        SUBMIT(103,"submit" ),
+                        RADIO(104,"radio" ),
+                        HIGHLIGHTRADIO(105,"radio2" ),
+                        MOSTLEASTRADIO(106,"radiomostleast" ),
+                        HOTSPOT_CHECK_BOX(107,"hotspotcheckbox" ),
+                        HLRADIO_CHECK_BOX(108,"hlradiocheckbox" ),
+                        SLIDER_THUMB(109,"sliderthumb" ),
+                        ACTIVESWF(110,"activeswf" ),
+                        FILEUPLOADBTN(111,"fileuploadbutton" ),
+                        HLRADIO_HOTSPOT(112,"radio2_hotspot" ),
+                        PIN_IMAGE( 113, "pin_image" );
+                -->
+                <xs:attribute name="format" type="xs:int" default="0" />
+
+                <!-- id for interaction item -->
+                <xs:attribute name="id" type="xs:string" />
+
+                <!-- This is the IFrame item typeid for iFrame formatted interaction items.
+                     0 = Scored Chat
+                -->
+                <xs:attribute name="iframeitemtype" type="xs:int" default="0"/>
+
+                <!-- indicates that this interaction item is a correct choice. -->
+                <xs:attribute name="iscorrect" type="xs:int" default="0" />
+
+                <!-- Indicates that this is the question stem interaction item for this interaction -->
+                <xs:attribute name="isquestionstem" type="xs:int" default="0" />
+
+                <!-- the point value to assign for selecting this interaction item. -->
+                <xs:attribute name="itemscore" type="xs:float" default="0" />
+
+                <!-- Indicates the language of the text in this interaction item if it is not the same as the sim language.
+                     Used for input text boxes, and media capture with speech 2 text, and file upload with speech 2 text.
+                     Typically used for scoring. -->
+                <xs:attribute name="langcode" type="xs:string" />
+
+                <!-- Indicates the max conversion height for an uploaded video or image, in pixels. -->
+                <xs:attribute name="maxheight" type="xs:int" default="0" />
+
+
+                <!-- indicates the max points associated with this interaction item.
+                     Appears only if format supports interactionitem level scoring.
+                     Formatted as a string to allow multi-competency points to be added
+                     in if necessary. P,K,S,A - comma delimited.
+                     Note: at this time, only a single competency can be scored in this way, so
+                     this string will always be just one number.
+                -->
+                <xs:attribute name="maxpoints" type="xs:string" />
+
+                <!-- Indicates the max conversion width for an uploaded video or image, in pixels. -->
+                <xs:attribute name="maxwidth" type="xs:int" default="0" />
+
+                <!-- CT5 - Maximum words for an essay item. -->
+                <xs:attribute name="maxwords" type="xs:int" default="0" />
+
+
+                <!-- CT5 - MediaTypeId -->
+                <xs:attribute name="mediatypeid" type="xs:int" default="0" />
+
+
+                <!-- indicates the min points associated with this interaction item.
+                     Appears only if format supports interactionitem level scoring.
+                     Formatted as a string to allow multi-competency points to be added
+                     in if necessary. P,K,S,A - comma delimited.
+                     Note: at this time, only a single competency can be scored in this way, so
+                     this string will always be just one number.
+                -->
+                <xs:attribute name="minpoints" type="xs:string" />
+
+                <!-- CT5 - Minimum words for an essay item. -->
+                <xs:attribute name="minwords" type="xs:int" default="0" />
+
+                <!-- a milestone is a sequential series of numbers used to
+                calculate percent completion during a sim. Generally not used in scoring. -->
+                <xs:attribute name="milestone" type="xs:int" default="0" />
+
+                <!-- indicates that a red flag should be shown in the report if this interaction item is selected. -->
+                <xs:attribute name="redflag" type="xs:int" default="0" />
+
+                <!-- For interaction items scored at the interaction item level (slider thumb, combo box, text box) this is the id of the matching question stem interaction item -->
+                <xs:attribute name="questionid" type="xs:string" />
+
+                <!-- For interaction items scored at the interaction item level that contain specific question text (Pin Image), this is the text used in the question) -->
+                <xs:attribute name="questiontext" type="xs:string" />
+
+                <!-- a designator that groups radio buttons -->
+                <xs:attribute name="radiobuttongroup" type="xs:int" default="0" />
+
+                <!-- CT5 - Number of Rows for an essay item. -->
+                <xs:attribute name="rows" type="xs:int" default="0" />
+
+                <!-- For sliders, this size of a single increment (still used for continuous sliders to set upper boundary) -->
+                <xs:attribute name="scaleincrement" type="xs:float" default="0" />
+
+                <!-- For sliders, this number of increments to put in the slider  (still used for continuous sliders to set upper boundary). -->
+                <xs:attribute name="scaleincrementcount" type="xs:float" default="0" />
+
+                <!-- For sliders, this is the value associated with the left or top-most position of the slider -->
+                <xs:attribute name="scaleleftvalue" type="xs:float" default="0" />
+
+                <!-- multi-use score parameter -->
+                <xs:attribute name="scoreparam1" type="xs:float" default="0" />
+
+                <!-- multi-use score parameter -->
+                <xs:attribute name="scoreparam2" type="xs:float" default="0" />
+
+                <!-- multi-use score parameter -->
+                <xs:attribute name="scoreparam3" type="xs:float" default="0" />
+
+                <!-- multi-use score parameter -->
+                <xs:attribute name="scoreparam4" type="xs:float" default="0" />
+
+                <!-- sequenceId for this interaction item -->
+                <xs:attribute name="seq" type="xs:int" default="0" />
+
+                <!-- the sim competencyid that this interaction item is assigned to (used only for combo boxes, which operate like interactions) -->
+                <xs:attribute name="simcompetencyid" type="xs:long" default="0" />
+
+                <!-- For non-scored interactions, this indicates the type of interaction item this is for reporting purposes. Values are:
+                    UNSET(0,"Please Select ..." ),
+                    QUESTION(1,"Question To Include In Report" ),
+                    VALUE_FOR_REPORT(2,"Value To Include In Report" ),
+                    IGNORED(3,"Ignored - Do Not Include In Report" )
+                -->
+                <xs:attribute name="smltiactnitmtypeid" type="xs:int" default="0" />
+
+                <!-- CT5 - For Matching items, this is the forced stem display order - if provided. IP.floatParam5  -->
+                <xs:attribute name="stemdisplayorder" type="xs:int" default="0" />
+
+                <!-- CT5 - Stem image scale factor for matching items. IP.intParam1  -->
+                <xs:attribute name="stemimagescale" type="xs:float" default="0" />
+
+
+
+                <!-- the clip sequence id to branch to if this interaction item is selected.
+                     for CT5 Direct this is the ct5itemid to branch to (for mc button items only).
+                -->
+                <xs:attribute name="tgtnodeseq" type="xs:int" default="0" />
+
+                <!-- CT5 - Thumb filecontenttypeid. -->
+                <xs:attribute name="thumbfilecontenttype" type="xs:int" default="0" />
+
+                <!-- CT5 - Thumb Width -->
+                <xs:attribute name="thumbwid" type="xs:int" default="0" />
+
+                <!-- CT5 - Thumb Height -->
+                <xs:attribute name="thumbhgt" type="xs:int" default="0" />
+
+
+                <!-- the true score associated with selecting this interaction. Used only in certain scoring situations. -->
+                <xs:attribute name="truescore" type="xs:float" default="0" />
+
+                <!-- the uploadedfile media typeid of this interaction item -->
+                <xs:attribute name="uploadedfilemediatypeid" type="xs:int" default="0" />
+
+                </xs:complexType>
+            </xs:element>
+            </xs:sequence>
+
+            <!-- CT5 - Video Interview Questions - record audio only -->
+            <xs:attribute name="audioonly" type="xs:int" default="0" />
+
+            <!-- CT5 - Text for Back button -->
+            <xs:attribute name="backbuttontext"  type="xs:string" />
+
+            <!-- CT5 - Clip Media BucketTypeId - needed for item preview so can get a temp signed URL at runtime. -->
+            <xs:attribute name="clipmediabuckettypeid" type="xs:int" default="0" />
+
+            <!-- CT5 - Clip Media has transcript -->
+            <xs:attribute name="clipmediahastranscript" type="xs:int" default="0" />
+
+            <!-- CT5 - Clip Media height -->
+            <xs:attribute name="clipmediaheight" type="xs:int" default="0" />
+
+            <!-- CT5 - Clip Media Hide media after completion 1=hide -->
+            <xs:attribute name="clipmediahideoncomplete" type="xs:int" default="0" />
+
+            <!-- CT5 - Clip Media Max Replays 0=unlimited -->
+            <xs:attribute name="clipmediamaxreplays" type="xs:int" default="0" />
+
+            <!-- CT5 - Clip Media Play type - 0=show intn after clip, 1=show intn during clip play -->
+            <xs:attribute name="clipmediaplaytype" type="xs:int" default="0" />
+
+            <!-- CT5 - Clip Media type -->
+            <xs:attribute name="clipmediatype" type="xs:int" default="0" />
+
+            <!-- CT5 - Clip Media Replay button 1=show replay button -->
+            <xs:attribute name="clipmediareplaybut" type="xs:int" default="0" />
+
+            <!-- CT5 - Clip Media width -->
+            <xs:attribute name="clipmediawidth" type="xs:int" default="0" />
+
+            <!-- CT5 - Clip Media UploadedUserFileId -->
+            <xs:attribute name="clipmediauufid" type="xs:long" default="0" />
+
+            <!-- CT5 - combo box rows to show for mult choice combo box -->
+            <xs:attribute name="comboboxrows" type="xs:int" default="0" />
+
+            <!-- CT5 - ct5ItemPartId for comment box -->
+            <xs:attribute name="commentboxid" type="xs:int" default="0" />
+
+            <!-- the id of the competencyscore that this interaction is attached to, if any. -->
+            <xs:attribute name="competencyscoreid" type="xs:long" default="0" />
+
+            <!-- General param for Ct5Direct -->
+           <xs:attribute name="ct5float1" type="xs:float" default="0" />
+
+            <!-- General param for Ct5Direct -->
+           <xs:attribute name="ct5float2" type="xs:float" default="0" />
+
+            <!-- General param for Ct5Direct -->
+           <xs:attribute name="ct5float3" type="xs:float" default="0" />
+
+            <!-- General param for Ct5Direct -->
+           <xs:attribute name="ct5float4" type="xs:float" default="0" />
+
+            <!-- General param for Ct5Direct -->
+           <xs:attribute name="ct5float5" type="xs:float" default="0" />
+
+           <!-- General param for Ct5Direct
+                Rating item - 1=swipe render
+                Mult Correct Item - min required checks
+                Matching - Present as a ranking item (shuffle stems not targets)
+           -->
+           <xs:attribute name="ct5int1" type="xs:int" default="0" />
+
+           <!-- General param for Ct5Direct
+                Mult Correct Item - max allowed checks
+           -->
+           <xs:attribute name="ct5int2" type="xs:int" default="0" />
+
+            <!-- General param for Ct5Direct
+                Indicates this is a completion point for tests with branching.
+           -->
+           <xs:attribute name="ct5int3" type="xs:int" default="0" />
+
+            <!-- General param for Ct5Direct
+                Indicates Increment Section Counter.
+           -->
+           <xs:attribute name="ct5int4" type="xs:int" default="0" />
+
+            <!-- General param for Ct5Direct
+                Mult Choice Item -  Shuffle choices
+                Mult Correct Item - Shuffle choices
+          -->
+           <xs:attribute name="ct5int5" type="xs:int" default="0" />
+
+            <!-- General param for Ct5Direct
+          -->
+           <xs:attribute name="ct5int6" type="xs:int" default="0" />
+
+            <!-- General param for Ct5Direct
+          -->
+           <xs:attribute name="ct5int7" type="xs:int" default="0" />
+
+            <!-- General param for Ct5Direct
+          -->
+           <xs:attribute name="ct5int8" type="xs:int" default="0" />
+
+            <!-- General param for Ct5Direct
+          -->
+           <xs:attribute name="ct5int9" type="xs:int" default="0" />
+
+            <!-- General param for Ct5Direct
+            -->
+           <xs:attribute name="ct5int10" type="xs:int" default="0" />
+
+            <!-- General param for Ct5Direct
+            -->
+           <xs:attribute name="ct5int11" type="xs:int" default="0" />
+
+            <!-- General param for Ct5Direct
+            -->
+           <xs:attribute name="ct5int12" type="xs:int" default="0" />
+
+            <!-- General param for Ct5Direct
+            -->
+           <xs:attribute name="ct5int13" type="xs:int" default="0" />
+
+            <!-- General param for Ct5Direct
+            -->
+           <xs:attribute name="ct5int14" type="xs:int" default="0" />
+
+            <!-- General param for Ct5Direct
+            -->
+           <xs:attribute name="ct5int15" type="xs:int" default="0" />
+
+            <!-- General param for Ct5Direct
+                Any Ct5 stackable item. this is the Stack Level. 0=not stacked. 1=lowest level, 9999=highest level
+            -->
+           <xs:attribute name="ct5int16" type="xs:int" default="0" />
+
+            <!-- General param for Ct5Direct
+            -->
+           <xs:attribute name="ct5int17" type="xs:int" default="0" />
+
+            <!-- General param for Ct5Direct
+            -->
+           <xs:attribute name="ct5int18" type="xs:int" default="0" />
+
+            <!-- General param for Ct5Direct
+            -->
+           <xs:attribute name="ct5int19" type="xs:int" default="0" />
+
+            <!-- General param for Ct5Direct
+            -->
+           <xs:attribute name="ct5int20" type="xs:int" default="0" />
+
+           <!-- General param for Ct5Direct
+                Any item with media - Use Media for Accessible Version Only
+           -->
+           <xs:attribute name="ct5int21" type="xs:int" default="0" />
+
+           <!-- General param for Ct5Direct
+           -->
+           <xs:attribute name="ct5int22" type="xs:int" default="0" />
+
+           <!-- General param for Ct5Direct
+           -->
+           <xs:attribute name="ct5int23" type="xs:int" default="0" />
+
+           <!-- General param for Ct5Direct
+           -->
+           <xs:attribute name="ct5int24" type="xs:int" default="0" />
+
+           <!-- General param for Ct5Direct
+           -->
+           <xs:attribute name="ct5int25" type="xs:int" default="0" />
+
+            <!-- CT5 database id for the custom test builder item that defines this item. Used only in Ct5 Direct tests. -->
+            <xs:attribute name="ct5itemid" type="xs:int" default="0" />
+
+            <!-- CT5 - CT5ItemTypeId. Used only in Ct5 Direct test -->
+            <xs:attribute name="ct5itemtypeid" type="xs:int" default="0" />
+
+
+            <!-- CT5 - Gen File for Download UploadedUserFileId
+           -->
+            <xs:attribute name="ct5long1" type="xs:long" default="0" />
+
+            <!--
+           -->
+            <xs:attribute name="ct5long2" type="xs:long" default="0" />
+
+            <!-- CT5
+           -->
+            <xs:attribute name="ct5long3" type="xs:long" default="0" />
+
+
+
+            <!-- database id for the custom test builder subtopic that is connected with this item. Used only in Ct5 Direct test -->
+            <xs:attribute name="ct5subtopicid" type="xs:int" default="0" />
+
+            <!-- database id for the custom test builder topic that is connected with this item. Used only in Ct5 Direct test -->
+            <xs:attribute name="ct5topicid" type="xs:int" default="0" />
+
+            <!-- Item characteristic parameter for this item if it represents a single item (rather than the item parts for fill blank or multiple radio button groups)  -->
+            <xs:attribute name="difficulty" type="xs:float" default="0" />
+
+            <!-- Item characteristic parameter for this item if it represents a single item (rather than the item parts for fill blank or multiple radio button groups)  -->
+            <xs:attribute name="discrimination" type="xs:float" default="0" />
+
+            <!-- Item characteristic parameter for this item if it represents a single item (rather than the item parts for fill blank or multiple radio button groups) -->
+            <xs:attribute name="guessing" type="xs:float" default="0" />
+
+            <!-- indicates this interaction is experimental and response should not be included in scoring. -->
+            <xs:attribute name="experimental" type="xs:int" default="0"/>
+
+            <!-- CT5 - hide Back Button if would be shown -->
+            <xs:attribute name="hidebackbutton" type="xs:int" default="0" />
+
+
+            <!-- id -->
+            <xs:attribute name="id" type="xs:string" />
+
+            <!-- indicates that previous selections should be included in score if this interaction is exposed multiple times -->
+            <xs:attribute name="incprevselections" type="xs:int" default="0" />
+
+            <!-- CT5 - intns with the same itemgroup are paired together and only one item from the group will be administered to the candidate.  -->
+            <xs:attribute name="itemgroup" type="xs:int" default="0" />
+
+            <!-- CT5 - for Game Types - indicates the level of this item  -->
+            <xs:attribute name="level" type="xs:int" default="0" />
+
+
+            <!-- indicates the maximum number of interaction responses that should be scored. Also sets the max possible points for percent points items, and total items value for percent correct items. -->
+            <xs:attribute name="maxselections" type="xs:int" default="0" />
+
+            <!-- indicates the max points associated with this interaction.
+                 Formatted as a string to allow multi-competency points to be added
+                 in if necessary. P,K,S,A - comma delimited.
+            -->
+            <xs:attribute name="maxpoints" type="xs:string" />
+
+            <!-- CT5 - Max Recording Attempts -->
+            <xs:attribute name="maxrecordattempts" type="xs:int" default="0" />
+
+            <!-- CT5 - Max Recording Seconds -->
+            <xs:attribute name="maxrecordsecs" type="xs:int" default="0" />
+
+
+
+            <!-- indicates the min points associated with this interaction.
+                 Formatted as a string to allow multi-competency points to be added
+                 in if necessary. P,K,S,A - comma delimited.
+            -->
+            <xs:attribute name="minpoints" type="xs:string" />
+
+            <!-- CT5 - Multiple choice format type (for Multiple Choice and Multiple Correct)
+                 0=Radios, 1=Buttons, 2=Combo Box, 3=Checkboxes
+            -->
+            <xs:attribute name="multiplechoiceformat" type="xs:int" default="0" />
+
+
+            <!-- CT5 - Treat multiple correct items and or matching type items as multiple true/false -->
+            <xs:attribute name="multipletruefalse" type="xs:int" default="0" />
+
+
+            <!-- a name assigned to this interaction in the authoring system. -->
+            <xs:attribute name="name" type="xs:string" />
+
+            <!-- CT5 - Text for Next button -->
+            <xs:attribute name="nextbuttontext"  type="xs:string" />
+
+
+            <!-- For interactions that are not assigned to a competencyscore,
+                 this indicates the type of question - Values are:
+                    NONE(0,"None", "NONE"),
+                    INTEREST_TASK1(1,"Interest - Simlet Task 1", "INTEREST"),
+                    INTEREST_TASK2(2,"Interest - Simlet Task 2", "INTEREST"),
+                    EXPERIENCE_TASK1(3,"Experience - Simlet Task 1", "EXPERIENCE"),
+                    EXPERIENCE_TASK2(4,"Experience - Simlet Task 2", "EXPERIENCE"),
+                    MIN_QUALS(5,"Min Quals", "MINQUALS"),
+                    APPLICANT_INFO(6,"Applicant Info", "APPLICANTINFO" ),
+                    INTEREST_GENERAL (7),
+                    EXPERIENCE_GENERAL (8);
+                    WRITING_SAMPLE(9,"Writing Sample","WRITINGSAMPLE","g.WritingSamples" ),
+                    SPEAKING_SAMPLE(10,"Speaking Sample","SPEAKINGSAMPLE","g.SpeakingSamples" ),
+                    FILEUPLOAD(11,"General Uploaded File","UPLOADEDFILE","g.UploadedFiles"),
+                    AV_UPLOAD(12,"Uploaded Audio/Video File","UPLOADEDAV","g.UploadedAVFiles" )
+                  -->
+            <xs:attribute name="noncompetencyquestiontypeid" type="xs:int" default="0" />
+
+            <!-- CT5 - Overall Time Limit Action
+               -1=stop timer when item exposed
+               0=no action
+               1=start timer when item exposed
+               XXX= start timer with this time limit in seconds when item exposed.
+            -->
+            <xs:attribute name="ovrtimelimitaction" type="xs:int" default="0" />
+
+            <!-- CT5 - Overall Time Limit Action - Act on Submit
+                     - Indicates that the action should take place when the Next / Submit button is clicked or the item is otherwise submitted.
+            -->
+            <xs:attribute name="ovrtimeactonsubmit" type="xs:int" default="0" />
+
+
+            <!-- This is a comma-delimited list of parent clip.seq and clip.clipsegment.seq.  So each pair of values points to a clip and a clip segment. -->
+            <xs:attribute name="parentclipsegementseqs" type="xs:string" />
+
+            <!-- CT5 - Used as a short cut to force percent complete to this value when present rather than fully calculate  -->
+            <xs:attribute name="percentcomplete" type="xs:float" default="0" />
+
+            <!-- CT5 - for Game Types - indicates pool id for this item  -->
+            <xs:attribute name="pool" type="xs:int" default="0" />
+
+            <!-- CT5 - for Game Types - indicates sequence number within the pool for this item  -->
+            <xs:attribute name="poolseq" type="xs:int" default="0" />
+
+            <!-- CT5 - This is a pracice item. -->
+            <xs:attribute name="practice" type="xs:int" default="0" />
+
+            <!-- indicates that this interaction must be answered before the sim is considered completed. -->
+            <xs:attribute name="rqdcompletion" type="xs:int" default="0" />
+
+            <!-- multi-use score parameter -->
+            <xs:attribute name="scoreparam1" type="xs:float" default="0" />
+
+            <!-- multi-use score parameter -->
+            <xs:attribute name="scoreparam2" type="xs:float" default="0" />
+
+            <!-- multi-use score parameter -->
+            <xs:attribute name="scoreparam3" type="xs:float" default="0" />
+
+            <!-- indicates the type of item, based on how it is scored. Values are
+                NA(0,"NA - Not a Simlet Item" ),
+                AUTO_DICHOTOMOUS(1,"(Auto) Dichotomous - Right or Wrong" ),
+                AUTO_POINTS(2,"(Auto) Each Choice Has Points" ),
+                MANUAL_TEXT(3, "(Manual) Text Choices Saved for Presentation" ),
+                MANUAL_AUDIO(4, "(Manual) Voice/Audio Recording" ),
+                MANUAL_UPLOAD(5, "(Manual) File Upload" ),
+                OTHER_TRACK(99,"Other Trackable Response" )
+            -->
+            <xs:attribute name="scoretype" type="xs:int" default="0" />
+
+            <!-- sequenceid of this interation -->
+            <xs:attribute name="seq" type="xs:int" default="0" />
+
+            <!-- CT5 - Shuffle-able -->
+            <xs:attribute name="shuffleable" type="xs:int" default="0" />
+
+            <!-- CT5 - A sequential number to designate a set of itemgroups that can be randomized (shuffled) if other settings are set to do so.  -->
+            <xs:attribute name="shufflegroup" type="xs:int" default="0" />
+
+            <!-- the sim competency to which this interaction is assigned, if any. -->
+            <xs:attribute name="simcompetencyid" type="xs:long" default="0" />
+
+            <!-- the IMO id for the Simlet that contains this interaction.  (used for tracking item responses across sims only)  -->
+            <xs:attribute name="simletaid" type="xs:long" default="0"/>
+
+            <!-- The id of the simlet that contains this interaction.  (used for tracking item responses across sims only)  -->
+            <xs:attribute name="simletid" type="xs:long" default="0"/>
+
+            <!-- the nodeid (ClicFlic authoring only value) for this interaction within the Simlet IMO (used for tracking item responses across sims only) -->
+            <xs:attribute name="simletnodeid" type="xs:long" default="0"/>
+
+            <!-- the sequenceid (ClicFlic authoring only value) for this interaction within the Simlet IMO (used for tracking item responses across sims only) -->
+            <xs:attribute name="simletnodeseq" type="xs:int" default="0"/>
+
+            <!-- the uniqueid (ClicFlic authoring only value) for this interaction within the Simlet IMO (used for tracking item responses across sims only) -->
+            <xs:attribute name="simletnodeuniqueid" type="xs:string"/>
+
+            <!-- simlet versionid (ClicFlic authoring only value) for the simlet containing this interaction (used for tracking item responses across sims only) -->
+            <xs:attribute name="simletversionid" type="xs:int" default="0"/>
+
+            <!-- CT5 - Target CT5ItemId to branch to on click. -->
+            <xs:attribute name="tgtct5itemid" type="xs:int" default="0" />
+
+            <!-- CT5 - Item-level timeout in seconds -->
+            <xs:attribute name="timeoutsecs" type="xs:float" default="0" />
+
+            <!-- the true score for this interaction -->
+            <xs:attribute name="truescore" type="xs:float" default="0" />
+
+            <!-- A unique identifier assigned to this interaction when the sim was built. -->
+            <xs:attribute name="uniqueid" type="xs:string" />
+
+
+        </xs:complexType>
+        </xs:element>
+
+        <!-- A clip is a media segment of some kind that is presented to the user.
+             Clips can contain any number of clip segments, only one of which will
+             be presented to a user at any given time.
+             -->
+        <xs:element name="clip" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+            <xs:sequence>
+
+            <!-- A segment of a clip. Could be an image, a video, text, an audio, etc. -->
+            <xs:element name="clipseg" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                <xs:sequence>
+
+                    <!-- The text used for this clip - for captions or displayed on screen. -->
+                    <xs:element name="content" type="xs:string" minOccurs="0" msdata:Ordinal="1" />
+
+                    <!-- Activity Summary - used for assembling an activity summary for the test taker post-test -->
+                    <xs:element name="activitysummary" type="xs:string" minOccurs="0" msdata:Ordinal="1" />
+
+                </xs:sequence>
+
+                <!-- The approximate duration of this clip segment. -->
+                <xs:attribute name="duration" type="xs:float" default="0" />
+
+                <!-- Indicates this clip is a simlet endpoint. USed in scoring when need to know where the simlet end;points are located.  -->
+                <xs:attribute name="endpoint" type="xs:int" default="0" />
+
+                <!-- MediaTypeId
+                    TEXT(1,"mediatype.text" ),
+                    IMAGE(2,"mediatype.image" ),
+                    AUDIO(3,"mediatype.audio"),
+                    VIDEO(4,"mediatype.video"),
+                    PDF(5,"mediatype.pdf" ),
+                    SWF(6,"mediatype.swf"),
+                    PPT(7,"mediatype.ppt"),
+                    DOC(8,"mediatype.document"),
+                    ZIP(9,"mediatype.zip");
+                -->
+                <xs:attribute name="mediatypeid" type="xs:int"  default="0"/>
+
+                <!-- a milestone is a sequential series of numbers used to
+                calculate percent completion during a sim. Generally not used in scoring. -->
+                <xs:attribute name="milestone" type="xs:int" default="0" />
+
+                <!-- the unique sequenceid of this clip segment -->
+                <xs:attribute name="seq" type="xs:int" default="0" />
+
+                <!-- for clips that automatically forward to another clip when finished, this is the sequenceid of the target clip. -->
+                <xs:attribute name="tgtnodeseq" type="xs:int" default="0" />
+
+                <!-- the display order of this clip segment - used only by the authoring system. -->
+                <xs:attribute name="disporder" type="xs:int" default="0" />
+                </xs:complexType>
+            </xs:element>
+            </xs:sequence>
+
+            <!-- A name assigned to the clip during authoring. -->
+            <xs:attribute name="name" type="xs:string" />
+
+            <!-- unique sequenceid of this clip within the sim. -->
+            <xs:attribute name="seq" type="xs:int" default="0" />
+
+            <!-- The simletid that contains this Clip. -->
+            <xs:attribute name="simletid" type="xs:long" default="0"/>
+
+            <!-- A unique identifier assigned to this clip when the sim was built. -->
+            <xs:attribute name="uniqueid" type="xs:string" />
+
+        </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+
+      <!-- CT5 - Test admin type 0=default (ksa item sequence), 1=item sequence with video interview, 10=reverse IMO, 20=game type 1  -->
+      <xs:attribute name="admintype" type="xs:int" default="0" />
+
+      <!-- the IMO id for the IMO underlying this Sim. -->
+      <xs:attribute name="aid" type="xs:long" default="0" />
+
+      <!-- The date the Sim was built. -->
+      <xs:attribute name="blddate" type="xs:long" default="0"/>
+
+      <!-- CT5 - Default text for Back button -->
+      <xs:attribute name="backbuttontext"  type="xs:string" />
+
+
+
+      <!-- URL pointing to the directory that contains all the media files for this sim. -->
+      <xs:attribute name="baseurl" type="xs:string" />
+
+      <!-- CT5 - Backtracking is allowed where permitted by format -->
+      <xs:attribute name="backtrackok" type="xs:int" default="0" />
+
+      <!--
+           1 = Include an overall CEFR level in overall testeventscore
+      -->
+      <xs:attribute name="cefr" type="xs:int" default="0" />
+
+      <!-- a second unique id used for the IMO underlying the sim. -->
+      <xs:attribute name="cid" type="xs:long" default="0" />
+
+      <!-- General param for Ct5Direct
+             Gamified Type 1 - Max Points for trigger
+      -->
+      <xs:attribute name="ct5int1" type="xs:int" default="0" />
+
+      <!-- General param for Ct5Direct
+      -->
+      <xs:attribute name="ct5int2" type="xs:int" default="0" />
+
+      <!-- General param for Ct5Direct
+          if( backtrackok, this flag means swap locations of Next and Back buttons
+      -->
+      <xs:attribute name="ct5int3" type="xs:int" default="0" />
+
+      <!-- General param for Ct5Direct
+      -->
+      <xs:attribute name="ct5int4" type="xs:int" default="0" />
+
+      <!-- General param for Ct5Direct
+      -->
+      <xs:attribute name="ct5int5" type="xs:int" default="0" />
+
+      <!-- General param for Ct5Direct -->
+      <xs:attribute name="ct5float1" type="xs:float" default="0" />
+
+      <!-- General param for Ct5Direct -->
+      <xs:attribute name="ct5float2" type="xs:float" default="0" />
+
+      <!-- CT5 database id for the custom test builder test that defines this test. Used as actId in various places. Used only in Ct5 Direct tests. -->
+      <xs:attribute name="ct5testid" type="xs:int" default="0" />
+
+
+      <!-- The type of deployment used to create the sim.
+          This is the deployment preference type
+          1 = Flash only
+          2 = HTML5 Only
+          3 = Hybrid, default to Flash
+          4 = hybrid default to HTML5
+      -->
+      <xs:attribute name="deploytype" type="xs:int" default="0" />
+
+      <!-- The approximate duration of the sim, in seconds. -->
+      <xs:attribute name="duration" type="xs:float" default="0" />
+
+      <!-- indicates the educational requirements of a job that can be included in a report. Values are:
+            NOT_SET(0,"Unknown"),
+            NONE(1,"None"),
+            HIGH_SCHOOL(2,"High School"),
+            ASSCOCIATES(3,"Some College or Associate's Degree"),
+            BACHELORS(4,"Bachelor's Degree"),
+            MASTERS(5,"Master's Degree"),
+            PHD(6,"Doctoral Degree or Higher")
+          -->
+      <xs:attribute name="educ" type="xs:int" default="0" />
+
+      <!-- indicates the experience requirements of a job that can be included in a report. Values are:
+          NOT_SET(0,"None"),
+          RE_1(1,"Less Than 1 Year"),
+          RE_1_2(2,"1 - 2 Years"),
+          RE_2_4(3,"2 - 4 Years"),
+          RE_4_6(4,"4 - 6 Years"),
+          RE_6_10(5,"6 - 10 Years"),
+          RE_10(6,"Over 10 Years")
+      -->
+      <xs:attribute name="exper" type="xs:int" default="0" />
+
+
+      <!-- height of the IMO in pixels, this value is 0 for Ct5Direct tests -->
+      <xs:attribute name="height" type="xs:int" default="0" />
+
+      <!-- CT5 - Hide animation (clip) media-->
+      <xs:attribute name="hideclipmedia" type="xs:int" default="0" />
+
+      <!-- the id of this sim's underlying IMO -->
+      <xs:attribute name="imonum" type="xs:long" default="0" />
+
+      <!-- Indicates that Scored Biodata scores should be included in the overall score. -->
+      <xs:attribute name="includebiodataoverall" type="xs:int" default="0" />
+
+      <!-- Indicates that General (not task, interest, experience, biodata, aggregate)
+           Sim Competency scores should be included in the overall score. -->
+      <xs:attribute name="includecompetenciesoverall" type="xs:int" default="0" />
+
+      <!-- Indicates that the system should include Sim Competency Scores that have any data at all, like interview questions,
+           Even if they don't have any items associated with them.
+      -->
+      <xs:attribute name="inclcompswnoitmsinscrdata" type="xs:int" default="0" />
+
+      <!-- Indicates that Scored Interest Competency scores should be included in the overall score. -->
+      <xs:attribute name="includeinterestoverall" type="xs:int" default="0" />
+
+      <!-- Indicates that Scored Experience scores should be included in the overall score. -->
+      <xs:attribute name="includeexperienceoverall" type="xs:int" default="0" />
+
+      <!-- Indicates the way interview questions should be ordered in a report. Values:
+        DEFAULT(0,"Default - Order by Competency Rank"),    // When an ONET Soc is selected
+        SCORE_DESC(1,"Order by Competency Score Lowest to Highest"),
+        SCORE_ASC(2,"Order by Competency Score Highest to Lowest"),
+        IMPORTANCT(3,"Order By Competency Importance Highest to Lowest")
+      -->
+      <xs:attribute name="interviewquesordertypeid" type="xs:int" default="0" />
+
+      <!-- CT5 - Items per clip, for randomization -->
+      <xs:attribute name="itemgroupsize" type="xs:int" default="0" />
+
+
+      <!-- The languagge used by this sim. -->
+      <xs:attribute name="lang" type="xs:string" default="en_US"/>
+
+      <!-- The date of the last sim competency statistics update -->
+      <xs:attribute name="lastsimcompetencystatupdate" type="xs:long" default="0"/>
+
+      <!-- CT5 - for Game Types - Indicates the points required to advance to the next level  -->
+      <xs:attribute name="levelmax" type="xs:int" default="0" />
+
+      <!-- major version id of this sim. This is used to demarcate between major version changes. Used in HR Avatar scoring system as a barrier between percentiles and score stats calculations. -->
+      <xs:attribute name="majorversionid" type="xs:int" default="1" />
+
+      <!-- This is the minimum sim versionid matching the current majorversionid of this sim. -->
+      <xs:attribute name="minsimveridformajorversion" type="xs:int" default="0" />
+
+      <!-- mean - used when overall scores are calculated using a normalized scale. This value is used to convert the overall raw score to a z score. -->
+      <xs:attribute name="mean" type="xs:float" default="0" />
+
+      <!-- Indicates how multiple competencies per item are represented in the IMO and how they should be scored.
+        ONE_PER 0 - only one competency per item type. Points stored in the 'itemscore' field.
+        PKSA 1 - Competency, Knowledge, Skills, Abilities - four different scores stored in the itemscore, score1, score2, and score3 fields.
+      -->
+      <xs:attribute name="multicompetenciestypeid" type="xs:int" default="1" />
+
+      <!-- The name of this sim on the authoring system. -->
+      <xs:attribute name="name" type="xs:string" />
+
+      <!-- name in English. Useful when dealing with multiple languages -->
+      <xs:attribute name="nameenglish" type="xs:string" />
+
+      <!-- The name of this sim to show the user. -->
+      <xs:attribute name="nameuser" type="xs:string" />
+
+      <!--
+           indicates that the Sim perform native reporting back to
+           the clicflic server in addition to any other reporting done.
+      -->
+      <xs:attribute name="nativerpt" type="xs:int" default="0" />
+
+      <!-- CT5 - Default text for Next button -->
+      <xs:attribute name="nextbuttontext"  type="xs:string" />
+
+
+
+      <!-- the onet version used to create competencies and tasks for this sim, if any. -->
+      <xs:attribute name="onetversion" type="xs:string" />
+
+      <!--
+           Determines how RAW overall score is calculated from all subscores.
+
+           0=Use user-specified weights for each task and competency.
+           1=Use Onet Importance values as weights.
+           2=Use User Rank values as weights.
+      -->
+      <xs:attribute name="overallscorecalctype" type="xs:int" default="0" />
+
+      <!--
+           Determines how the SCALED or final overall score is calculated from the raw score.
+
+           0=Use raw score with no changes.
+           1=Use lookup table if present
+           2=Convert Raw to Z (using mean and standard deviation provided in mean and standarddeviation) and then scale using Normal Equivalent Curve values (mean=50, Std Dev = 21.06)
+           3=Convert Raw to Z and then scale using provided mean and std deviation in rawtoscaledfloatparam1 and rawtoscaledfloatparam2
+
+      -->
+      <xs:attribute name="overallscaledscorecalctype" type="xs:int" default="0" />
+
+
+      <!-- CT5 - Progress Bar format 0=% complete, 1=X of Y -->
+      <xs:attribute name="percentcompleteformat" type="xs:int" default="0" />
+
+
+      <!--
+           If using overallscaledscorecalctype=3, floatparam1 below is the target mean and floatparam2 is the target standard deviation to convert to.
+
+           rawtoscaledfloatparam 1 and 2 are mean/sd for OVERALL SCALED SCORE
+           rawtoscaledfloatparam 3 and 4 are mean/sd for OVERALL RAW SCORE
+
+      -->
+      <xs:attribute name="rawtoscaledfloatparam1" type="xs:float" default="0" />
+      <xs:attribute name="rawtoscaledfloatparam2" type="xs:float" default="0" />
+      <xs:attribute name="rawtoscaledfloatparam3" type="xs:float" default="0" />
+      <xs:attribute name="rawtoscaledfloatparam4" type="xs:float" default="0" />
+
+
+      <!-- The default report id for this Sim
+           CT5 - Custom Report Id -->
+      <xs:attribute name="report" type="xs:long" default="0" />
+
+      <!-- Required Recording Devices Code
+           0=none
+           1=audio only
+           2=camera only
+           3=microphone and camera
+      -->
+      <xs:attribute name="reqrecdevs" type="xs:int" default="0" />
+
+
+
+      <!-- CT5 - Instructions for restart. 0=restart where left off, 1=restart on last answered item, 10=restart at beginning. -->
+      <xs:attribute name="restarttype" type="xs:int" default="0" />
+
+      <!--  The score color scheme type. Values are:
+          THREE COLORS (0),
+          FIVE COLORS(1)
+      -->
+      <xs:attribute name="scorecolorscheme" type="xs:int" default="0" />
+
+
+      <!--  The score format type. Values are:
+          NUMERIC_1_TO_5(0,"1-5"),
+          NUMERIC_0_TO_100(1,"0-100")
+      -->
+      <xs:attribute name="scoreformat" type="xs:int" default="0" />
+
+      <!-- CT5 - Shuffle groups of shuffle-able items -->
+      <xs:attribute name="shuffleitemgroups" type="xs:int" default="0" />
+
+
+
+      <!-- id of this sim. -->
+      <xs:attribute name="simid" type="xs:long" default="0" />
+
+      <!-- indicates the way sim competencies should be sorted in reports (within groups)
+           0 = default = weights (if present) then name
+           1 = user rank, then name
+           3 = dispord, then name
+      -->
+      <xs:attribute name="simcompetencyreportingsorttype" type="xs:int" default="0" />
+
+      <!-- id of the sim template used to build this sim. -->
+      <xs:attribute name="simtemplate" type="xs:long" default="0" />
+
+      <!-- version id of this sim. -->
+      <xs:attribute name="simverid" type="xs:int" default="0" />
+
+      <!-- The date the current version of this Sim was initially built. -->
+      <xs:attribute name="simverdate" type="xs:long" default="0"/>
+
+      <!-- The number of this build within this version. Sequential starting from 0. Incremented every time a sim is built within this sim version.  -->
+      <xs:attribute name="simverbldnum" type="xs:int" default="0"/>
+
+      <!-- Onet standard occupational code assigned to this Sim, if any. -->
+      <xs:attribute name="soc" type="xs:string" />
+
+      <!-- stddeviation - used when overall scores are calculated using a normalized scale. This value is used to convert the overall raw score to a z score. -->
+      <xs:attribute name="stddeviation" type="xs:float" default="0" />
+
+      <!-- URL to the SWF file compiled when this sim was built. -->
+      <xs:attribute name="swfurl" type="xs:string" />
+
+      <!-- Overall Time Limit in seconds. Note that this value can be changed by interactions and clips within a sim,
+           so it's really just the initial time limit.
+           CT5 - time limit in seconds -->
+      <xs:attribute name="timeoutoverall" type="xs:float" default="0" />
+
+      <!-- Indicates the trype of training needed to perform in this job. Values are:
+          NOT_SET(0,"None"),
+          TT_0_6M(1,"Less 6 Months"),
+          TT_6M_1(2,"6 Months - 1 Year"),
+          TT_1_2(3,"1 - 2 Years"),
+          TT_2_4(4,"2 - 4 Years"),
+          TT_4_10(5,"4 - 10 Years"),
+          TT_10(6,"Over 10 Years");
+      -->
+      <xs:attribute name="trn" type="xs:int" default="0" />
+
+      <!-- Type of Sim. Values are:
+          ONET(1,"O*Net-Based"),
+          NON_ONET(2,"Not O*Net-Based")
+          -->
+      <xs:attribute name="type" type="xs:int" default="0" />
+
+      <!-- Indicates that the unique ids for interactions have been modified for trace-back to their source interactions within simlets.
+           This can be useful for performing item analysis across different sims.  Note, however, that each interaction contained in this
+           document can be traced back to its original simlet without the uniqueid.
+
+           0=no change
+           1=replace all simlet interaction uniqueids with simletid-simletVersionId-simlet.interaction.sequenceId
+           2=append a prefix to each simlet interaction unique id using prefix=
+      -->
+      <xs:attribute name="uniqueidchangetypeid" type="xs:int" default="0" />
+
+      <!-- Indicates the method for calculating SimCompetency scores across multiple simlets.
+           0=Calculate competency scores individually and combine evenly.
+           1=Calculate competency scores individually and combine using Simlet Competency Coverage Values
+           2=Calculate competency scores across all simlets at the same time.
+      -->
+      <xs:attribute name="usesmltcompcvrg" type="xs:int" default="0" />
+
+      <!--
+            A value of 1 indicates this sim uses standard HRA Scoring.
+      -->
+      <xs:attribute name="usesstdhrascoring" type="xs:int" default="0" />
+
+      <!-- Indicates that scoring algorithm should use the total items in the sim or simlet (depending on what is being scored) to calculate
+           the total value (either total points available, or total correct items possible) when scoring. The default value (0) means only use
+           items that have been encountered (responded to) by the test taker.
+      -->
+      <xs:attribute name="usetotalitemsforcompcalcs" type="xs:int" default="0" />
+
+
+      <!-- indicates that the userrank values of each sim competency and sim task should be used as the weight instead of the weight field.
+           12/27/2012 - removed and incorporated into overallscorecalctype -->
+      <!-- <xs:attribute name="userankvaluesasweights" type="xs:int" default="0" /> -->
+
+      <!-- width of IMO in pixels -->
+      <!-- width of Ct5Direct Test in pixels -->
+      <xs:attribute name="width" type="xs:int" default="0" />
+
+      <!-- min score for white range. -->
+      <xs:attribute name="whitemin" type="xs:float" default="0" />
+
+      <!-- min score for green range. -->
+      <xs:attribute name="greenmin" type="xs:float" default="0" />
+
+      <!-- min score for yellow-green range. -->
+      <xs:attribute name="yellowgreenmin" type="xs:float" default="0" />
+
+      <!-- min score for yellow range (below this is red range) -->
+      <xs:attribute name="yellowmin" type="xs:float" default="0" />
+
+      <!-- min score for red-yellow range. -->
+      <xs:attribute name="redyellowmin" type="xs:float" default="0" />
+
+      <!-- min score for red-yellow range. -->
+      <xs:attribute name="redmin" type="xs:float" default="0" />
+
+    </xs:complexType>
+  </xs:element>
+
+    <xs:complexType name="interviewQuestionObj">
+      <xs:sequence>
+
+        <!--  -->
+        <xs:element name="question" type="xs:string" minOccurs="0" msdata:Ordinal="0" />
+        <xs:element name="anchor" nillable="true" minOccurs="0" maxOccurs="unbounded">
+            <xs:complexType>
+                <xs:simpleContent msdata:ColumnName="anchor_Text" msdata:Ordinal="1">
+                <xs:extension base="xs:string">
+
+                    <!--  -->
+                    <xs:attribute name="type" type="xs:int" />  <!-- hi, med, low -->
+                </xs:extension>
+                </xs:simpleContent>
+            </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+
+      <!--
+        Defines the breadth of score range for which this quetion is applicable
+
+        0 = Default - for use in all cases.
+        5 = Question is preferred for Low Red scores
+        10 = Question is preferred for all Low scores
+        15 = Question is preferred for Medium scores
+        20 = Question is preferred for all High scores
+        25 = Question is preferred for High red scores
+      -->
+      <xs:attribute name="breadth" type="xs:int" default="0" />
+
+      <!--  -->
+      <xs:attribute name="onetversion" type="xs:string" />
+
+      <!--  -->
+      <xs:attribute name="soc" type="xs:string" />
+
+      <xs:attribute name="type" type="xs:int" default="0" />
+    </xs:complexType>
+
+
+</xs:schema>
