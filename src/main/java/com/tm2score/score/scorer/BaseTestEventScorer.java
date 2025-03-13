@@ -2089,6 +2089,7 @@ public class BaseTestEventScorer
             {
                 cefrType = CefrType.getValue(scs.getSimCompetencyObj().getCefr());
                 cefrScoreType = CefrUtils.getCefrScoreTypeForSimCompetency(te, scs);
+                LogService.logIt( "BaseTestEventScorer.setCompetencyTestEventScores() BBB.5 cefrType=" + (cefrType==null ? "null" : cefrType.getName()) + ", cefrScoreType=" + (cefrScoreType==null ? "null" : cefrScoreType.getName()) ); 
             }
 
             String cvs = "";

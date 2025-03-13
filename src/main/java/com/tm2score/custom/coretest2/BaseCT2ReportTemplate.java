@@ -730,10 +730,8 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                 scrTxt = reportData.getOverallScoreText();
             }
 
-            if( scrTxt !=null )
-            {
+            if( scrTxt!=null )
                 scrTxt = tctrans( scrTxt,false );
-            }
 
             if( useScoreTextAsNumScore )
             {
@@ -1435,7 +1433,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
             }
 
 
-            // add commy columns if still not covered.
+            // add dummy columns if still not covered.
             while( useCircleScore && rowSpanCoverCount<rowSpanUsedForScore-1 )
             {
                 c = new PdfPCell( new Phrase( "", getFontLight() ) );
@@ -1467,78 +1465,41 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             if( (scrTxt != null && !scrTxt.isEmpty()) || showRiskFactors || earlyExitStr!=null )
             {
-
+                // if( 1==1 )
+                //     scrTxt += " dfsg sdfg sfdg sfdg sfd gsfd gsfdgkj sfdgkjsfhd gkjsfhd gkjsfhd gkjsfhd gksfjdh gksfjdgh sfkdjg sfkdjgh sfkdjgh sfdkjgh sfdkjgh sfdkjgh sfdkjgh sfdkjgh sfdkgjh sfdkjgh sfdkjgh sfdkjgh sfdkgjh fdskjgh sfdkjgh sfdkgjh sfdkgjh sfdkgjh fdkgjh sfdkjgh sfdkgjh sfdkgjh fdkjgh fdkjgh sdfkgj hsfdkgjh sfdkjgh sfdkjgh sfdkjgh sfdkgjh sfdkgjh sfdkgjh sfdkgjh sfdkjg hsfdkjgh sfkdjg hsfkdjgh sfkdjgh sfkdjgh sfkdjgh sjkdfgh skdfgh skdfjgh skdfjgh fdkjgh djkg dfkjgh dfkjgh dkfj ghkdfjgh fkdjgh dfkj ghfdkjgh fkdjgh fkdjg hfkdjg hfkdjgh fkdjgh fdkgjh fdkjgh fdjgh fjdgh fjdgh fjdgh fjdgh fjdgh fdjgh fdjghfjdghfdjgh fdjgh dfjgh dfjgh dfjgh djgh dfjgh djgh";
+                
                 if( earlyExitStr!=null )
                 {
                     c = new PdfPCell( new Phrase( "\n" + earlyExitStr + "\n ", getFontRed() ));
                     c.setPadding( 1 );
-                    //c.setHorizontalAlignment( reportData.getIsLTR() ? Element.ALIGN_LEFT : Element.ALIGN_RIGHT );
                     setRunDirection(c);
                     c.setBorder( Rectangle.NO_BORDER );
-                    //c.addElement( pp );
-                    //c.addElement( new Phrase( scrTxt, getFontLight() ) );
-                   // c.setPhrase(  );
-
-                    //t3.addCell(scrTxt);
-
                     t3.addCell( c );
                 }
 
                 if( scrTxt != null && !scrTxt.isEmpty() )
                 {
-                    //Paragraph pp = new Paragraph( scrTxt, getFontLight() );
-
-                    //pp.setAlignment( reportData.getIsLTR() ? Element.ALIGN_LEFT : Element.ALIGN_RIGHT );
-
-                    //pp.setSpacingBefore( 1 );
-                    //pp.setLeading( showRiskFactors ? 9 : 10 );
-
                     c = new PdfPCell( new Phrase( scrTxt, getFontLight() ));
                     c.setPadding( 1 );
-                    //c.setHorizontalAlignment( reportData.getIsLTR() ? Element.ALIGN_LEFT : Element.ALIGN_RIGHT );
                     setRunDirection(c);
                     c.setBorder( Rectangle.NO_BORDER );
-                    //c.addElement( pp );
-                    //c.addElement( new Phrase( scrTxt, getFontLight() ) );
-                   // c.setPhrase(  );
-
-                    //t3.addCell(scrTxt);
-
                     t3.addCell( c );
-                    //showRiskFactors = false;
                 }
 
                 if( showRiskFactors )
                 {
-                    //c = new PdfPCell();
-                    //c.setPadding( 1 );
-                    //c.setHorizontalAlignment( reportData.getIsLTR() ? Element.ALIGN_LEFT : Element.ALIGN_RIGHT );
-                    //setRunDirection(c);
-                   // c.setBorder( Rectangle.NO_BORDER );
-
                     String rfHdrKey = "g.CT3RiskFactorsHdr";
                     String rfFtrKey = "g.CT3RiskFactorsFtr";
 
                     //float spcg = 8;
 
                     Chunk chnk = new Chunk( lmsg( "g.CT3RiskFactorsHdrTitle" ) + " " , this.getFontBoldRed() );
-
-                    Chunk chnk2 = new Chunk(  lmsg( rfHdrKey ) , getFontLight() );
+                    // Chunk chnk2 = new Chunk(  lmsg( rfHdrKey ) , getFontLight() );
 
                     Phrase cHdr = new Phrase();
-
                     cHdr.add( chnk );
-                    // cHdr.add( chnk2 );
 
-                    //Paragraph cHdr = new Paragraph( ph );
-
-                    // Paragraph cHdr = new Paragraph( lmsg( rfHdrKey ) , getFontSmall() );
-                    //cHdr.setSpacingBefore( spcg );
-                    //cHdr.setSpacingAfter( 5 );
-                    //cHdr.setLeading( 10 );
-                    Phrase cFtr = new Phrase( lmsg( rfFtrKey ) , getFontLight() );
-                    //cFtr.setSpacingBefore( 4 );
-                    // cFtr.setLeading( 10 );
+                    // Phrase cFtr = new Phrase( lmsg( rfFtrKey ) , getFontLight() );
 
                     java.util.List<String> clj = new ArrayList<>();
                     com.itextpdf.text.List cl = new com.itextpdf.text.List( com.itextpdf.text.List.UNORDERED, 12 );
@@ -1564,8 +1525,6 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
                         cl.add( new ListItem( 9,  rftxt, getFontLight() ) );
                         clj.add( rftxt );
-
-                        // cl.add( new ListItem( new Phrase( tt.getText(), getFontLight() ) ) );
                     }
 
                     if( reportData.getIsLTR() )
@@ -1573,8 +1532,9 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
                         c.addElement( cHdr );
                         c.addElement( cl );
+                        
+                        // skipping cFtr
                         // c.addElement( cFtr );
-
                         t3.addCell( c );
                     }
 
@@ -1595,10 +1555,11 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                             t3.addCell( c );
                         }
 
-                        c = new PdfPCell( cFtr );
-                        c.setPadding( 1 );
-                        setRunDirection(c);
-                        c.setBorder( Rectangle.NO_BORDER );
+                        // skipping footer
+                        // c = new PdfPCell( cFtr );
+                        // c.setPadding( 1 );
+                        // setRunDirection(c);
+                        // c.setBorder( Rectangle.NO_BORDER );
                         // t3.addCell( c );
                     }
                 } // End Risk Factors
@@ -1615,9 +1576,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
                 c = new PdfPCell();
                 c.setPadding( 1 );
-                //c.setHorizontalAlignment( reportData.getIsLTR() ? Element.ALIGN_LEFT : Element.ALIGN_RIGHT );
                 setRunDirection(c);
-
                 c.setColspan( colspan );
 
                 if( reportData.getIsLTR() )
@@ -1633,23 +1592,27 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                 c.setPaddingLeft( CT2_BOXHEADER_LEFTPAD );
                 c.setPaddingBottom( 10 );
                 setRunDirection( c );
-
+                
+                // Add the score text / risk factors table to touter.
                 c.addElement( t3 );
                 touter.addCell( c );
 
+                // add score key table.
                 if( includeColorGraph )
                 {
-                    c = new PdfPCell( getScoreKeyTable( !useSolidBarGraphs && reportData.hasProfile() ) );
+                    PdfPTable keyTable = getScoreKeyTable( !useSolidBarGraphs && reportData.hasProfile() );
+                    // c = new PdfPCell( keyTable );
+                    c = new PdfPCell();
+                    c.addElement(keyTable);
                     c.setColspan(includeRating ? 2 : 1 );
                     c.setHorizontalAlignment( reportData.getIsLTR() ? Element.ALIGN_RIGHT : Element.ALIGN_CENTER );
-
                     c.setBorder( reportData.getIsLTR() ? Rectangle.BOTTOM | Rectangle.RIGHT : Rectangle.BOTTOM | Rectangle.LEFT  );
-
                     c.setBorderColor( ct2Colors.scoreBoxBorderColor );
                     c.setBorderWidth( scoreBoxBorderWidth );
                     c.setPadding( 0 );
                     c.setPaddingTop( 6 );
-                    c.setPaddingBottom( 10 );
+                    // c.setPaddingBottom( 10 );
+                    // c.setCalculatedHeight( keyTable.calculateHeights() );
                     setRunDirection( c );
                     touter.addCell( c );
                 }
@@ -1661,7 +1624,9 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
                 lt.setHorizontalAlignment( reportData.getIsLTR() ? Element.ALIGN_RIGHT : Element.ALIGN_LEFT );
 
-                c = new PdfPCell( lt );
+                c = new PdfPCell( );
+                c.addElement( lt );
+                // c = new PdfPCell( lt );
                 c.setColspan( cols );
                 c.setHorizontalAlignment( reportData.getIsLTR() ? Element.ALIGN_RIGHT : Element.ALIGN_CENTER );
                 c.setBorder( Rectangle.LEFT | Rectangle.BOTTOM | Rectangle.RIGHT  );
@@ -7313,8 +7278,12 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
             if( cefrScoreType!=null )
             {
                 String cefrScoreText = CefrUtils.getCefrScoreTextForTes( reportData.getLocale(), tes );
+                
                 if( cefrScoreText!=null && !cefrScoreText.isBlank() )
+                {
+                    // cefrScoreText = tctrans( cefrScoreText, false);                    
                     scoreText = lmsg( "g.CefrEquivScoreText") + " " + cefrScoreText + (scoreText.isBlank() ? "" : "\n\n" + lmsg("g.GeneralScoreText") + " ") + scoreText;
+                }
             }
 
 

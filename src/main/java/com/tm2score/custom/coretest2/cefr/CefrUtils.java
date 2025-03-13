@@ -10,6 +10,7 @@ import com.tm2score.entity.event.TestEventScore;
 import com.tm2score.global.Constants;
 import com.tm2score.score.iactnresp.ScorableResponse;
 import com.tm2score.score.simcompetency.SimCompetencyScore;
+import com.tm2score.service.LogService;
 import com.tm2score.util.StringUtils;
 import java.util.List;
 import java.util.Locale;
@@ -64,10 +65,14 @@ public class CefrUtils
     }
 
     public static String getCefrScoreTextForTes( Locale locale, TestEventScore tes )
-    {
+    {        
         // get localized version
         CefrScoreType st = getCefrScoreTypeForTes( tes );
         CefrType typ = getCefrTypeForTes( tes );
+        
+        if( locale!=null && typ!=null && !typ.equals(CefrType.NONE) )
+            return CefrUtils.getCefrScoreDescription( locale, st, typ.getStub() );
+        
         if( locale!=null && st!=null && st.equals(CefrScoreType.UNKNOWN) && typ!=null && !typ.equals(CefrType.NONE))
             return st.getDescription(locale, typ.getStub());
         
@@ -134,11 +139,14 @@ public class CefrUtils
             // LogService.logIt( "CefrUtils.getCefrScoreTypeForSimCompetency() BBB.1 " + scs.getName() + ", ct5Subtopic=" + (ct5Subtopic==null ? "null" : ct5Subtopic.getName()) );
             // No ct5Subtopic - skip
             if( ct5Subtopic==null )
+            {
+                LogService.logIt( "CefrUtils.getCefrScoreTypeForSimCompetency() BBB.2A NO Ct5Subtopic found for Ct5SubtopicId=" + sr.getCt5SubtopicId() + ", itemId=" + sr.getCt5ItemId() + ", correct=" + sr.correct() );
                 continue;
+            }
             
             cefrScoreType = getCefrScoreTypeFromCt5Subtopic( ct5Subtopic );
 
-            // LogService.logIt( "CefrUtils.getCefrScoreTypeForSimCompetency() BBB.2 Subtopic.cefrScoreType=" + cefrScoreType.getName() + ", correct=" + sr.correct() );
+            LogService.logIt( "CefrUtils.getCefrScoreTypeForSimCompetency() BBB.2 Subtopic.cefrScoreType=" + cefrScoreType.getName() + ", correct=" + sr.correct() );
             
             countArray[cefrScoreType.getCefrScoreTypeId()]++;
             
@@ -152,14 +160,17 @@ public class CefrUtils
         {
             // LogService.logIt( "CefrUtils.getCefrScoreTypeForSimCompetency() CCC.1 count[" + i + "]=" + countArray[i] + ", raw percentCorrect[i]=" + percentCorrectArray[i] );
             percentCorrectArray[i] = (countArray[i]<=0) ? 0 : 100f*percentCorrectArray[i]/countArray[i];
-            // LogService.logIt( "CefrUtils.getCefrScoreTypeForSimCompetency() CCC.2 final percentCorrect[" + i + "]=" + percentCorrectArray[i] );
+            LogService.logIt( "CefrUtils.getCefrScoreTypeForSimCompetency() CCC.2 final percentCorrect[" + i + "]=" + percentCorrectArray[i] );
         }
 
         cefrScoreType = null;
                     
         // check from bottom
         for( int i=1;i<percentCorrectArray.length; i++ )
-        {            
+        {   
+
+            LogService.logIt( "CefrUtils.getCefrScoreTypeForSimCompetency() CCC.2A count[" + i + "]=" + countArray[i] + ", raw percentCorrect[i]=" + percentCorrectArray[i] );
+            
             // no items at this level, skip it (should not happen except for advanced)
             if( countArray[i]<=0 )
             {
@@ -169,7 +180,7 @@ public class CefrUtils
             // failed this level.
             if( percentCorrectArray[i]<66.66f )
             {
-                // LogService.logIt( "CefrUtils.getCefrScoreTypeForSimCompetency() DDD.1 failed level " + i );
+                LogService.logIt( "CefrUtils.getCefrScoreTypeForSimCompetency() DDD.1 failed level " + i );
                 
                 // last passed is present.
                 if( cefrScoreType!=null )
@@ -186,9 +197,9 @@ public class CefrUtils
             // last passed
             cefrScoreType = CefrScoreType.getValue(i);
 
-            // LogService.logIt( "CefrUtils.getCefrScoreTypeForSimCompetency() DDD.2 passed level " + i );
+            LogService.logIt( "CefrUtils.getCefrScoreTypeForSimCompetency() DDD.2 passed level " + i );
             
-            // if passed the highest level. REturn it.
+            // if passed the highest level. Return it.
             if( i==7 )
                 return CefrScoreType.C2; 
         }

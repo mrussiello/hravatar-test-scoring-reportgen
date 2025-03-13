@@ -924,7 +924,7 @@ public class ReportData
     
     public String getCompetencyScoreText( TestEventScore tes )
     {
-        if( this.equivSimJUtils==null )
+        if( equivSimJUtils==null )
             return tes.getScoreText();
                 
         String s = equivSimJUtils.getCompetencyScoreText( tes );

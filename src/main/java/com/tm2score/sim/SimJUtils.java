@@ -234,7 +234,6 @@ public class SimJUtils {
         if( sc == null )
             return null;
         
-        
         ScoreCategoryType sct = ScoreCategoryType.getValue(category);
         
         if( sct == null )
