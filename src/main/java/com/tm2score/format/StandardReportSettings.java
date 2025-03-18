@@ -67,6 +67,7 @@ public class StandardReportSettings implements ReportSettings
     BaseFont headerBaseFont;
 
     Font fontXXLarge;
+    Font fontXXLargeBoldDarkBlue;
     Font fontXXLargeWhite;
     Font fontXXLargeLight;
     Font fontXXLargeBold;
@@ -79,6 +80,7 @@ public class StandardReportSettings implements ReportSettings
     Font fontXLarge;
     Font fontXLargeLight;
     Font fontXLargeLightBold;
+    Font fontXLargeBoldDarkBlue;
     Font fontXLargeWhite;
     Font fontXLargeBold;
     Font fontXLargeItalic;
@@ -228,6 +230,7 @@ public class StandardReportSettings implements ReportSettings
             headerBaseFont = BaseFont.createFont( filesRoot + "BNKGOTHM.TTF", BaseFont.WINANSI, BaseFont.EMBEDDED );
 
             fontXXLarge = new Font( baseFontCalibri, XXLFONTSZ );
+            fontXXLargeBoldDarkBlue = new Font( baseFontCalibriBold, XXLFONTSZ );
             fontXXLargeWhite = new Font( baseFontCalibri, XXLFONTSZ );
             fontXXLargeLight = new Font( baseFontCalibri, XXLFONTSZ );
             fontXXLargeBold = new Font( baseFontCalibriBold, XXLFONTSZ, Font.BOLD );
@@ -235,6 +238,7 @@ public class StandardReportSettings implements ReportSettings
             fontXXLargeBoldItalic = new Font( baseFontCalibriBoldItalic, XXLFONTSZ, Font.BOLDITALIC );
 
             fontXLarge = new Font( baseFontCalibri, XLFONTSZ );
+            fontXLargeBoldDarkBlue = new Font( baseFontCalibriBold, XLFONTSZ );
             fontXLargeWhite = new Font( baseFontCalibri, XLFONTSZ );
             fontXLargeLight = new Font( baseFontCalibri, XLFONTSZ );
             fontXLargeLightBold = new Font( baseFontCalibriBold, XLFONTSZ );
@@ -309,6 +313,7 @@ public class StandardReportSettings implements ReportSettings
             BaseColor baseFontColor = darkFontColor;
 
             fontXXLarge.setColor( baseFontColor  );
+            fontXXLargeBoldDarkBlue.setColor( new BaseColor( 0x0b, 0x50, 0x8b)  );
             fontXXLargeWhite.setColor( whiteFontColor  );
             fontXXLargeLight.setColor( lightFontColor  );
             fontXXLargeBold.setColor( baseFontColor  );
@@ -316,6 +321,7 @@ public class StandardReportSettings implements ReportSettings
             fontXXLargeBoldItalic.setColor( baseFontColor  );
 
             fontXLarge.setColor( baseFontColor  );
+            fontXLargeBoldDarkBlue.setColor( new BaseColor( 0x0b, 0x50, 0x8b)  );
             fontXLargeWhite.setColor( whiteFontColor  );
             fontXLargeLight.setColor( lightFontColor  );
             fontXLargeLightBold.setColor( lightFontColor  );
@@ -573,6 +579,11 @@ public class StandardReportSettings implements ReportSettings
     }
 
     @Override
+    public Font getFontXXLargeBoldDarkBlue() {
+        return fontXXLargeBoldDarkBlue;
+    }
+    
+    @Override
     public Font getFontXXLargeWhite() {
         return fontXXLargeWhite;
     }
@@ -670,6 +681,11 @@ public class StandardReportSettings implements ReportSettings
     @Override
     public void setFontXLargeLightBold(Font fontXLargeLightBold) {
         this.fontXLargeLightBold = fontXLargeLightBold;
+    }
+
+    @Override
+    public Font getFontXLargeBoldDarkBlue() {
+        return fontXLargeBoldDarkBlue;
     }
 
     @Override

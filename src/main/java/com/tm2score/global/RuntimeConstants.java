@@ -151,7 +151,6 @@ public class RuntimeConstants
         cache.put("hraLogoBlackTextSmallFilename","hra-two-color-tagline-logo-trans-420.png"); 
         cache.put("hraLogoBlackTextSmallPurpleFilename","hra-two-color-tagline-logo-trans-420.png"); 
 
-
         cache.put("hraLogoWhiteTextSmallFilename","hra-white-tagline-logo-trans-412.png");      
         cache.put("hraLogoWhiteTextSmallPurpleFilename","hra-white-tagline-logo-trans-412.png"); 
 

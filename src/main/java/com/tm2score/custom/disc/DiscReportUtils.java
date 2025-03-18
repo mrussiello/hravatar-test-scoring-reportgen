@@ -5,6 +5,7 @@
  */
 package com.tm2score.custom.disc;
 
+import com.itextpdf.text.BaseColor;
 import com.tm2score.entity.event.TestEvent;
 import com.tm2score.entity.event.TestEventScore;
 import com.tm2score.event.EventFacade;
@@ -20,6 +21,7 @@ import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +43,23 @@ public class DiscReportUtils {
     public static final String[] DISC_COMPETENCY_NAMES = new String[]{"Dominance", "Influence", "Steadiness", "Compliance"};
     public static final String[] DISC_COMPETENCY_STUBS = new String[]{"d", "i", "s", "c"};
 
+    public static Color[] sliceColors = new Color[] 
+    {
+        new Color(214, 44, 26),   // D #d62c1a
+        new Color(229, 124, 30),  // I #e57c1e
+        new Color(46, 139, 87),   // S #2e8b57
+        new Color(0, 119, 204)    // C #0077cc
+    };
+
+
+    public static BaseColor[] sliceBaseColors = new BaseColor[] 
+    {
+        new BaseColor(214, 44, 26),   // D #d62c1a
+        new BaseColor(229, 124, 30),  // I #e57c1e
+        new BaseColor(46, 139, 87),   // S #2e8b57
+        new BaseColor(0, 119, 204)    // C #0077cc
+    };
+    
     private final String bundleName;
     private Properties customProperties;
 
@@ -96,34 +115,19 @@ public class DiscReportUtils {
         try
         {
             LogService.logIt( "DiscReportUtils.getDiscPieGraphImage2() wid=" + wid + ", hgt=" + hgt  );
-
-            //Color[] sliceColors = new Color[] 
-            //{
-            //    new Color(3, 150, 255),    // 0077cc
-            //    new Color(232, 246, 255),   // e8f6ff
-            //    new Color(73, 178, 255),   // #398ac4
-            //    new Color(150, 211, 255)   // 96d3ff
-            //};
-
-            Color[] sliceColors = new Color[] 
-            {
-                new Color(238, 238, 238),   // eeeeee
-                new Color(90, 154, 203),   // #A9ACB
-                new Color(248, 148, 29),   // f8941d
-                new Color(0, 119, 204)    // 0077cc
-
-            };
             
             PieChart chart = new PieChartBuilder().width(wid).height(hgt).theme(ChartTheme.GGPlot2).build();
 
+            Color[] colors = reverseColorArray(sliceColors);
+            
             // Customize Chart
-            chart.getStyler().setSeriesColors(sliceColors);
+            chart.getStyler().setSeriesColors(colors );
             chart.getStyler().setChartPadding(0);
             chart.getStyler().setCircular(true);
-            chart.getStyler().setLegendVisible(true);
+            chart.getStyler().setLegendVisible(false);
             Font font = new Font("Arial", Font.PLAIN, 10);
             chart.getStyler().setLegendFont(font);            
-            Font font2 = new Font("Arial", Font.PLAIN, 8);
+            Font font2 = new Font("Arial", Font.BOLD, 10);
             chart.getStyler().setLabelsFont(font2);
             chart.getStyler().setLabelsFontColor( Color.BLACK );
             //chart.getStyler().setLegendLayout(LegendLayout.Horizontal );
@@ -148,8 +152,9 @@ public class DiscReportUtils {
             float scrAdj;
             String name;
             // String[] cols = new String[]{"d", "i", "s", "c" };
-            String[] cols = new String[]{"c", "s", "i", "d" };
+            // String[] cols = new String[]{"c", "s", "i", "d" };
             
+            /*
             float totalVal = 0;
             for( String s : cols )
             {
@@ -171,7 +176,7 @@ public class DiscReportUtils {
             }
             
             // LogService.logIt( "DiscReportUtils.getDiscPieGraphImage2() smallSliceCount=" + smallSliceCount );
-            if( smallSliceCount>1 )
+            if(1==2 && smallSliceCount>1 )
             {
                 List<Object[]> sortedCols = new ArrayList<>();
                 for( int i=0;i<4;i++ )
@@ -187,27 +192,66 @@ public class DiscReportUtils {
                 cols = new String[]{ (String)sortedCols.get(0)[0],(String)sortedCols.get(3)[0],(String)sortedCols.get(1)[0],(String)sortedCols.get(2)[0]}; 
             }
             
+            if(1==1 )
+            {
+                List<Object[]> sortedCols = new ArrayList<>();
+                for( int i=0;i<4;i++ )
+                {
+                    ltr = cols[i];
+                    scrAdj = (Float) scoreValMap.get(ltr)[1];
+                    sortedCols.add(new Object[]{ltr,scrAdj});
+                }
+                // Collections.sort( sortedCols, new DiscScoreNameValueComparator() );
+                Collections.reverse(sortedCols);
+                
+                // move smallest to second largest
+                cols = new String[]{ (String)sortedCols.get(0)[0],(String)sortedCols.get(1)[0],(String)sortedCols.get(2)[0],(String)sortedCols.get(3)[0]}; 
+            }
+            
+            
             String newSort = "";            
             for( String s : cols )
             {
                 newSort += s + ",";                
             }
             // LogService.logIt( "DiscReportUtils.getDiscPieGraphImage2() newSort=" + newSort);
-                        
-            for( String s : cols )
+                
+            */
+            
+            String[] cols = new String[]{"d", "i", "s", "c" };            
+            List<String> colsRev = Arrays.asList(cols);
+            Collections.reverse(colsRev);
+
+            int colorIndex = -1;
+            List<Color> colorList = new ArrayList<>();
+            
+            for( String s : colsRev )
             {
-                name = (String) scoreValMap.get(s)[0];
+                name = s.toUpperCase(); // = (String) scoreValMap.get(s)[0];
                 scrAdj = (Float) scoreValMap.get(s)[1];
+                
+                colorIndex++;
+                
+                // skip non-scores
+                if( scrAdj<=0.1f )
+                    continue;
+                
+                colorList.add( colors[colorIndex]);
+                
                 BigDecimal bd = new BigDecimal(Float.toString(scrAdj));
                 bd = bd.setScale(scrDigits, RoundingMode.DOWN); // Truncate to 2 decimal places
                 float trimmed = bd.floatValue(); // trimmed = 3.14
                 // dataset.setValue(name + "(" + trimmed + ")", trimmed);
-                chart.addSeries(name + " (" + trimmed + ")", trimmed);
+                // chart.addSeries(name + " (" + trimmed + ")", trimmed);
+                chart.addSeries(name, trimmed);
             }
+            
+            colors = colorList.toArray(Color[]::new);
+            chart.getStyler().setSeriesColors(colors);            
             
             Path tempFile = Files.createTempFile("discpie-", ".png" );
             Path pathFilename = tempFile.toAbsolutePath();
-            LogService.logIt( "DiscReportUtils.getDiscPieGraphImage2() newSort=" + newSort + ", smallSliceCount=" + smallSliceCount + ", writing NIO tempFile to " +  pathFilename.toString());
+            LogService.logIt( "DiscReportUtils.getDiscPieGraphImage2() writing NIO tempFile to " +  pathFilename.toString());
             
             //File tempFile2 = File.createTempFile("discpie-", ".png");
             //tempFile2.deleteOnExit();
@@ -242,6 +286,14 @@ public class DiscReportUtils {
     }
 
 
+    private static Color[] reverseColorArray(Color[] arr )
+    {
+        Color[] out = new Color[arr.length];
+        for( int i=0;i<out.length;i++ )
+            out[i] = arr[arr.length-1-i];
+        return out;
+    }
+    
 
 
     public static String getCompetencyStub( int[] topTraitIndexes )
@@ -271,8 +323,7 @@ public class DiscReportUtils {
      */
     public static int[] getTopTraitIndexes( float[] discScoreVals )
     {
-        int[] out = new int[2];
-        out[1]=-1;
+        int[] out = new int[]{-1,-1};
         float highVal=-1;
         int idx=0;
 
@@ -281,6 +332,9 @@ public class DiscReportUtils {
 
         for( int i=0; i<4; i++ )
         {
+            if(discScoreVals[i]<=0)
+                continue;
+            
             if( discScoreVals[i]>highVal )
             {
                 highVal=discScoreVals[i];

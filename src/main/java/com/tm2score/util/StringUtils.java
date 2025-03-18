@@ -1220,7 +1220,6 @@ public class StringUtils
         inStr = inStr.trim();
 
         return inStr.indexOf('{')==0 && inStr.lastIndexOf('}')==inStr.length()-1;
-
     }
 
 

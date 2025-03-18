@@ -38,8 +38,6 @@ import com.tm2score.util.MessageFactory;
 import com.tm2score.util.UrlEncodingUtils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -126,6 +124,7 @@ public class CT2ReportSettings implements ReportSettings {
     public BaseFont headerBaseFont;
 
     public Font fontXXLarge;
+    public Font fontXXLargeBoldDarkBlue;
     public Font fontXXLargeWhite;
     public Font fontXXLargeLight;
     public Font fontXXLargeBold;
@@ -138,6 +137,7 @@ public class CT2ReportSettings implements ReportSettings {
     public Font fontXLarge;
     public Font fontXLargeLight;
     public Font fontXLargeLightBold;
+    public Font fontXLargeBoldDarkBlue;
     public Font fontXLargeBlack;
     public Font fontXLargeWhite;
     public Font fontXLargeBoldWhite;
@@ -318,6 +318,7 @@ public class CT2ReportSettings implements ReportSettings {
     public Image hraLogoWhiteText;
     public Image hraLogoWhiteTextSmall;
     public Image hraCoverPageImage;
+    public Image hraCoverPageImage2;
     public Image hraCoverPageBlueArrowImage;
     
     public SimJ engEquivSimJ;
@@ -458,7 +459,8 @@ public class CT2ReportSettings implements ReportSettings {
             
 // headerBaseFont = BaseFont.createFont(filesRoot + "BNKGOTHM.TTF", BaseFont.WINANSI, BaseFont.EMBEDDED);
 
-            fontXXLarge = new Font(baseFontCalibri, XXLFONTSZ);
+            fontXXLarge = new Font(baseFontCalibri, XXLFONTSZ);            
+            fontXXLargeBoldDarkBlue = new Font(baseFontCalibriBold, XXLFONTSZ);
             fontXXLargeWhite = new Font(baseFontCalibri, XXLFONTSZ);
             fontXXLargeLight = new Font(baseFontCalibri, XXLFONTSZ);
             fontXXLargeBold = new Font(baseFontCalibriBold, XXLFONTSZ, Font.NORMAL);
@@ -468,6 +470,7 @@ public class CT2ReportSettings implements ReportSettings {
             fontXLarge = new Font(baseFontCalibri, XLFONTSZ);
             // fontXLarge.se
 
+            fontXLargeBoldDarkBlue = new Font(baseFontCalibriBold, XLFONTSZ);
             fontXLargeWhite = new Font(baseFontCalibri, XLFONTSZ);
             fontXLargeLight = new Font(baseFontCalibri, XLFONTSZ);
             fontXLargeLightBold = new Font(baseFontCalibriBold, XLFONTSZ);
@@ -571,6 +574,7 @@ public class CT2ReportSettings implements ReportSettings {
             BaseColor baseFontColor = ct2Colors.darkFontColor;
 
             fontXXLarge.setColor(baseFontColor);
+            fontXXLargeBoldDarkBlue.setColor(new BaseColor( 0x0b, 0x50, 0x8b));
             fontXXLargeWhite.setColor(ct2Colors.whiteFontColor);
             fontXXLargeLight.setColor(ct2Colors.lightFontColor);
             fontXXLargeBold.setColor(baseFontColor);
@@ -578,6 +582,7 @@ public class CT2ReportSettings implements ReportSettings {
             fontXXLargeBoldItalic.setColor(baseFontColor);
 
             fontXLarge.setColor(baseFontColor);
+            fontXLargeBoldDarkBlue.setColor(new BaseColor( 0x0b, 0x50, 0x8b));
             fontXLargeWhite.setColor(ct2Colors.whiteFontColor);
             fontXLargeBlack.setColor(BaseColor.BLACK);
             fontXLargeLight.setColor(ct2Colors.lightFontColor);
@@ -705,6 +710,7 @@ public class CT2ReportSettings implements ReportSettings {
             hraLogoWhiteTextSmall = reportData==null ? null : ITextUtils.getITextImage(reportData.getHRALogoWhiteTextSmallUrl( devel ));
             
             hraCoverPageImage = reportData==null ? null : ITextUtils.getITextImage(reportData.getHRACoverPageUrl() );
+                                               
             hraCoverPageBlueArrowImage = reportData==null ? null : ITextUtils.getITextImage(reportData.getHRACoverPageBlueArrowUrl() );
             //summaryCatNumericAxis = ITextUtils.getITextImage( getLocalImageUrl(summaryCatNumericAxisFilename));
 
@@ -1720,6 +1726,11 @@ public class CT2ReportSettings implements ReportSettings {
     }
 
     @Override
+    public Font getFontXXLargeBoldDarkBlue() {
+        return fontXXLargeBoldDarkBlue;
+    }
+
+    @Override
     public Font getFontXXLargeWhite() {
         return fontXXLargeWhite;
     }
@@ -1822,6 +1833,11 @@ public class CT2ReportSettings implements ReportSettings {
     @Override
     public Font getFontXLargeWhite() {
         return fontXLargeWhite;
+    }
+
+    @Override
+    public Font getFontXLargeBoldDarkBlue() {
+        return fontXLargeBoldDarkBlue;
     }
 
     @Override
@@ -2479,6 +2495,11 @@ public class CT2ReportSettings implements ReportSettings {
     public Image getHraCoverImage() {
         return this.hraCoverPageImage;
     }
+
+    public Image getHraCoverImage2() {
+        return this.hraCoverPageImage2;
+    }
+    
     
     @Override
     public void setHraLogoBlackText(Image hraLogoBlackText) {

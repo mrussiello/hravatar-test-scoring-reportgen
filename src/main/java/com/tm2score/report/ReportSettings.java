@@ -94,6 +94,8 @@ public interface ReportSettings {
 
     Font getFontXLargeLightBold();
 
+    Font getFontXLargeBoldDarkBlue();
+    
     Font getFontXLargeWhite();
 
     Font getFontXSmall();
@@ -118,6 +120,8 @@ public interface ReportSettings {
 
     Font getFontXXLargeLight();
 
+    Font getFontXXLargeBoldDarkBlue();
+    
     Font getFontXXLargeWhite();
 
     Font getFontXXSmall();

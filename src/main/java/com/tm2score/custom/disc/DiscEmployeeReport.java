@@ -15,7 +15,7 @@ import com.tm2score.service.LogService;
  */
 public class DiscEmployeeReport extends BaseDiscReportTemplate implements ReportTemplate
 {
-
+    
     public DiscEmployeeReport()
     {
         super();
@@ -37,33 +37,51 @@ public class DiscEmployeeReport extends BaseDiscReportTemplate implements Report
 
             addDiscStylesExplained();
 
+            addFooterBar( lmsg( "g.SCOREBREAKDOWN"), true, fontXLargeBoldWhite );
+            
             addNewPage();
 
             addTopTraitSection();
 
+            addFooterBar( lmsg( "g.TRAITS"), false, fontXLargeBoldWhite );
+            
             addNewPage();
 
             // addLeadingTraitSection();
 
             addHowXShouldWorkWithYSection( 0 );
+            
+            addBlueBar();
 
             addHowXShouldWorkWithYSection( 1 );
 
+            addFooterBar( lmsg( "g.TEAMWORK"), true, fontXLargeBoldWhite );
+            
+            addNewPage();
+
             addHowXShouldWorkWithYSection( 2 );
 
+            addBlueBar();
+            
             addHowXShouldWorkWithYSection( 3 );
+            
+            addFooterBar( lmsg( "g.TEAMWORK"), false, fontXLargeBoldWhite );
             
             addNewPage();
 
             addDiscEducationSection();
-                        
-            addMinimalPrepNotesSection();
+
+            addFooterBar( lmsg( "g.LEARNMORE"), true, fontXLargeBoldWhite );
                 
-            if( !reportData.getReportRuleAsBoolean( "usernotesoff" ) )
-                addNewPage();
+            // if( !reportData.getReportRuleAsBoolean( "usernotesoff" ) )
+            addNewPage();
 
             addNotesSection();
 
+            addFooterBar( lmsg( "g.NOTES"), false, fontXLargeBoldWhite );
+            
+            addMinimalPrepNotesSection();
+            
             closeDoc();
 
             return getDocumentBytes();
@@ -85,5 +103,20 @@ public class DiscEmployeeReport extends BaseDiscReportTemplate implements Report
         }
     }
 
+    @Override
+    public synchronized void specialInit()
+    {
+        feedbackReportCoverImageUrl = "https://cdn.hravatar.com/web/orgimage/zrWvh1uNWrg-/img_13x1741970464932.png";
+        
+        feedbackReportFooterImageUrls = new String[] { "https://cdn.hravatar.com/web/orgimage/zrWvh1uNWrg-/img_17x1741983088934.png",
+                                                       "https://cdn.hravatar.com/web/orgimage/zrWvh1uNWrg-/img_8x1741970464652.png",
+                                                       "https://cdn.hravatar.com/web/orgimage/zrWvh1uNWrg-/img_11x1741970464884.png",
+                                                        "https://cdn.hravatar.com/web/orgimage/zrWvh1uNWrg-/img_9x1741970464749.png",
+                                                        "https://cdn.hravatar.com/web/orgimage/zrWvh1uNWrg-/img_10x1741970464834.png"};
+        super.specialInit();
+    }
+    
+    
+    
 
 }

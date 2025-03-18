@@ -838,7 +838,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
             c.setBorder( Rectangle.NO_BORDER );
             setRunDirection( c );
 
-            boolean isRightMost = cols == 1;
+            boolean isRightMost = cols==1;
 
             // Create header
             c = new PdfPCell( new Phrase( lmsg( "g.Candidate"), fontLargeWhite ) );
@@ -944,22 +944,13 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                 touter.addCell(c);
             }
 
-            // header row is finished.
+            // dark header row is finished.
 
             // t.setWidthPercentage( 0.8f );
 
             c = touter.getDefaultCell();
             c.setPadding( 0 );
             c.setBorder( Rectangle.NO_BORDER );
-
-            //c = new PdfPCell( new Phrase( reportData.getSimName(), this.getFontLargeLightBold() ) );
-            //c.setBorder( Rectangle.NO_BORDER );
-            //c.setHorizontalAlignment(Element.ALIGN_LEFT );
-            //c.setVerticalAlignment( Element.ALIGN_BOTTOM );
-            //c.setPadding( 2 );
-            //t.addCell( c );
-
-            // t.addCell( new Phrase( reportData.getSimName(), getFontLargeLightBold() ) );
 
             // Spacer
             c = new PdfPCell( new Phrase( "", fontXSmall ) );
@@ -971,13 +962,6 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
             setRunDirection( c );
 
             touter.addCell( c );
-
-
-            //int colspan = 1;
-
-            //if( !includeNumScores ) // reportData.getReport().getIncludeOverallScore()!=1 )
-            //    colspan++;
-            // isRightMost = cols==1;
 
             // NAME
             c = new PdfPCell( new Phrase( piiOk ? reportData.getUserName() : "" , fontXLargeBlack ) );
@@ -1009,12 +993,8 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
             int rowSpanCoverCount = 0;
             int rowSpanUsedForScore = 2;
 
-            if( includeNumScores || cefrLevel!=null)
+            if(includeNumScores || cefrLevel!=null)
             {
-                // isRightMost = cols == 2;
-
-
-                // Score (if)
                 c = new PdfPCell( new Phrase( !useCircleScore && includeNumScores ? scr : "" , fontLargeBold ) );
                 c.setPadding( 2 );
                 c.setPaddingTop(4);
@@ -1088,13 +1068,13 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
             if( reportData.getUser()==null )
                 reportData.u = new User();
 
+            
+            // Next Row - CEFR score IF present.
             if( cefrLevel!=null )
             {
-                // isRightMost = cols == 1;
                 CefrScoreType st = CefrScoreType.getFromText(cefrLevel);
 
                 c = new PdfPCell( new Phrase( lmsg("g.CefrEquivScore") , fontLarge ) );
-                //c.setColspan(colspan);
                 c.setPadding( 1 );
                 c.setPaddingTop(4);
                 c.setPaddingBottom(4);
@@ -1103,18 +1083,13 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                 else
                     c.setPaddingRight( CT2_BOXHEADER_LEFTPAD );
                 c.setVerticalAlignment( Element.ALIGN_TOP );
-                //if( isRightMost )
-                //    c.setBorder( Rectangle.LEFT | Rectangle.RIGHT );
-                //else
-                //    c.setBorder( reportData.getIsLTR() ? Rectangle.LEFT : Rectangle.RIGHT );
+
                 c.setBorder(Rectangle.NO_BORDER);
                 c.setBorderColor( ct2Colors.scoreBoxBorderColor );
                 c.setBorderWidth( scoreBoxBorderWidth );
                 c.setPaddingBottom( 2 );
                 setRunDirection( c );
                 touter.addCell( c );
-
-                // isRightMost = cols==2;
 
                 // LogService.logIt( "BaseCT2ReportTemplate.addReportInfoHeader() includeColorGraph=" + includeColorGraph + ", useSolidBarGraphs=" + useSolidBarGraphs );
 
@@ -1125,29 +1100,14 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                 c.setPaddingBottom(4);
                 c.setHorizontalAlignment(Element.ALIGN_CENTER);
                 c.setVerticalAlignment( Element.ALIGN_TOP );
-                //if( isRightMost )
-                //{
-                //    c.setBorder( reportData.getIsLTR() ?  Rectangle.RIGHT : Rectangle.LEFT );
-                //    c.setBorderColor( ct2Colors.scoreBoxBorderColor );
-                //    c.setBorderWidth( scoreBoxBorderWidth );
-                //}
-                //else
                 c.setBorder(Rectangle.NO_BORDER );
                 setRunDirection( c );
                 touter.addCell( c );
 
+                // dummy cell
                 if( includeColorGraph )
                 {
-                    //isRightMost = !includeRating;
                     c = new PdfPCell( new Phrase("") ); // new PdfPCell( summaryCatNumericAxis );
-
-                    //if( isRightMost )
-                    //{
-                    //    c.setBorder( reportData.getIsLTR() ? Rectangle.RIGHT : Rectangle.LEFT   );
-                    //    c.setBorderColor( ct2Colors.scoreBoxBorderColor );
-                    //    c.setBorderWidth( scoreBoxBorderWidth );
-                    //}
-                    //else
                     c.setBorder( Rectangle.NO_BORDER );
                     c.setHorizontalAlignment( Element.ALIGN_LEFT );
                     c.setVerticalAlignment( Element.ALIGN_TOP );
@@ -1156,10 +1116,10 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                     touter.addCell( c );
                 }
 
+                // dummy cell
                 if( includeRating )
                 {
                     c = new PdfPCell( new Phrase("") );
-                    // c.setBorder( reportData.getIsLTR() ?  Rectangle.RIGHT : Rectangle.LEFT  );
                     c.setBorder( Rectangle.NO_BORDER  );
                     c.setBorderColor( ct2Colors.scoreBoxBorderColor );
                     c.setBorderWidth( scoreBoxBorderWidth );
@@ -1171,7 +1131,6 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                     touter.addCell( c );
                 }
             }
-
 
             // LogService.logIt( "BaseCT2ReportTemplate.addReportInfoHeader() overallTimeout=" + overallTimeout );
 
@@ -3043,7 +3002,6 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
             */
 
             float thgt = t.calculateHeights();
-
             if( thgt> pageHeight )
                 t.setHeaderRows( 1 );
 
@@ -10440,7 +10398,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             boolean compNameForAdmin = reportData.getReportRuleAsBoolean("compnameforprep") && includeCompanyInfo;
 
-            // LogService.logIt( "BaseCT2ReportTemplate.addCoverPage()  CCC.1 includeCompanyInfo=" + includeCompanyInfo + ", reportCompanyName=" + reportCompanyName + ", compNameForAdmin=" + compNameForAdmin );
+            LogService.logIt( "BaseCT2ReportTemplate.addCoverPage()  CCC.1 includeCompanyInfo=" + includeCompanyInfo + ", reportCompanyName=" + reportCompanyName + ", compNameForAdmin=" + compNameForAdmin + ", omitCoverImages=" + omitCoverImages );
 
             if( compNameForAdmin && !reportData.hasCustLogo() )
                 includeCompanyInfo = false;
@@ -10465,7 +10423,17 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
             hraCover.scalePercent( 100*pageHeight/hraCover.getHeight());
 
             if( !omitCoverImages )
+            {
                 ITextUtils.addDirectImage( pdfWriter, hraCover, pageWidth-hraCover.getScaledWidth() + 1, 0, true );
+
+                Image hraCover2 = getHraCoverImage2();
+                LogService.logIt( "BaseCT2ReportTemplate.addCoverPageV2() hraCover2=" + (hraCover2==null ? "null" : "not null") );
+                if( hraCover2 !=null )
+                {
+                    hraCover2.scalePercent(64);
+                    ITextUtils.addDirectImage( pdfWriter, hraCover2, pageWidth-hraCover2.getScaledWidth() + 1, 0, true );
+                }
+            }
 
             boolean clientLogoInHeader = reportData.getReportRuleAsBoolean( "clientlogopdfhdr" ) && (includeCompanyInfo || compNameForAdmin) && reportData.hasCustLogo();
             if( clientLogoInHeader )
@@ -10782,7 +10750,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
             boolean addTable = false;
             t = new PdfPTable( 2 );
             t.setWidths( new float[] {0.1f, 4f} );
-            t.setTotalWidth( (pageWidth-2*CT2_MARGIN)*0.7f);
+            t.setTotalWidth( (pageWidth-2*CT2_MARGIN)*( !omitCoverImages && getHraCoverImage2()!=null ? 0.4f : 0.7f));
             t.setLockedWidth( true );
             setRunDirection(t);
 
@@ -10860,7 +10828,9 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             c = new PdfPCell( new Phrase( lmsg( "g.ProprietaryAndConfidential" ) , getFont() ) );
             c.setBorder( Rectangle.NO_BORDER );
-            c.setHorizontalAlignment( Element.ALIGN_CENTER );
+            c.setHorizontalAlignment( !omitCoverImages && getHraCoverImage2()!=null ? Element.ALIGN_LEFT : Element.ALIGN_CENTER );
+            if( !omitCoverImages && getHraCoverImage2()!=null )
+                c.setPaddingLeft( 50 );
             setRunDirection(c);
             t.addCell( c );
 
@@ -11930,7 +11900,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
     {
         // LogService.logIt( "BaseCoreTestReportTemplt.calcTableHghtUsed( maxRoom=" + maxRoom + ", prevResidual=" + prevResidual + ", startIndex=" + startIndex + ", maxIndex=" + maxIndex + ", isSplitLate=" + isSplitLate + ", " + ")");
 
-        Object[] dta = new Object[] {new Integer(startIndex) , new Float(0), new Float(0) };
+        Object[] dta = new Object[] {startIndex, Float.valueOf(0), Float.valueOf(0)};
 
         if( rowHgts.length<=startIndex )
             return dta;
@@ -11943,13 +11913,13 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
             // Bigger than max
             if( prevResidual>= maxRoom )
             {
-                dta[1] = new Float( maxRoom );
-                dta[2] = new Float( prevResidual -  maxRoom );
+                dta[1] = Float.valueOf(maxRoom);
+                dta[2] = Float.valueOf(prevResidual -  maxRoom);
 
                 if( prevResidual== maxRoom)
                 {
                     dta[0]=startIndex+1;
-                    dta[2] = new Float( 0 );
+                    dta[2] = Float.valueOf(0);
                 }
 
                 return dta;
@@ -11964,8 +11934,8 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
         {
             if( rowHgts[i] + hgt == maxRoom )
             {
-                dta[0]=new Integer( i+1 );
-                dta[1] = new Float(hgt);
+                dta[0]=i+1;
+                dta[1] = Float.valueOf(hgt);
                 return dta;
             }
 
@@ -11976,14 +11946,14 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                     // LogService.logIt( "BaseCoreTestReportTemplt.calcTableHghtUsed() AAA i=" + i + ", hgt=" + hgt );
 
                     resid = rowHgts[i] - (maxRoom-hgt);
-                    dta[2] = new Float( resid );
+                    dta[2] = resid;
                     hgt = maxRoom;
 
                     // LogService.logIt( "BaseCoreTestReportTemplt.calcTableHghtUsed() BBB hgt=" + hgt + ", resid=" + resid );
                 }
 
-                dta[0] = new Integer(i);
-                dta[1] = new Float(hgt);
+                dta[0] = i;
+                dta[1] = hgt;
                 return dta;
             }
 
@@ -11991,7 +11961,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
         }
 
         dta[0] = maxIndex+1;
-        dta[1] = Float.valueOf(hgt);
+        dta[1] = hgt;
         return dta;
     }
 

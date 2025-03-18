@@ -433,6 +433,9 @@ public class ReportData
         
        try
        {
+           if( fn==null )
+               return null;
+           
            if( fn.toLowerCase().startsWith("http") )
                return (new URI(fn)).toURL();
     
@@ -1072,5 +1075,5 @@ public class ReportData
     public void setNeedsKeyCheck(boolean needsKeyCheck) {
         this.needsKeyCheck = needsKeyCheck;
     }
-
+    
 }

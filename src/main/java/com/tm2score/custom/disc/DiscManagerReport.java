@@ -15,7 +15,6 @@ import com.tm2score.service.LogService;
  */
 public class DiscManagerReport extends BaseDiscReportTemplate implements ReportTemplate
 {
-
     public DiscManagerReport()
     {
         super();
@@ -36,31 +35,69 @@ public class DiscManagerReport extends BaseDiscReportTemplate implements ReportT
             addReportInfoHeader();
 
             addDiscStylesExplained();
-
+            
+            addFooterBar( lmsg( "g.SCOREBREAKDOWN"), true, fontXLargeBoldWhite );
+            
             addNewPage();
 
             addTopTraitSection();
 
+            addFooterBar( lmsg( "g.TRAITS"), false, fontXLargeBoldWhite );
+
+            addNewPage();
+            
             addLeadingTraitSection();
 
+            addBlueBar();
+            
             addHowWorkWithTraitSection();
 
-            addDiscManagerInfoSection();
-
+            addFooterBar( lmsg( "g.TEAMWORK"), false, fontXLargeBoldWhite );
+            
             addNewPage();
             
-            addDiscBuildYourTeamSection();
-
             addDiscEducationSection();
+
+            addFooterBar( lmsg( "g.LEARNMORE"), true, fontXLargeBoldWhite );
+                
+            addNewPage();            
+            
+            addKeyActionsToTakeSection();
+            
+            addFooterBar( lmsg( "g.KEYACTIONS"), false, fontXLargeBoldWhite );
+                
+            addNewPage();            
+
+            addDiscBuildYourTeamSection();
                         
+            addFooterBar( lmsg( "g.ACTIVITIES"), true, fontXLargeBoldWhite );
+            
             addNewPage();
             
-            addMinimalPrepNotesSection();
+            addHowBuildTeamsWithDiscSection();
 
-            if( !reportData.getReportRuleAsBoolean( "usernotesoff" ) )
-                addNewPage();
+            addBlueBar();
+            
+            addAvoidSterotypingSection();
+            
+            addFooterBar( lmsg( "g.NEXTSTEPS"), false, fontXLargeBoldWhite );
+
+            addNewPage();
+            
+            
+            //addDiscManagerInfoSection();
+
+            //addFooterBar( lmsg( "g.TEAMWORK"), false, fontXLargeBoldWhite );
+            
+            
+            //if( !reportData.getReportRuleAsBoolean( "usernotesoff" ) )
+            //    addNewPage();
 
             addNotesSection();
+
+            addFooterBar( lmsg( "g.NOTES"), false, fontXLargeBoldWhite );
+                        
+            addMinimalPrepNotesSection();
 
             closeDoc();
 
@@ -82,6 +119,17 @@ public class DiscManagerReport extends BaseDiscReportTemplate implements ReportT
             throw new STException( e );
         }
     }
+    
+    @Override
+    public synchronized void specialInit()
+    {
+        feedbackReportCoverImageUrl = "https://cdn.hravatar.com/web/orgimage/zrWvh1uNWrg-/img_12x1741970464889.png";
+        feedbackReportFooterImageUrls = new String[] {  "https://cdn.hravatar.com/web/orgimage/zrWvh1uNWrg-/img_9x1741970464749.png",
+                                                        "https://cdn.hravatar.com/web/orgimage/zrWvh1uNWrg-/img_11x1741970464884.png",
+                                                        "https://cdn.hravatar.com/web/orgimage/zrWvh1uNWrg-/img_10x1741970464834.png"};
+        super.specialInit();
+    }
+    
 
 
 }

@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package com.tm2score.custom.coretest2;
+package com.tm2score.custom.disc;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Rectangle;
@@ -18,16 +18,14 @@ import com.tm2score.service.LogService;
  *
  * @author Mike
  */
-public class CoverBlueBarCellEvent implements PdfPCellEvent
+public class DiscLegendCellBackgroundCellEvent implements PdfPCellEvent
 {
-    // #0b508b
-    static BaseColor bgColor = new BaseColor( 0x0b, 0x50, 0x8b);
-    float barWidth = 150;
-    float barHeight = 12;
+    BaseColor colorToUse = null;
     
 
-    public CoverBlueBarCellEvent()
+    public DiscLegendCellBackgroundCellEvent( BaseColor colorToUse)
     {
+        this.colorToUse=colorToUse;
     }
     
     
@@ -38,33 +36,28 @@ public class CoverBlueBarCellEvent implements PdfPCellEvent
         {            
             
             // Draw the bar first
-            float wid = rctngl.getWidth();
-            float hgt = rctngl.getHeight();
+            float wid = Math.min(20, rctngl.getWidth());
+            float hgt = wid; // rctngl.getHeight();
             float llx = rctngl.getLeft();
             float lly = rctngl.getBottom();
 
-            float barWid = Math.min( barWidth, wid);
-            float barHgt = Math.min( barHeight, hgt);
-            
-            // LogService.logIt( "CellBackgroundCellEvent.cellLayout() bgColor=" + bgColor.getRed() + "," + bgColor.getGreen() + "," + bgColor.getBlue() + ", fgColor=" + fgColor.getRed() + "," + fgColor.getGreen() + "," + fgColor.getBlue() );
-            
-            
             PdfContentByte pcb = pcbs[ PdfPTable.BACKGROUNDCANVAS ];
 
             pcb.saveState();
 
             pcb.setLineWidth(0 );
-
-            pcb.setColorFill( bgColor );
-            pcb.rectangle(llx, lly + (hgt - barHgt)/2, barWid, barHgt);
-            pcb.fill();
-                                    
+            float borderWidth = 0;
+            pcb.setColorFill( colorToUse );   
+            pcb.setColorStroke(colorToUse);
+            pcb.rectangle(llx, lly + borderWidth, wid, hgt-2*borderWidth);
+            pcb.fillStroke();
+            
             pcb.restoreState();
         }
 
         catch( Exception e )
         {
-            LogService.logIt( e, "CoverBlueBarCellEvent.cellLayout() " );
+            LogService.logIt( e, "DiscLegendCellBackgroundCellEvent.cellLayout() " );
         }
 
 
