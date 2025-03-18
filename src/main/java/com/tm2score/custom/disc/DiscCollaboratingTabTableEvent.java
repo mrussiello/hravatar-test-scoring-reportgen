@@ -84,7 +84,7 @@ public class DiscCollaboratingTabTableEvent implements PdfPTableEvent
             
             if( imageIcon!=null )
             {
-                imageIcon.setAbsolutePosition( 2, lly + hgt - imgHgt - 10 );        
+                imageIcon.setAbsolutePosition( 2, lly + hgt - imgHgt - 20 );        
                 pcb.addImage(imageIcon);   
             }
 

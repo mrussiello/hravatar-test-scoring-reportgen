@@ -1608,6 +1608,23 @@ public abstract class BaseDiscReportTemplate extends BaseCT2ReportTemplate imple
             c.setPadding( 2 );
             setRunDirection( c );
             touter.addCell(c);
+            
+            Paragraph par = new Paragraph();
+            Chunk chk = new Chunk( lmsg_spec("disc.reference.title") + ": ", this.fontSmall );
+            par.add(chk );
+            chk = new Chunk( lmsg_spec("disc.reference"), this.fontSmallItalic );
+            par.add(chk );
+            
+            c = new PdfPCell( par );
+            c.setBorder( Rectangle.NO_BORDER );
+            c.setHorizontalAlignment( Element.ALIGN_LEFT );
+            c.setVerticalAlignment( Element.ALIGN_TOP );
+            c.setBorderWidth( 0 );
+            c.setPadding( 2 );
+            setRunDirection( c );
+            touter.addCell(c);
+            
+            
 
             float ulY = currentYLevel - 6*PAD;  // 4* PAD;
             float tableHeight = touter.calculateHeights(); //  + 500;
