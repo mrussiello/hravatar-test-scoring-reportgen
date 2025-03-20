@@ -4,17 +4,10 @@
  */
 package com.tm2score.custom.disc;
 
-import com.tm2score.battery.BatteryScoreType;
-import com.tm2score.battery.BatteryType;
-import com.tm2score.entity.battery.Battery;
-import com.tm2score.entity.event.TestEvent;
-import com.tm2score.event.TestEventScoreType;
 import com.tm2score.format.*;
 import com.tm2score.global.I18nUtils;
-import com.tm2score.global.RuntimeConstants;
 import com.tm2score.global.STException;
 import com.tm2score.service.LogService;
-import com.tm2score.user.AssistiveTechnologyType;
 import com.tm2score.util.StringUtils;
 
 /**

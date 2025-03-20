@@ -2594,7 +2594,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             boolean includeNumScores = reportData.getReport().getIncludeSubcategoryNumeric()==1 && !reportData.getReportRuleAsBoolean("cmptynumoff");
             boolean includeStars = reportData.getReport().getIncludeSubcategoryCategory()==1;
-            boolean includeColorGraph = sft.getSupportsBarGraphic(reportData.getReport()) && reportData.getReport().getIncludeCompetencyColorScores()==1;
+            boolean includeColorGraph = sft.getSupportsBarGraphic(reportData.getReport()) && reportData.getReport().getIncludeCompetencyColorScores()==1 && !reportData.getReportRuleAsBoolean("cmptygrphoff");
 
             // if( sft!=null && !sft.getSupportsBarGraphic(reportData.getReport()) )
             //     includeColorGraph = false;
@@ -7501,7 +7501,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                 c.setPaddingTop( 10 );
                 setRunDirection( c );
 
-                if( scoreText != null && !scoreText.isEmpty() )
+                if( scoreText != null && !scoreText.isBlank() )
                     compT.addCell(c);
             }
 
