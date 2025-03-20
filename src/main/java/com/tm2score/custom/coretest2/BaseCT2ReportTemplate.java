@@ -709,7 +709,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
             // Next row - Text
             String scrTxt = null; //getTestEvent().getOverallTestEventScore().getScoreText();
 
-            if( !useScoreTextAsNumScore && ( hideOverallScoreText || reportData.getReport().getIncludeScoreText() != 1 )  )
+            if( !useScoreTextAsNumScore && ( hideOverallScoreText || reportData.getReport().getIncludeScoreText()!=1 )  )
                 scrTxt = null;
 
             else if( useRawOverallScore )
@@ -753,9 +753,35 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                         scrTxt="";
                     String stub = (String) CefrUtils.getCefrScoreInfoForOverall(reportData.getTestEvent(), reportData.getTestEvent().getTestEventScoreList())[1];
 
-                    String cefrScoreText = CefrUtils.getCefrScoreDescription(reportData.getLocale(), CefrScoreType.getFromText(cefrLevel), stub); // StringUtils.getBracketedArtifactFromString( tes.getTextParam1(), Constants.CEFRLEVELTEXT);
-                    if( cefrScoreText!=null && !cefrScoreText.isBlank() )
-                        scrTxt = lmsg("g.CefrEquivScoreText") + " " + cefrScoreText + (scrTxt.isBlank() ? "" : "\n\n" + lmsg("g.GeneralScoreText") + " " ) +  scrTxt;
+                    CefrScoreType cefrScoreType = CefrScoreType.getFromText(cefrLevel);
+                    
+                    if( cefrScoreType!=null )
+                    {
+                        if( reportData.equivSimJUtils!=null )
+                        {
+                            if( reportData.te.getSimXmlObj()==null )
+                            {
+                                if( reportUtils==null )
+                                    reportUtils  = new ReportUtils();
+
+                                reportUtils.loadTestEventSimXmlObject(reportData.te);
+                            }
+
+                            ScoreCategoryType cefrScoreCategoryType = CefrUtils.getCefrScoreCategoryType(reportData.te.getSimXmlObj(), cefrScoreType, reportData.getTestEvent().getScoreColorSchemeType() );
+                        
+                            String s = reportData.equivSimJUtils.getOverallScoreText( cefrScoreCategoryType.getScoreCategoryTypeId(), cefrScoreType.getNumericEquivalentScore( reportData.getTestEvent().getScoreColorSchemeType() ) );
+
+                            if( s!=null && !s.isBlank() )
+                            {
+                                LogService.logIt( "Found CEFR-Language-Equivalent Score Text=" + s );
+                                scrTxt = s;
+                            }       
+                        }
+                        
+                        String cefrScoreText = CefrUtils.getCefrScoreDescription(reportData.getLocale(), cefrScoreType, stub); // StringUtils.getBracketedArtifactFromString( tes.getTextParam1(), Constants.CEFRLEVELTEXT);
+                        if( cefrScoreText!=null && !cefrScoreText.isBlank() )
+                            scrTxt = lmsg("g.CefrEquivScoreText") + " " + cefrScoreText + (scrTxt.isBlank() ? "" : "\n\n" + lmsg("g.GeneralScoreText") + " " ) +  scrTxt;
+                    }
                 }
             }
 
@@ -7013,7 +7039,6 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
     {
         try
         {
-
             if( tesl.size() <= 0 )
                 return;
 
@@ -7235,8 +7260,27 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             if( cefrScoreType!=null )
             {
-                String cefrScoreText = CefrUtils.getCefrScoreTextForTes( reportData.getLocale(), tes );
+                if( reportData.equivSimJUtils!=null )
+                {
+                    if( reportData.te.getSimXmlObj()==null )
+                    {
+                        if( reportUtils==null )
+                            reportUtils  = new ReportUtils();
+
+                        reportUtils.loadTestEventSimXmlObject(reportData.te);
+                    }
+
+                    ScoreCategoryType cefrScoreCategoryType = CefrUtils.getCefrScoreCategoryType(reportData.te.getSimXmlObj(), cefrScoreType, reportData.getTestEvent().getScoreColorSchemeType() );
+
+                    String s = reportData.equivSimJUtils.getCompetencyScoreText( tes.getName(), tes.getNameEnglish(), cefrScoreCategoryType.getScoreCategoryTypeId(), cefrScoreType.getNumericEquivalentScore(reportData.getTestEvent().getScoreColorSchemeType()) );                            
+                    if( s!=null && !s.isBlank() )
+                    {
+                        LogService.logIt( "Found CEFR-Language-Equivalent COMPETENCY Score Text=" + s );
+                        scoreText = s;
+                    }       
+                }                                        
                 
+                String cefrScoreText = CefrUtils.getCefrScoreTextForTes( reportData.getLocale(), tes );                
                 if( cefrScoreText!=null && !cefrScoreText.isBlank() )
                 {
                     // cefrScoreText = tctrans( cefrScoreText, false);                    

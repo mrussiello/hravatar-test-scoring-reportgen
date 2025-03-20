@@ -994,7 +994,6 @@ public class ReportData
         catch( Exception e )
         {
             LogService.logIt( e, "ReportData.getReportOverviewText() Decoding " + s );
-            
             return s;
         }
     }

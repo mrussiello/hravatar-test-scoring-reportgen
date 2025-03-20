@@ -1,5 +1,6 @@
 package com.tm2score.custom.coretest2.cefr;
 
+import com.tm2score.event.ScoreColorSchemeType;
 import com.tm2score.util.MessageFactory;
 import java.util.Locale;
 
@@ -86,6 +87,38 @@ public enum CefrScoreType
         return UNKNOWN;
     }
 
+    
+    public float getNumericEquivalentScore( ScoreColorSchemeType scst )
+    {
+        if( scst.getIsSevenColor() )
+        {
+            return switch (cefrScoreTypeId) {
+                case 0 -> 10;
+                case 1 -> 10;
+                case 2 -> 21;
+                case 3 -> 36;
+                case 4 -> 51;
+                case 5 -> 66;
+                case 6 -> 81;
+                case 7 -> 91;
+                default -> 10;
+            };
+        }
+
+        // five colors (used in advanced tests.
+        return switch (cefrScoreTypeId) {
+            case 0 -> 10;
+            case 1 -> 11;
+            case 2 -> 10;
+            case 3 -> 10;
+            case 4 -> 36;
+            case 5 -> 51;
+            case 6 -> 66;
+            case 7 -> 81;
+            default -> 10;
+        };
+
+    }
 
     public int getCefrScoreTypeId()
     {

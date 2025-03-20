@@ -173,6 +173,8 @@ public class SimJUtils {
         if( sct == null )
             return null;
         
+        if( sct.equals( ScoreCategoryType.WHITE ) )
+            return UrlEncodingUtils.decodeKeepPlus(simJ.getWhitetext() );
         if( sct.equals( ScoreCategoryType.GREEN ) )
             return UrlEncodingUtils.decodeKeepPlus(simJ.getGreentext() );
         if( sct.equals( ScoreCategoryType.YELLOWGREEN ) )
@@ -183,6 +185,8 @@ public class SimJUtils {
             return UrlEncodingUtils.decodeKeepPlus(simJ.getRedyellowtext() );
         if( sct.equals( ScoreCategoryType.RED ) )
             return UrlEncodingUtils.decodeKeepPlus(simJ.getRedtext() );
+        if( sct.equals( ScoreCategoryType.BLACK ) )
+            return UrlEncodingUtils.decodeKeepPlus(simJ.getBlacktext() );
         
         return null;        
     }
@@ -239,6 +243,8 @@ public class SimJUtils {
         if( sct == null )
             return null;
         
+        if( sct.equals( ScoreCategoryType.WHITE ) )
+            return UrlEncodingUtils.decodeKeepPlus(sc.getWhitetext());
         if( sct.equals( ScoreCategoryType.GREEN ) )
             return UrlEncodingUtils.decodeKeepPlus(sc.getGreentext());
         if( sct.equals( ScoreCategoryType.YELLOWGREEN ) )
@@ -249,6 +255,8 @@ public class SimJUtils {
             return UrlEncodingUtils.decodeKeepPlus(sc.getRedyellowtext());
         if( sct.equals( ScoreCategoryType.RED ) )
             return UrlEncodingUtils.decodeKeepPlus(sc.getRedtext());
+        if( sct.equals( ScoreCategoryType.BLACK ) )
+            return UrlEncodingUtils.decodeKeepPlus(sc.getBlacktext());
         
         return null;
     }

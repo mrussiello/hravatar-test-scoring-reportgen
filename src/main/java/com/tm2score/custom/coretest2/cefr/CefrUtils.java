@@ -7,11 +7,14 @@ package com.tm2score.custom.coretest2.cefr;
 import com.tm2builder.sim.xml.SimJ;
 import com.tm2score.entity.event.TestEvent;
 import com.tm2score.entity.event.TestEventScore;
+import com.tm2score.event.ScoreCategoryType;
+import com.tm2score.event.ScoreColorSchemeType;
 import com.tm2score.global.Constants;
 import com.tm2score.score.iactnresp.ScorableResponse;
 import com.tm2score.score.simcompetency.SimCompetencyScore;
 import com.tm2score.service.LogService;
 import com.tm2score.util.StringUtils;
+import com.tm2score.util.UrlEncodingUtils;
 import java.util.List;
 import java.util.Locale;
 
@@ -25,6 +28,113 @@ public class CefrUtils
     {
         return cefrScoreType.getDescription(locale, stub);
     }
+    
+    
+    public static ScoreCategoryType getCefrScoreCategoryType( SimJ simJ, CefrScoreType cefrScoreType, ScoreColorSchemeType scst )
+    {
+        float scaledScore = cefrScoreType.getNumericEquivalentScore( scst );
+
+        if( scst.getIsSevenColor() && scaledScore >= simJ.getWhitemin() )
+            return ScoreCategoryType.WHITE;
+
+        else if( scaledScore >= simJ.getGreenmin() )
+            return ScoreCategoryType.GREEN;
+
+        else if( scst.getIsFiveOrSevenColor() && scaledScore >= simJ.getYellowgreenmin() )
+            return ScoreCategoryType.YELLOWGREEN;
+
+        else if( scaledScore >= simJ.getYellowmin() )
+            return ScoreCategoryType.YELLOW;
+
+        else if( scst.getIsFiveOrSevenColor() && scaledScore >= simJ.getRedyellowmin() )
+            return ScoreCategoryType.REDYELLOW;
+
+        else if( scst.getIsSevenColor() && scaledScore >= simJ.getRedmin() )
+            return ScoreCategoryType.RED;
+
+        else if( scst.getIsSevenColor()  )
+            return ScoreCategoryType.BLACK;
+
+       return ScoreCategoryType.RED;
+    }
+    
+    public static String getGeneralOverallScoreTextForCefrScore( SimJ simJ, CefrScoreType cefrScoreType, ScoreColorSchemeType scst )
+    {
+        if( simJ == null )
+            return null;
+
+        String t = "";
+
+        float scaledScore = cefrScoreType.getNumericEquivalentScore( scst );
+
+        if( scst.getIsSevenColor() && scaledScore >= simJ.getWhitemin() )
+            t += UrlEncodingUtils.decodeKeepPlus( simJ.getWhitetext() == null ? "" : simJ.getWhitetext() );
+
+        else if( scaledScore >= simJ.getGreenmin() )
+            t += UrlEncodingUtils.decodeKeepPlus( simJ.getGreentext() == null ? "" : simJ.getGreentext() );
+
+        else if( scst.getIsFiveOrSevenColor() && scaledScore >= simJ.getYellowgreenmin() )
+            t +=  UrlEncodingUtils.decodeKeepPlus( simJ.getYellowgreentext() == null ? "" : simJ.getYellowgreentext() );
+
+        else if( scaledScore >= simJ.getYellowmin() )
+            t +=  UrlEncodingUtils.decodeKeepPlus( simJ.getYellowtext()==null ? "" : simJ.getYellowtext() );
+
+        else if( scst.getIsFiveOrSevenColor() && scaledScore >= simJ.getRedyellowmin() )
+            t +=  UrlEncodingUtils.decodeKeepPlus( simJ.getRedyellowtext() == null ? "" : simJ.getRedyellowtext() );
+
+        else if( scst.getIsSevenColor() && scaledScore >= simJ.getRedmin() )
+            t += UrlEncodingUtils.decodeKeepPlus( simJ.getRedtext() == null ? "" : simJ.getRedtext() );
+
+        else if( scst.getIsSevenColor()  )
+            t += UrlEncodingUtils.decodeKeepPlus( simJ.getBlacktext() == null ? "" : simJ.getBlacktext() );
+
+        else
+            t +=  UrlEncodingUtils.decodeKeepPlus( simJ.getRedtext() == null ? "" : simJ.getRedtext() );
+
+       return t;
+    }
+
+    public static String getGeneralSimCompetencyScoreTextForCefrScore( SimJ.Simcompetency simCompetencyObj, CefrScoreType cefrScoreType, ScoreColorSchemeType scst )
+    {
+        if( simCompetencyObj == null )
+            return null;
+
+        String t = "";
+
+        float scaledScore = cefrScoreType.getNumericEquivalentScore( scst );
+
+        if( simCompetencyObj.getHighcliffmin()> 0 && simCompetencyObj.getHighclifflevel()>0 && scaledScore >= simCompetencyObj.getHighcliffmin() )
+            t += UrlEncodingUtils.decodeKeepPlus( simCompetencyObj.getHighclifftext() == null ? "" : simCompetencyObj.getHighclifftext() );
+
+        else if( scst.getIsSevenColor() && scaledScore >= simCompetencyObj.getWhitemin() )
+            t += UrlEncodingUtils.decodeKeepPlus( simCompetencyObj.getWhitetext() == null ? "" : simCompetencyObj.getWhitetext() );
+
+        else if( scaledScore >= simCompetencyObj.getGreenmin() )
+            t += UrlEncodingUtils.decodeKeepPlus( simCompetencyObj.getGreentext() == null ? "" : simCompetencyObj.getGreentext() );
+
+        else if( scst.getIsFiveOrSevenColor() && scaledScore >= simCompetencyObj.getYellowgreenmin() )
+            t +=  UrlEncodingUtils.decodeKeepPlus( simCompetencyObj.getYellowgreentext() == null ? "" : simCompetencyObj.getYellowgreentext() );
+
+        else if( scaledScore >= simCompetencyObj.getYellowmin() )
+            t +=  UrlEncodingUtils.decodeKeepPlus( simCompetencyObj.getYellowtext()==null ? "" : simCompetencyObj.getYellowtext() );
+
+        else if( scst.getIsFiveOrSevenColor() && scaledScore >= simCompetencyObj.getRedyellowmin() )
+            t +=  UrlEncodingUtils.decodeKeepPlus( simCompetencyObj.getRedyellowtext() == null ? "" : simCompetencyObj.getRedyellowtext() );
+
+        else if( scst.getIsSevenColor() && scaledScore >= simCompetencyObj.getRedmin() )
+            t += UrlEncodingUtils.decodeKeepPlus( simCompetencyObj.getRedtext() == null ? "" : simCompetencyObj.getRedtext() );
+
+        else if( scst.getIsSevenColor()  )
+            t += UrlEncodingUtils.decodeKeepPlus( simCompetencyObj.getBlacktext() == null ? "" : simCompetencyObj.getBlacktext() );
+
+        else
+            t +=  UrlEncodingUtils.decodeKeepPlus( simCompetencyObj.getRedtext() == null ? "" : simCompetencyObj.getRedtext() );
+
+       return t;
+    }
+
+    
+    
     
     /*
      Returns 

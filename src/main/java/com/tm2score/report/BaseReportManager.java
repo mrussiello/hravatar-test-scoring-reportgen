@@ -1016,7 +1016,7 @@ public class BaseReportManager {
 
             Date procStart = new Date();
 
-            // LogService.logIt("ReportManager.generateLanguageEquivReport() reportId = " + reportId + ", TestEvent=" + te.getTestEventId() + ", langEquivSimId=" + langEquivSimId + ", langEquivReportId=" + langEquivReportId );
+            LogService.logIt("ReportManager.generateLanguageEquivReport() reportId = " + reportId + ", TestEvent=" + te.getTestEventId() + ", langEquivSimId=" + langEquivSimId + ", langEquivReportId=" + langEquivReportId );
 
             if( eventFacade == null )
                 eventFacade = EventFacade.getInstance();

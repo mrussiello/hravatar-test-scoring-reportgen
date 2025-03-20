@@ -51,6 +51,7 @@ import com.tm2score.score.ComboSimCompetencyScoreUtils;
 import com.tm2score.score.MergableScoreObject;
 import com.tm2score.score.MergableScoreObjectCombiner;
 import com.tm2score.report.ReportRules;
+import com.tm2score.report.SampleReportUtils;
 import com.tm2score.score.iactnresp.ScorableResponse;
 import com.tm2score.score.ScoreManager;
 import com.tm2score.score.ScoreUtils;
@@ -1557,7 +1558,13 @@ public class BaseTestEventScorer
                      textParam1 += "[" + Constants.CEFRLEVEL + "]" + st.getTextVal();
                      textParam1 += "[" + Constants.CEFRLEVELTEXT + "]" + CefrUtils.getCefrScoreDescription( simLocale, st, stub );
                      otes.setTextParam1(textParam1);
-                     eventFacade.saveTestEventScore(otes);
+                     
+                    String scrTxt = CefrUtils.getGeneralOverallScoreTextForCefrScore(te.getSimXmlObj(), st, scoreColorSchemeType);
+                    String scrFmt = I18nUtils.getFormattedNumber( Locale.US , st.getNumericEquivalentScore(scoreColorSchemeType), 1 );
+                    scrTxt  = performStandardSubstitutions( scrTxt, scrFmt );
+                    otes.setScoreText( scrTxt );                     
+                    eventFacade.saveTestEventScore(otes);
+                     
                  }
             }
         }
@@ -2090,6 +2097,15 @@ public class BaseTestEventScorer
                 cefrType = CefrType.getValue(scs.getSimCompetencyObj().getCefr());
                 cefrScoreType = CefrUtils.getCefrScoreTypeForSimCompetency(te, scs);
                 LogService.logIt( "BaseTestEventScorer.setCompetencyTestEventScores() BBB.5 cefrType=" + (cefrType==null ? "null" : cefrType.getName()) + ", cefrScoreType=" + (cefrScoreType==null ? "null" : cefrScoreType.getName()) ); 
+            
+                // Overwrite the score text in this situation.
+                if( cefrType!=null && cefrScoreType!=null && cefrScoreType.getCefrScoreTypeId()>0 )
+                {
+                    scrTxt =  CefrUtils.getGeneralSimCompetencyScoreTextForCefrScore(scs.getSimCompetencyObj(), cefrScoreType, scoreColorSchemeType); // scs.getScoreText( scoreColorSchemeType );
+                    scrFmt = I18nUtils.getFormattedNumber( Locale.US , cefrScoreType.getNumericEquivalentScore(scoreColorSchemeType), 0 );
+                    scrTxt  = performStandardSubstitutions( scrTxt, scrFmt );
+                    tes.setScoreText( scrTxt );
+                }
             }
 
             String cvs = "";
@@ -2566,8 +2582,8 @@ public class BaseTestEventScorer
             // for overall
             Map<String,Object> norm = getPercentile(te.getProductId(), te.getProduct().getIntParam24(), te, tes, te.getOrgId(), cc);
 
-            float percentile = norm==null ? -1 :  ((Float)norm.get("percentile")).floatValue();
-            int pcount = norm==null ? 0 : ((Integer)norm.get("count")).intValue();
+            var percentile = norm==null ? -1 :  ((Float)norm.get("percentile"));
+            int pcount = norm==null ? 0 : ((Integer)norm.get("count"));
 
             // LogService.logIt( "BaseTestEventScorer Overall Percentiles: " + percentile + "-" + pcount );
 
@@ -2597,8 +2613,8 @@ public class BaseTestEventScorer
             {
                 // For the Org
                 // norm = getPercentile(te.getProductId(), te, tes, te.getOrgId(), null);
-                percentile = norm==null ? -1 : ((Float)norm.get("percentileorg")).floatValue();
-                pcount = norm==null ? 0 : ((Integer)norm.get("countorg")).intValue();
+                percentile = norm==null ? -1 : ((Float)norm.get("percentileorg"));
+                pcount = norm==null ? 0 : ((Integer)norm.get("countorg"));
 
                 tes.setAccountPercentile( percentile );
                 te.setAccountPercentile( percentile );
@@ -2620,8 +2636,8 @@ public class BaseTestEventScorer
                 //    norm.put( "count" , new Integer(0)) ;
                 //}
 
-                percentile = norm==null ? -1 : ((Float)norm.get("percentilecc")).floatValue();
-                pcount = norm==null ? 0 : ((Integer)norm.get("countcc")).intValue();
+                percentile = norm==null ? -1 : ((Float)norm.get("percentilecc"));
+                pcount = norm==null ? 0 : ((Integer)norm.get("countcc"));
 
                 tes.setCountryPercentile( percentile );
                 te.setCountryPercentile( percentile );
