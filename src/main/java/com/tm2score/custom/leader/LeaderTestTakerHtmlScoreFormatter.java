@@ -16,7 +16,7 @@ import com.tm2score.util.StringUtils;
  */
 public class LeaderTestTakerHtmlScoreFormatter extends BaseScoreFormatter implements ScoreFormatter
 {
-    public static String HEADER_IMAGE_URL = "https://cdn.hravatar.com/web/orgimage/zrWvh1uNWrg-/img_11x1742479112742.jpg";
+    public static String HEADER_IMAGE_URL = "https://cdn.hravatar.com/web/orgimage/zrWvh1uNWrg-/img_11x1742479112742.png";
 
     public LeaderTestTakerHtmlScoreFormatter()
     {

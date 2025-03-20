@@ -23,7 +23,7 @@ import com.tm2score.util.StringUtils;
  */
 public class DiscTestTakerHtmlScoreFormatter extends BaseScoreFormatter implements ScoreFormatter
 {
-    public static String HEADER_IMAGE_URL = "https://cdn.hravatar.com/web/orgimage/zrWvh1uNWrg-/img_10x1742475075130.jpg";
+    public static String HEADER_IMAGE_URL = "https://cdn.hravatar.com/web/orgimage/zrWvh1uNWrg-/img_10x1742475075130.png";
 
     public DiscTestTakerHtmlScoreFormatter()
     {
