@@ -105,8 +105,7 @@ public class BaseScoreFormatter
     public static String WORD_ICON_URL = "https://cdn.hravatar.com/web/orgimage/zrWvh1uNWrg-/img_8x1517691502892.png";
     public static String PDF_ICON_URL = "https://cdn.hravatar.com/web/orgimage/zrWvh1uNWrg-/img_6x1517691501742.png";
     public static String IMAGE_ICON_URL = "https://cdn.hravatar.com/web/orgimage/zrWvh1uNWrg-/img_9x1517693458213.png";
-
-
+    
 
 
     // DO NOT MAKE STATIC - changed by
@@ -549,6 +548,8 @@ public class BaseScoreFormatter
         s = StringUtils.replaceStr(s, "[CANDIDATE]" , tk.getUser() != null && tk.getUser().getUserType().getNamedUserIdUsername() ? n : MessageFactory.getStringMessage(locale, "g.Candidate" )  );
         s = StringUtils.replaceStr(s, "[EMPLOYEE]" , tk.getUser() != null && tk.getUser().getUserType().getNamedUserIdUsername() ? n : MessageFactory.getStringMessage(locale, "g.Employee" )  );
         s = StringUtils.replaceStr(s, "[DEPARTMENT]" , tk.getUser()!=null&& tk.getSuborgId()>0 && tk.getSuborg()!= null ? tk.getSuborg().getName() : MessageFactory.getStringMessage(locale, "g.NA" )  );
+        s = StringUtils.replaceStr(s, "[EXTREFERENCE]" , tk.getExtRef()==null || tk.getExtRef().isBlank() ? "" : tk.getExtRef()  );
+        s = StringUtils.replaceStr(s, "[COMPLETEDATE]" , I18nUtils.getFormattedDate(locale, te==null || te.getLastAccessDate()==null ? tk.getLastAccessDate() : te.getLastAccessDate(), DateFormat.MEDIUM )  );
         s = StringUtils.replaceStr(s, "[TEXT]" , tk.getBatteryProduct()!=null ? tk.getBatteryProduct().getName() : ( te==null ? tk.getTestEventList().get(0).getProduct().getName() : te.getProduct().getName() )  );
 
         return s;
@@ -735,6 +736,14 @@ public class BaseScoreFormatter
     }
 
 
+    protected String getRowHeaderImage( String imgUrl, int maxWid )
+    {
+        if( maxWid<=0 )
+            maxWid=800;
+        
+        return "<tr><td colspan=\"7\" style=\"text-align:center\"><img src=\"" + imgUrl + "\" style=\"display-inline-block;width:100%;max-width:" + maxWid + "px\"/></td></tr>\n";
+    }
+    
     protected String getRow( String style, String label, String value, String value2, String value3, boolean bold  )
     {
          return "<tr " + style + "><td style=\"width:20px\"></td><td " + ( bold ? "style=\"font-weight:bold;vertical-align:top\"" : "style=\"font-weight:normal;vertical-align:top\"" ) + ">" + label + "</td><td " + ( bold ? "style=\"font-weight:bold\"" : "" ) + ">" + value + "</td><td " + ( bold ? "style=\"font-weight:bold\"" : "" ) + ">" + value2 + "</td><td colspan=\"3\"" + ( bold ? "font-weight:bold" : "" ) +  "\">" + value3 + "</td></tr>\n";

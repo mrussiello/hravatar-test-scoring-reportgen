@@ -522,7 +522,8 @@ public abstract class BaseDiscReportTemplate extends BaseCT2ReportTemplate imple
                 LogService.logIt( "BaseDiscReportTemplate.addFooterBar() footerImageIndex=" + footerImageIndex + ", footerImageUri=" + footerImageUri + ", footerImage=" + (footerImage!=null) );
                 if( footerImage !=null )
                 {
-                    footerImage.scalePercent(7);
+                    footerImage.scalePercent(21.875f);
+                    // footerImage.scalePercent(7);
                     // ITextUtils.addDirectImage( pdfWriter, footerImage, pageWidth-footerImage.getScaledWidth() + 1, 19, false );
                 }
 

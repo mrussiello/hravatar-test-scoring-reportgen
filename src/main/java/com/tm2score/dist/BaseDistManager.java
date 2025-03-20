@@ -954,7 +954,7 @@ public class BaseDistManager {
                 if( addLimitedAccessLinkInfo==1 )
                     limitedAccessLink = findCreateLimitedAccessLinkForEmailAndTestEventId( email, tk.getTestKeyId(), tk.getOrgId() );
                 
-                contentToUse =  sb.toString(); //limitedAccessLink==null ? conten
+                contentToUse = sb.toString(); //limitedAccessLink==null ? conten
 
                 if( limitedAccessLink!=null )
                 {
