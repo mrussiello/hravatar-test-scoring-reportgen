@@ -84,10 +84,10 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
 
     protected SimCompetencyClass simCompetencyClass;
 
-    protected int totalCorrect = 0;
+    protected float totalCorrect = 0;
     //protected int totalCorrectCountAdjusted = 0;
 
-    protected int totalScorableItems = 0;
+    protected float totalScorableItems = 0;
     //protected int totalScorableItemsCountAdjusted = 0;
 
     protected List<TextAndTitle> itemScoreTextAndTitleList;
@@ -1503,7 +1503,7 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
                     String temp;
 
                     if( getTotalScorableItems() > 1 )
-                        temp = MessageFactory.getStringMessage( locale , "g.EssayPlagiarizedXofY" , new String[]{ Integer.toString( plagiarizedCount ), Integer.toString( getTotalScorableItems() ) } );
+                        temp = MessageFactory.getStringMessage( locale , "g.EssayPlagiarizedXofY" , new String[]{ Integer.toString( plagiarizedCount ), Integer.toString( (int)getTotalScorableItems() ) } );
                     else
                         temp = MessageFactory.getStringMessage( locale , "g.EssayPlagiarized" , null );
 
@@ -2006,7 +2006,7 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
         return simCompetencyObj;
     }
 
-    public int getTotalScorableItems() {
+    public float getTotalScorableItems() {
         return totalScorableItems;
     }
 
@@ -2039,7 +2039,7 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
         caveatList = cl;
     }
 
-    public int getTotalCorrect() {
+    public float getTotalCorrect() {
         return totalCorrect;
     }
 

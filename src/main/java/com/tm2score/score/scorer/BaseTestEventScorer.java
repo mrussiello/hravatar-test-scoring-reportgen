@@ -2000,7 +2000,7 @@ public class BaseTestEventScorer
 
                 tes.setFractionUsed( scs.getFractionScoreValue() );
                 tes.setTotalUsed( scs.getTotalScoreValue() );
-                tes.setScorableItemResponses( scs.getTotalScorableItems() );
+                tes.setScorableItemResponses( (int) scs.getTotalScorableItems() );
 
                 tes.setMean( scs.getSimCompetencyObj().getMean() );
                 tes.setStdDeviation( scs.getSimCompetencyObj().getStddeviation() );

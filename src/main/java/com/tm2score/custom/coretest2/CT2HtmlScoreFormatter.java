@@ -489,7 +489,7 @@ public class CT2HtmlScoreFormatter extends BaseScoreFormatter implements ScoreFo
         out[0] = "";
         out[1] = toggle;
 
-        boolean tog = toggle;
+        boolean tog = false; // toggle;
 
         try
         {
@@ -522,32 +522,6 @@ public class CT2HtmlScoreFormatter extends BaseScoreFormatter implements ScoreFo
 
                 boolean overallTimeout = otes.getIntParam1()>0;
 
-                // title Row
-                /*
-                if( showNumeric && showColorGraph && showStarRating )
-                    sb.append( getRowTitle( rowStyleHdr, lmsg(  "g.OverallResults" , null ), lmsg(  "g.Score" , null ), lmsg(  "g.Interpretation" ), lmsg(  this.useRatingAndColors() ? "g.Rating" : "g.JobMatch" , null ) ) );
-
-                else if( showNumeric && showColorGraph )
-                    sb.append( getRowTitle( rowStyleHdr, lmsg(  "g.OverallResults" , null ), lmsg(  "g.Score" , null ), lmsg(  "g.Interpretation" ), null ) );
-
-                else if( showNumeric && showStarRating )
-                    sb.append( getRowTitle( rowStyleHdr, lmsg(  "g.OverallResults" , null ), lmsg(  "g.Score" , null ), "", lmsg(  this.useRatingAndColors() ? "g.Rating" : "g.JobMatch" , null ) ) );
-
-                else if( showColorGraph && showStarRating )
-                    sb.append( getRowTitle( rowStyleHdr, lmsg(  "g.OverallResults" , null ), "", lmsg(  "g.Interpretation" ), lmsg(  this.useRatingAndColors() ? "g.Rating" : "g.JobMatch" , null ) ) );
-
-                else if( showNumeric  )
-                    sb.append( getRowTitle( rowStyleHdr, lmsg(  "g.OverallResults" , null ), lmsg(  "g.Score" , null ), null, null ) );
-
-                else if( showColorGraph  )
-                    sb.append( getRowTitle( rowStyleHdr, lmsg(  "g.OverallResults" , null ), "", lmsg(  "g.Interpretation" ), null ) );
-
-                else if( showStarRating )
-                    sb.append( getRowTitle( rowStyleHdr, lmsg(  "g.OverallResults" , null ), "", "", lmsg(  this.useRatingAndColors() ? "g.Rating" : "g.JobMatch" , null ) ) );
-
-                else
-                    sb.append( getRowTitle( rowStyleHdr, lmsg(  "g.OverallResults" , null ), "", "", null ) );
-                */
                 String earlyExitStr = StringUtils.getBracketedArtifactFromString( getTestEvent().getTextStr1(), Constants.EARLYEXITBATTERYKEY );
                 if( earlyExitStr!=null )
                     earlyExitStr = BatteryScoringUtils.getEarlyExitWarningMessage( getLocale(), earlyExitStr );
@@ -568,14 +542,6 @@ public class CT2HtmlScoreFormatter extends BaseScoreFormatter implements ScoreFo
 
                 String style = tog ? rowStyle1 : rowStyle2;
                 String value; //  =  isIncludeNumeric() ? I18nUtils.getFormattedNumber(locale, getTestEvent().getOverallScore(), getTestEvent().getScorePrecisionDigits() ) : "";
-
-                //boolean useRawOverallScore =
-                //        getOrg().getShowOverallRawScore()==1 &&
-                 //   getTestEvent().getOverallTestEventScore()!=null &&
-                 //   getTestEvent().getOverallTestEventScore().getRawScore()>=0 &&
-                 //   getTestEvent().getProduct()!=null &&
-                //    getTestEvent().getProductTypeId()==ProductType.SIM.getProductTypeId() &&
-                //    getTestEvent().getProduct().getConsumerProductTypeId()==ConsumerProductType.ASSESSMENT_JOBSPECIFIC.getConsumerProductTypeId();
 
                 int scrDigits = getReport().getIntParam2() >= 0 ? getReport().getIntParam2() : getTestEvent().getScorePrecisionDigits();
 

@@ -41,10 +41,10 @@ public class SimletCompetencyScore
 
     protected float totalPoints = 0;
 
-    protected int totalCorrect = 0;
-    protected int totalCorrectCountAdjusted = 0;
+    protected float totalCorrect = 0;
+    protected float totalCorrectCountAdjusted = 0;
 
-    protected int totalScorableItems = 0;
+    protected float totalScorableItems = 0;
     protected float totalScorableItemsCountAdjusted = 0;
 
     protected int totalValidScorableItems = 0;
@@ -751,7 +751,7 @@ public class SimletCompetencyScore
             if( competencyScoreObj.getDichotomousscoretypeid() == DichotomousScoreType.TOTAL_ITEMS.getDichotomousScoreTypeId() )
                 totalScorableItems = competencyScoreObj.getTotalitems() >= totalCorrect ? competencyScoreObj.getTotalitems() : totalCorrect;
 
-            if( totalScorableItems>0 && totalScorableItemsCountAdjusted>0 && totalScorableItems!=(int)totalScorableItemsCountAdjusted && Math.abs( ((float)totalScorableItems)-totalScorableItemsCountAdjusted)>0.2f)
+            if( totalScorableItems>0 && totalScorableItemsCountAdjusted>0 && totalScorableItems!=(int)totalScorableItemsCountAdjusted && Math.abs( totalScorableItems-totalScorableItemsCountAdjusted)>0.2f)
             {
                 LogService.logIt( "SimletCompetencyScore.calculateScore() Using totalCorrectCountAdjusted=" + totalCorrectCountAdjusted + " and totalScorableItemsCountAdjusted=" + totalScorableItemsCountAdjusted + " in fractionCorrect calculation. totalCorrect=" + totalCorrect + ", totalScorableItems=" + totalScorableItems + ", CompetencyScoreType=" + competencyScoreType.getName() );
                 fractionCorrect = totalCorrectCountAdjusted/totalScorableItemsCountAdjusted;
@@ -1160,11 +1160,11 @@ public class SimletCompetencyScore
         return totalPoints;
     }
 
-    public int getTotalCorrect() {
+    public float getTotalCorrect() {
         return totalCorrect;
     }
 
-    public int getTotalScorableItems() {
+    public float getTotalScorableItems() {
         return totalScorableItems;
     }
 
@@ -1229,7 +1229,7 @@ public class SimletCompetencyScore
         return itemScoreTextAndTitleList;
     }
 
-    public int getTotalCorrectCountAdjusted() {
+    public float getTotalCorrectCountAdjusted() {
         return totalCorrectCountAdjusted;
     }
 
