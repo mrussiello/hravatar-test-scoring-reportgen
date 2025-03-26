@@ -209,8 +209,9 @@ public class ScoredEssayIntnItem {
 
                 // boolean spellingOk = isSpellingOk();
 
-
-                if( equivWords>=minWords )
+                int wordAdj = Math.round(1.03f*((float)minWords));
+                
+                if( equivWords>=(minWords-wordAdj) )
                 {
                     // LogService.logIt( "ScoredEssayIntnItem.calculate() AAA testEventId=" + testEventId);
                     
