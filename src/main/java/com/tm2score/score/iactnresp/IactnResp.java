@@ -17,7 +17,6 @@ import com.tm2score.imo.xml.Clicflic;
 import com.tm2score.interview.InterviewQuestion;
 import com.tm2builder.sim.xml.SimJ;
 import com.tm2score.ct5.Ct5ItemType;
-import com.tm2score.ct5.Ct5MultipleChoiceFormatType;
 import com.tm2score.global.Constants;
 import com.tm2score.global.I18nUtils;
 import com.tm2score.ivr.IvrStringUtils;

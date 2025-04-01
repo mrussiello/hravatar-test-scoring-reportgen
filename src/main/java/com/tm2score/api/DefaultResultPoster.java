@@ -173,66 +173,13 @@ public class DefaultResultPoster implements ResultPoster {
                     }
                     
                     if( status<200 || status>=300 )
-                        throw new IOException( "IpUtils.getIPLocationData() statusCode="+ status + ", reason=" + response.getReasonPhrase() );
+                        throw new IOException( "DefaultResultPoster.postTestResults() statusCode="+ status + ", reason=" + response.getReasonPhrase() );
                     
                     if( entity2!=null )
                         EntityUtils.consume(entity2);
                                         
                     return null;
                     });
-
-                    // statusCode = r.getCode();
-
-                    //if( statusCode == 307 )
-                    //{
-                    //    String location = null;
-                    //    Header[] hdrs = r.getHeaders("Location" );
-
-                    //    for( Header h : hdrs )
-                    //    {
-                    //       location = h.getValue();                        
-                    //        if( location!=null && !location.isBlank() )
-                    //            break;
-                    //    }
-
-                    //    LogService.logIt( "DefaultResultPoster.postTestResults() Method failed with Temp Redirect: " + r.getReasonPhrase() + ", url=" + url + ", testKeyId=" + testKey.getTestKeyId() + ", location hdr=" + location );
-
-                    //    if( location!=null && !location.isBlank() )
-                    //    {
-                    //        post = new HttpPost( location );
-
-                    //        post.setHeader( HttpHeaders.CONTENT_TYPE, "application/xml");
-
-                    //        if( basicAuthCreds != null && basicAuthCreds.size()>= 2 )
-                    //        {
-                    //            String un = basicAuthCreds.get( "username" );
-                    //            String pwd = basicAuthCreds.get( "password" );
-                    //            String b6 = Base64Encoder.encodeString( un + ":" + pwd );
-                    //            post.setHeader( "Authorization", "Basic " + b6  );
-                    //        }
-
-                    //        post.setEntity( new StringEntity(payload) );
-                    //        try( CloseableHttpResponse rr = client.execute( post ) )
-                    //        {
-                    //            // r = client.execute( post );
-                   //             statusCode = rr.getCode();                        
-                    //            LogService.logIt( "DefaultResultPoster.postTestResults() Redirect to " + location + " returned status=" + rr.getReasonPhrase() + ", testKeyId=" + testKey.getTestKeyId() );                        
-                    //            if( rr.getEntity()!=null )
-                    //                EntityUtils.consume(rr.getEntity());
-                    //        }
-                    //    }                    
-                    //}
-
-
-                    //else if( !isStatusCodeOk( statusCode ) )
-                    //{
-                    //    // String payloadTrunc = payload!=null && payload.length()>2000 ? payload.substring(0, 2000 ) : payload;
-
-                    //    LogService.logIt( "DefaultResultPoster.postTestResults() FFF.1 POST Method failed: " + r.getReasonPhrase() + ", url=" + url + ", testKeyId=" + testKey.getTestKeyId() );
-                     //   TestEventLogUtils.createTestKeyLogEntry( testKey.getTestKeyId(), 0, 0, "DefaultResultPoster.postTestResults() Method failed with status line: " + r.getReasonPhrase() + ", url=" + url, null, null );                    
-                     //   EmailUtils.getInstance().sendEmailToAdmin( "DefaultResultPoster.postTestResults() Result Post Failure. HTTP Status Code=" + statusCode + ", status line=" + r.getReasonPhrase(), "url=" + url + ", TestKeyId=" + testKey.getTestKeyId() + "\npayload=" + (payload==null ? "null" : payload ) );
-                    //    throw new ScoringException( "DefaultResultPoster.postTestResults() HTTP POST failed: " + r.getReasonPhrase() + ", url=" + url + ", testKeyId=" + testKey.getTestKeyId(),ScoringException.NON_PERMANENT,this.testKey);
-                    //}
 
                     //else
                     TestEventLogUtils.createTestKeyLogEntry( testKey.getTestKeyId(), 0, 2, "DefaultResultPoster.postTestResults() Result Post Succeeded. url=" + url, null, null );                    

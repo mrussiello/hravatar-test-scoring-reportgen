@@ -137,6 +137,8 @@ public class NumberUtils
         // First try locale.
         try
         {
+            
+            
             NumberFormat fmt = NumberFormat.getInstance( Locale.US );
 
             fmt.setRoundingMode( RoundingMode.HALF_UP );

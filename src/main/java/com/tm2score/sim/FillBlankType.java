@@ -3,6 +3,7 @@ package com.tm2score.sim;
 import com.tm2score.global.NumberUtils;
 import com.tm2score.service.LogService;
 import com.tm2score.util.StringUtils;
+import java.text.NumberFormat;
 import java.util.Locale;
 
 
@@ -99,6 +100,24 @@ public enum FillBlankType
 
                 inValue = inValue.trim();
 
+                try
+                {
+                    if( locale==null )
+                        locale=Locale.US;
+                    NumberFormat numberFormat = NumberFormat.getIntegerInstance(locale);
+                    int inpInt = numberFormat.parse(inValue).intValue();
+                    int keyInt = numberFormat.parse(matchValue).intValue();
+
+                    if( ( equals(INTEGER_POSITIVE) || equals( WHOLE ) ) && inpInt<0 )
+                        return false;                
+
+                    return inpInt==keyInt;        
+                }
+                catch( Exception e )
+                {
+                    LogService.logIt(e, "FillBlankType.valuesMatch() formatType=" + this.name() + ", Using other method. inValue=" + inValue + ", matchValue=" + matchValue + ", locale=" + locale.toString() );
+                }
+                               
                 int mv = NumberUtils.parseIntegerInputStr( Locale.US, matchValue ); //  Integer.parseInt( matchValue );
 
                 int iv = NumberUtils.parseIntegerInputStr( Locale.US, inValue ); //  Integer.parseInt( inValue );
@@ -109,11 +128,29 @@ public enum FillBlankType
                 return mv==iv;
             }
 
-            else if( equals( FLOAT ) || equals( FLOAT_POSITIVE ) || equals( CURRENCY ) || equals( PERCENT ) )
+            else if( equals( FLOAT ) || equals( FLOAT_POSITIVE ) )
             {
                 inValue = StringUtils.removeCurrencyPercentSymbols( inValue );
                 inValue = inValue.trim();
 
+                try
+                {
+                    if( locale==null )
+                        locale=Locale.US;
+                    NumberFormat numberFormat = NumberFormat.getNumberInstance(locale);
+                    float inpFloat = numberFormat.parse(inValue).floatValue();
+                    float keyFloat = numberFormat.parse(matchValue).floatValue();
+
+                    if( equals( FLOAT_POSITIVE ) && inpFloat<0 )
+                        return false;                
+                    
+                    return Math.abs(inpFloat - keyFloat) < 1e-5f;
+                }
+                catch( Exception e )
+                {
+                    LogService.logIt(e, "FillBlankType.valuesMatch() formatType=" + this.name() + ", Using other method. inValue=" + inValue + ", matchValue=" + matchValue + ", locale=" + locale.toString() );
+                }
+                
                 
                 float mv = NumberUtils.parseFloatInputStr( Locale.US, matchValue ); // Float.parseFloat( matchValue );
 
@@ -125,6 +162,40 @@ public enum FillBlankType
                 return iv>=mv-0.0099f && iv<=mv + 0.0099;
             }
 
+            else if( equals( CURRENCY ) || equals( PERCENT ) )
+            {
+                inValue = StringUtils.removeCurrencyPercentSymbols( inValue );
+                inValue = inValue.trim();
+
+                try
+                {
+                    if( locale==null )
+                        locale=Locale.US;
+                    NumberFormat numberFormat = NumberFormat.getNumberInstance(locale);
+                    float inpFloat = numberFormat.parse(inValue).floatValue();
+                    float keyFloat = numberFormat.parse(matchValue).floatValue();
+
+                    if( equals( FLOAT_POSITIVE ) && inpFloat<0 )
+                        return false;                
+                    
+                    return Math.abs(inpFloat - keyFloat) < 1e-5f;
+                }
+                catch( Exception e )
+                {
+                    LogService.logIt(e, "FillBlankType.valuesMatch() formatType=" + this.name() + ", Using other method. inValue=" + inValue + ", matchValue=" + matchValue + ", locale=" + locale.toString() );
+                }
+                
+                
+                float mv = NumberUtils.parseFloatInputStr( Locale.US, matchValue ); // Float.parseFloat( matchValue );
+
+                float iv = NumberUtils.parseFloatInputStr( Locale.US, inValue ); // Float.parseFloat( inValue );
+
+                if( equals( FLOAT_POSITIVE ) && iv<0 )
+                    return false;                
+                
+                return iv>=mv-0.0099f && iv<=mv + 0.0099;
+            }
+            
             else if( equals( TENKEY_DATA_ENTRY_ONLY ) || equals( ALPHA_DATA_ENTRY_ONLY ) )
                 return inValue.trim().equals( matchValue.trim() );
 

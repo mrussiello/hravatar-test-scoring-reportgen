@@ -440,7 +440,7 @@ public class SimletCompetencyScore
             if( !sr.getUsesOrContributesPointsToSimletCompetency(this) ) //&& !sr.measuresSmltCompetency( competencyScoreObj.getId() ) )
             {
                 if( ScoreManager.DEBUG_SCORING )
-                    LogService.logIt( "SimletCompetencyScore.calculateScore() BBB.4 scorable response doesn't match competency id " + competencyScoreObj.getId() + ", competency=" + this.competencyScoreObj.getName() + ", " + sr.toString() );
+                    LogService.logIt( "SimletCompetencyScore.calculateScore() BBB.4 scorable response doesn't contribute to competency id " + competencyScoreObj.getId() + ", competency=" + this.competencyScoreObj.getName() + ", " + sr.toString() );
                 continue;
             }
 

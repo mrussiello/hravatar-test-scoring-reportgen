@@ -135,7 +135,7 @@ public class ItemResponse implements Comparable<ItemResponse>, Serializable
     @Column( name = "responsetime" )
     private float responseTime = 0;
 
-    // 0=response collected (0=wrong, 1=correct), --1 means not answered, -2 means timed out
+    // 0=response collected (0=wrong, 1=correct), -1 means not answered, -2 means timed out
     @Column( name = "itemresponsetypeid" )
     private int itemResponseTypeId = 0;
 
