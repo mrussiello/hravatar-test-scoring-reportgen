@@ -17,11 +17,13 @@ import com.tm2score.util.Base64Encoder;
 import com.tm2score.util.HttpUtils;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.ConnectionRequestTimeoutException;
+import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpHeaders;
@@ -103,6 +105,7 @@ public class DefaultResultPoster implements ResultPoster {
             {
                 HttpPost post = new HttpPost( url );
                 post.setHeader( HttpHeaders.CONTENT_TYPE, "application/xml");
+                
 
                 if( basicAuthCreds != null && basicAuthCreds.size()>= 2 )
                 {
@@ -119,7 +122,7 @@ public class DefaultResultPoster implements ResultPoster {
 
                 // al.add( new NameValuePair("name","ABC" ) );
 
-                post.setEntity( new StringEntity(payload) );
+                post.setEntity( new StringEntity(payload, ContentType.APPLICATION_XML.withCharset(StandardCharsets.UTF_8)) );
                 // post.setEntity(new UrlEncodedFormEntity(al));
 
                 //try( CloseableHttpResponse r = client.execute( post ) )

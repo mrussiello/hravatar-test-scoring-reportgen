@@ -208,8 +208,8 @@ public class JaxbUtils
     public static String marshalAssessmentResultXml( AssessmentResult assessmentResult ) throws Exception
     {
         try
-        {
-            JAXBContext jc = JAXBContext.newInstance(AssessmentResult.class);//JAXBContext.newInstance( "com.tm2test.api" );
+        {            
+            JAXBContext jc = JAXBContext.newInstance(AssessmentResult.class );//JAXBContext.newInstance( "com.tm2test.api" );
             Marshaller u = jc.createMarshaller();
 
             u.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
