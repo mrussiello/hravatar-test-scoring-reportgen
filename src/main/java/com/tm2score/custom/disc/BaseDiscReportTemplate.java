@@ -131,7 +131,7 @@ public abstract class BaseDiscReportTemplate extends BaseCT2ReportTemplate imple
         else
             highNamePair = lmsg_spec( DiscReportUtils.getCompetencyStubLetter(topTraitIndexes[0]) + ".name" );
 
-        LogService.logIt( "BaseDiscReportUtils.specialInit() feedbackReportCoverImageUrl=" + feedbackReportCoverImageUrl +", topTraitIndexes[0]=" + topTraitIndexes[0] + ", topTraitIndexes[1]=" + topTraitIndexes[1] + ", stub=" + stub + ", highNamePair=" + highNamePair );
+        // LogService.logIt( "BaseDiscReportUtils.specialInit() feedbackReportCoverImageUrl=" + feedbackReportCoverImageUrl +", topTraitIndexes[0]=" + topTraitIndexes[0] + ", topTraitIndexes[1]=" + topTraitIndexes[1] + ", stub=" + stub + ", highNamePair=" + highNamePair );
 
         try
         {
@@ -519,7 +519,7 @@ public abstract class BaseDiscReportTemplate extends BaseCT2ReportTemplate imple
                 String footerImageUri = feedbackReportBarFooterImageUri;
                 URL footerImageURL = reportData.getLocalImageUrl( footerImageUri );
                 Image footerImage = ITextUtils.getITextImage( footerImageURL );
-                LogService.logIt( "BaseDiscReportTemplate.addFooterBar() footerImageIndex=" + footerImageIndex + ", footerImageUri=" + footerImageUri + ", footerImage=" + (footerImage!=null) );
+                // LogService.logIt( "BaseDiscReportTemplate.addFooterBar() footerImageIndex=" + footerImageIndex + ", footerImageUri=" + footerImageUri + ", footerImage=" + (footerImage!=null) );
                 if( footerImage !=null )
                 {
                     footerImage.scalePercent(21.875f);
@@ -553,7 +553,7 @@ public abstract class BaseDiscReportTemplate extends BaseCT2ReportTemplate imple
                 String footerImageUri = feedbackReportFooterImageUrls[footerImageIndex];
                 URL footerImageURL = reportData.getLocalImageUrl( footerImageUri );
                 Image footerImage = ITextUtils.getITextImage( footerImageURL );
-                LogService.logIt( "BaseDiscReportTemplate.addFooterBar() footerImageIndex=" + footerImageIndex + ", footerImageUri=" + footerImageUri + ", footerImage=" + (footerImage!=null) );
+                // LogService.logIt( "BaseDiscReportTemplate.addFooterBar() footerImageIndex=" + footerImageIndex + ", footerImageUri=" + footerImageUri + ", footerImage=" + (footerImage!=null) );
                 if( footerImage !=null )
                 {
                     footerImage.scalePercent(60);

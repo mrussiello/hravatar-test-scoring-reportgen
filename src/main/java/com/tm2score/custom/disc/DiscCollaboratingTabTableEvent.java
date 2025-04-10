@@ -98,7 +98,7 @@ public class DiscCollaboratingTabTableEvent implements PdfPTableEvent
 
                 pcb.setFontAndSize(fontToUse, 14 );
                 // float textWid = ITextUtils.getTextWidth(textToUse, fontToUse, 14);
-                LogService.logIt( "TableBackgroundCellEvent.tableLayout() wid=" + wid + ", hgt=" + hgt + ", llx=" + llx + ", lly=" + lly + ", imgHgt=" + imgHgt );
+                // LogService.logIt( "TableBackgroundCellEvent.tableLayout() wid=" + wid + ", hgt=" + hgt + ", llx=" + llx + ", lly=" + lly + ", imgHgt=" + imgHgt );
                 pcb.showTextAligned(Element.ALIGN_CENTER, textToUse, 15, lly + (hgt)/2f - imgHgt + 6 , 90);
                 pcb.endText();
             }

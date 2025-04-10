@@ -4,6 +4,7 @@ import com.tm2score.global.NumberUtils;
 import com.tm2score.service.LogService;
 import com.tm2score.util.StringUtils;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Locale;
 
 
@@ -113,6 +114,10 @@ public enum FillBlankType
 
                     return inpInt==keyInt;        
                 }
+                catch( ParseException e )
+                {
+                    LogService.logIt("FillBlankType.valuesMatch() formatType=" + this.name() + ", " + e.toString() + ", Using other method.  inValue=" + inValue + ", matchValue=" + matchValue + ", locale=" + locale.toString() );
+                }
                 catch( Exception e )
                 {
                     LogService.logIt(e, "FillBlankType.valuesMatch() formatType=" + this.name() + ", Using other method. inValue=" + inValue + ", matchValue=" + matchValue + ", locale=" + locale.toString() );
@@ -145,6 +150,10 @@ public enum FillBlankType
                         return false;                
                     
                     return Math.abs(inpFloat - keyFloat) < 1e-5f;
+                }
+                catch( ParseException e )
+                {
+                    LogService.logIt("FillBlankType.valuesMatch() formatType=" + this.name() + ", " + e.toString() + ", Using other method. inValue=" + inValue + ", matchValue=" + matchValue + ", locale=" + locale.toString() );
                 }
                 catch( Exception e )
                 {
@@ -179,6 +188,10 @@ public enum FillBlankType
                         return false;                
                     
                     return Math.abs(inpFloat - keyFloat) < 1e-5f;
+                }
+                catch( ParseException e )
+                {
+                    LogService.logIt("FillBlankType.valuesMatch() formatType=" + this.name() + ", " + e.toString() + ", Using other method.  inValue=" + inValue + ", matchValue=" + matchValue + ", locale=" + locale.toString() );
                 }
                 catch( Exception e )
                 {

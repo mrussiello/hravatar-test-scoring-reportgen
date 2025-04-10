@@ -251,7 +251,7 @@ public class DiscReportUtils {
             
             Path tempFile = Files.createTempFile("discpie-", ".png" );
             Path pathFilename = tempFile.toAbsolutePath();
-            LogService.logIt( "DiscReportUtils.getDiscPieGraphImage2() writing NIO tempFile to " +  pathFilename.toString());
+            // LogService.logIt( "DiscReportUtils.getDiscPieGraphImage2() writing NIO tempFile to " +  pathFilename.toString());
             
             //File tempFile2 = File.createTempFile("discpie-", ".png");
             //tempFile2.deleteOnExit();
@@ -511,7 +511,7 @@ public class DiscReportUtils {
                 LogService.logIt( "DiscReportUtils.loadProperties() BBB.1 Unable to load properties for Bundle=" + bundleName );
 
             customProperties = prop;
-            LogService.logIt( "DiscReportUtils.loadProperties() " + bundleName + ", Properties files has " + customProperties.size() + " keys. " );
+            // LogService.logIt( "DiscReportUtils.loadProperties() " + bundleName + ", Properties files has " + customProperties.size() + " keys. " );
         }
         catch( Exception e )
         {
