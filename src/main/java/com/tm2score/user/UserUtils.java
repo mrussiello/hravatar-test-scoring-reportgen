@@ -108,7 +108,10 @@ public class UserUtils extends FacesUtils
             getUserBean();
 
             if( !userBean.getUserLoggedOnAsAdmin() )
-                throw new Exception( "Unauthorized Action." );
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return null;
+            }
 
             TestEventScore tes = userBean.getTestEventScore();
 
@@ -239,7 +242,10 @@ public class UserUtils extends FacesUtils
             getUserBean();
 
             if( !userBean.getUserLoggedOnAsAdmin() )
-                throw new Exception( "Unauthorized Action." );
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
 
             String testKeyIdz = userBean.getTestKeyIdz2();
             
@@ -307,7 +313,10 @@ public class UserUtils extends FacesUtils
             getUserBean();
 
             if( !userBean.getUserLoggedOnAsAdmin() )
-                throw new Exception( "Unauthorized Action." );
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
 
 
             long simId = userBean.getSimId2();
@@ -431,7 +440,10 @@ public class UserUtils extends FacesUtils
             getUserBean();
 
             if( !userBean.getUserLoggedOnAsAdmin() )
-                throw new Exception( "Unauthorized Action." );
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
 
             String testEventIdz = userBean.getTestEventIdz2();
             
@@ -563,7 +575,10 @@ public class UserUtils extends FacesUtils
         try
         {
             if( !userBean.getUserLoggedOnAsAdmin() )
-                throw new Exception( "Unauthorized Action." );
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
 
             ReportManager rm = new ReportManager();
             
@@ -629,7 +644,10 @@ public class UserUtils extends FacesUtils
             getUserBean();
 
             if( !userBean.getUserLoggedOnAsAdmin() )
-                throw new Exception( "Unauthorized Action." );
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
 
             LogService.logIt( "UserUtils.processPerformDistributeBatch() STARTING." );
 
@@ -639,11 +657,6 @@ public class UserUtils extends FacesUtils
             int[] count = dmb.doDistBatch(withArchive, true);
 
             setStringInfoMessage( "Dist Batch Completed  Sent " + count[0] + " test admin emails and " + count[1] + " text messages and " + count[2]  + " test-taker emails." );
-        }
-
-        catch( STException e )
-        {
-            setMessage(e);
         }
 
         catch( Exception e )
@@ -674,7 +687,7 @@ public class UserUtils extends FacesUtils
             if( !userBean.getUserLoggedOnAsAdmin() )
             {
                 this.setStringErrorMessage( "Unauthorized Action." );
-                return "StayInSamePlace";
+                return "/index.xhtml";
             }
 
             if( !ScoreManager.OK_TO_START_ANY )
@@ -721,7 +734,10 @@ public class UserUtils extends FacesUtils
             getUserBean();
 
             if( !userBean.getUserLoggedOnAsAdmin() )
-                throw new Exception( "Unauthorized Action." );
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
 
             ScoreManager sm = new ScoreManager();
 
@@ -756,6 +772,11 @@ public class UserUtils extends FacesUtils
             
             setStringInfoMessage( "Debug for Scoring is now " + (ScoreManager.DEBUG_SCORING ? "ON" : "OFF" ) );
         }
+        else
+        {
+            this.setStringErrorMessage( "You are not authorized to perform this action.");
+            return "/index.xhtml";
+        }
 
         return null;
     }
@@ -769,6 +790,11 @@ public class UserUtils extends FacesUtils
             ReportManager.DEBUG_REPORTS=!ReportManager.DEBUG_REPORTS;
             
             setStringInfoMessage( "Debug for Scoring is now " + (ReportManager.DEBUG_REPORTS ? "ON" : "OFF" ) );
+        }
+        else
+        {
+            this.setStringErrorMessage( "You are not authorized to perform this action.");
+            return "/index.xhtml";
         }
 
         return null;
@@ -806,6 +832,11 @@ public class UserUtils extends FacesUtils
                 this.setStringInfoMessage( "Parsed value is " + n );
             }
         }
+        else
+        {
+            this.setStringErrorMessage( "You are not authorized to perform this action.");
+            return "/index.xhtml";
+        }
 
         return null;
         
@@ -839,6 +870,11 @@ public class UserUtils extends FacesUtils
             
             RuntimeConstants.setValueFmString( strParam2, strParam3);
         }
+        else
+        {
+            this.setStringErrorMessage( "You are not authorized to perform this action.");
+            return "/index.xhtml";
+        }
 
         return null;
         
@@ -857,6 +893,11 @@ public class UserUtils extends FacesUtils
             userFacade.clearSharedCacheDiscern();
             
             setStringInfoMessage( "Shared DBMS Cache cleared." );
+        }
+        else
+        {
+            this.setStringErrorMessage( "You are not authorized to perform this action.");
+            return "/index.xhtml";
         }
 
         TestKeyEventSelectionType tkest = TestKeyEventSelectionType.getValue( userBean.getTestKeyEventSelectionTypeId() );
@@ -884,6 +925,11 @@ public class UserUtils extends FacesUtils
             userFacade.clearSharedCacheDiscern();
 
             setStringInfoMessage( "Shared DBMS Cache cleared." );
+        }
+        else
+        {
+            this.setStringErrorMessage( "You are not authorized to perform this action.");
+            return "/index.xhtml";
         }
 
         return null;
@@ -938,7 +984,10 @@ public class UserUtils extends FacesUtils
             getUserBean();
 
             if( !userBean.getUserLoggedOnAsAdmin() )
-                return null;
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
 
             if( userBean.getTestKeyId4()<=0 )
                 this.setStringErrorMessage( "TestKeyId is required" );
@@ -989,7 +1038,10 @@ public class UserUtils extends FacesUtils
             getUserBean();
 
             if( !userBean.getUserLoggedOnAsAdmin() )
-                return null;
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
 
             if( userBean.getTextRecipPh() == null || userBean.getTextRecipPh().isEmpty() )
             {
@@ -1047,7 +1099,10 @@ public class UserUtils extends FacesUtils
             getUserBean();
 
             if( !userBean.getUserLoggedOnAsAdmin() )
-                return null;
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
 
             ScoreManager.OK_TO_START_ANY = !ScoreManager.OK_TO_START_ANY;
             ReportManager.OK_TO_START_ANY = !ReportManager.OK_TO_START_ANY;
@@ -1353,7 +1408,10 @@ public class UserUtils extends FacesUtils
         try
         {
             if( !userBean.getUserLoggedOnAsAdmin() )
-                throw new Exception( "Unauthorized Action." );
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
 
             //if( userBean.getTestEventId() <= 0 )
             //    throw new Exception( "TestEventId is invalid. " + userBean.getTestEventId() );
@@ -1472,7 +1530,10 @@ public class UserUtils extends FacesUtils
         try
         {
             if( !userBean.getUserLoggedOnAsAdmin() )
-                throw new Exception( "Unauthorized Action." );
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
 
             //if( userBean.getTestEventId() <= 0 )
             //    throw new Exception( "TestEventId is invalid. " + userBean.getTestEventId() );
@@ -1933,7 +1994,10 @@ public class UserUtils extends FacesUtils
             tkids = userBean.getTestKeyIdsStr2();
             
             if( !userBean.getUserLoggedOnAsAdmin() )
-                throw new Exception( "Unauthorized Action." );
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
 
             LogService.logIt( "UserUtils.processRedistributeTestKeyId() AAA testKeyId=" + userBean.getTestKeyId3() );
             
@@ -2076,17 +2140,15 @@ public class UserUtils extends FacesUtils
         try
         {
             if( !userBean.getUserLoggedOnAsAdmin() )
-                throw new Exception( "Unauthorized Action." );
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
         
             userBean.clear();
             
             return null;
-        }
-        
-        catch( STException e )
-        {
-            setMessage( e );
-        }
+        }        
         catch( Exception e )
         {
             LogService.logIt( e, "UserUtils.processClearResults() tkid=" + tkid );
@@ -2105,7 +2167,10 @@ public class UserUtils extends FacesUtils
         try
         {
             if( !userBean.getUserLoggedOnAsAdmin() )
-                throw new Exception( "Unauthorized Action." );
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
 
             userBean.setResultStr1(null);
             LogService.logIt( "UserUtils.processGenerateAssessmentResultXml() AAA testKeyId=" + tkid );
@@ -2170,7 +2235,10 @@ public class UserUtils extends FacesUtils
             teids = userBean.getTestEventIds2();
 
             if( !userBean.getUserLoggedOnAsAdmin() )
-                throw new Exception( "Unauthorized Action." );
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
 
             LogService.logIt( "UserUtils.processRedistributeTestEventIds() AAA teids=" + teids );
             
@@ -2237,7 +2305,10 @@ public class UserUtils extends FacesUtils
             getUserBean();
 
             if( !userBean.getUserLoggedOnAsAdmin() )
-                throw new Exception( "Unauthorized Action." );
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
 
             if( userBean.getTestKeyId5() <= 0 )
                 throw new Exception( "TestKeyId is invalid." );
@@ -2304,7 +2375,10 @@ public class UserUtils extends FacesUtils
             getUserBean();
 
             if( !userBean.getUserLoggedOnAsAdmin() )
-                throw new Exception( "Unauthorized Action." );
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
 
             List<Long> tkl = new ArrayList<>();
 
@@ -2428,7 +2502,10 @@ public class UserUtils extends FacesUtils
             getUserBean();
 
             if( !userBean.getUserLoggedOnAsAdmin() )
-                throw new Exception( "Unauthorized Action." );
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
             
             EmailUtils emailUtils = EmailUtils.getInstance();
                 
@@ -2454,7 +2531,10 @@ public class UserUtils extends FacesUtils
             getUserBean();
 
             if( !userBean.getUserLoggedOnAsAdmin() )
-                throw new Exception( "Unauthorized Action." );
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
             
             EmailUtils emailUtils = EmailUtils.getInstance();
                 
@@ -2480,7 +2560,10 @@ public class UserUtils extends FacesUtils
             getUserBean();
 
             if( !userBean.getUserLoggedOnAsAdmin() )
-                throw new Exception( "Unauthorized Action." );
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
             
             EmailUtils emailUtils = EmailUtils.getInstance();
                 
@@ -2505,7 +2588,10 @@ public class UserUtils extends FacesUtils
             getUserBean();
 
             if( !userBean.getUserLoggedOnAsAdmin() )
-                throw new Exception( "Unauthorized Action." );
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
             
             EmailUtils emailUtils = EmailUtils.getInstance();
                 
@@ -2534,7 +2620,10 @@ public class UserUtils extends FacesUtils
             getUserBean();
 
             if( !userBean.getUserLoggedOnAsAdmin() )
-                throw new Exception( "Unauthorized Action." );
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
             
             EmailUtils emailUtils = EmailUtils.getInstance();
                 
@@ -2560,7 +2649,10 @@ public class UserUtils extends FacesUtils
             getUserBean();
 
             if( !userBean.getUserLoggedOnAsAdmin() )
-                throw new Exception( "Unauthorized Action." );
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
             
             EmailUtils emailUtils = EmailUtils.getInstance();
                 
@@ -2586,10 +2678,16 @@ public class UserUtils extends FacesUtils
             getUserBean();
 
             if( !userBean.getUserLoggedOnAsAdmin() )
-                throw new Exception( "Unauthorized Action." );
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
 
             if( userBean.getPin() == null || userBean.getPin().isEmpty() )
-                throw new Exception( "Pin is invalid." );
+            {
+                this.setStringErrorMessage( "Pin is not valid or missing. Cannot rescore.");
+                return "StayInSamePlace";
+            }
 
             if( eventFacade==null )
                 eventFacade = EventFacade.getInstance();

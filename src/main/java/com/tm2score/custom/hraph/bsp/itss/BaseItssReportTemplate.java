@@ -123,7 +123,7 @@ public abstract class BaseItssReportTemplate extends BaseCT2ReportTemplate imple
             
             previousYLevel =  currentYLevel;
             
-            float y = addTitle( previousYLevel, bmsg( "g.RoleFitCompetencySummary" ), competencySummaryStr );
+            float y = addTitle(previousYLevel, bmsg( "g.RoleFitCompetencySummary" ), competencySummaryStr, null, null );
 
             y -= TPAD;
             
@@ -324,7 +324,7 @@ public abstract class BaseItssReportTemplate extends BaseCT2ReportTemplate imple
             
             previousYLevel =  currentYLevel;
             
-            float y = addTitle( previousYLevel, bmsg( "g.RoleFitScoreSummary" ), competencySummaryStr );
+            float y = addTitle(previousYLevel, bmsg( "g.RoleFitScoreSummary" ), competencySummaryStr, null, null );
 
             y -= TPAD;
             
@@ -494,7 +494,7 @@ public abstract class BaseItssReportTemplate extends BaseCT2ReportTemplate imple
             previousYLevel =  currentYLevel;
             
 
-            float y = addTitle( previousYLevel, bmsg( "g.FindingsRecommendations" ), competencySummaryStr );
+            float y = addTitle(previousYLevel, bmsg( "g.FindingsRecommendations" ), competencySummaryStr, null, null );
 
             y -= TPAD;
             
@@ -603,7 +603,7 @@ public abstract class BaseItssReportTemplate extends BaseCT2ReportTemplate imple
             previousYLevel =  currentYLevel;
             
 
-            float y = addTitle( previousYLevel, lmsg( "g.CompetencySummary" ), competencySummaryStr );
+            float y = addTitle(previousYLevel, lmsg( "g.CompetencySummary" ), competencySummaryStr, null, null );
 
             y -= TPAD;  // getHraLogoBlackText().getScaledHeight() - fnt.getSize()*2f;
 
@@ -1048,7 +1048,7 @@ public abstract class BaseItssReportTemplate extends BaseCT2ReportTemplate imple
             
             previousYLevel =  currentYLevel;
 
-            float y = addTitle( previousYLevel, lmsg( "g.PreparationNotes" ), null );
+            float y = addTitle(previousYLevel, lmsg( "g.PreparationNotes" ), null, null, null );
 
             // First create the table
             PdfPCell c;

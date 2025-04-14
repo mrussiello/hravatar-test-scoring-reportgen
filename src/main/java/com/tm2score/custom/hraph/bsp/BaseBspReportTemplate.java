@@ -103,7 +103,7 @@ public abstract class BaseBspReportTemplate extends BaseCT2ReportTemplate implem
             previousYLevel =  currentYLevel;
             
 
-            float y = addTitle( previousYLevel, lmsg( "g.CompetencySummary" ), competencySummaryStr );
+            float y = addTitle(previousYLevel, lmsg( "g.CompetencySummary" ), competencySummaryStr, null, null );
 
             y -= TPAD;  // getHraLogoBlackText().getScaledHeight() - fnt.getSize()*2f;
 
@@ -258,7 +258,7 @@ public abstract class BaseBspReportTemplate extends BaseCT2ReportTemplate implem
         {
             previousYLevel =  currentYLevel;
             
-            float y = addTitle( previousYLevel, lmsg( "g.DevelopmentalSuggestions" ), lmsg( "g.DevelopmentalSuggestionsInfo" ) );
+            float y = addTitle(previousYLevel, lmsg( "g.DevelopmentalSuggestions" ), lmsg( "g.DevelopmentalSuggestionsInfo" ), null, null );
 
             y -= 2*TPAD;  // getHraLogoBlackText().getScaledHeight() - fnt.getSize()*2f;
             
@@ -563,7 +563,7 @@ public abstract class BaseBspReportTemplate extends BaseCT2ReportTemplate implem
             
             previousYLevel =  currentYLevel;
 
-            float y = addTitle( previousYLevel, lmsg( "g.PreparationNotes" ), null );
+            float y = addTitle(previousYLevel, lmsg( "g.PreparationNotes" ), null, null, null );
 
             // First create the table
             PdfPCell c;

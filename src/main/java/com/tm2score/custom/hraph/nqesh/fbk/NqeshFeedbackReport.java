@@ -340,7 +340,7 @@ public class NqeshFeedbackReport extends BaseCT2ReportTemplate implements Report
 
             previousYLevel =  currentYLevel;
 
-            float y = addTitle( previousYLevel, lmsg( "g.CompetencySummary"), null );
+            float y = addTitle(previousYLevel, lmsg( "g.CompetencySummary"), null, null, null );
 
             y -= TPAD;  // getHraLogoBlackText().getScaledHeight() - fnt.getSize()*2f;
 
@@ -644,7 +644,7 @@ public class NqeshFeedbackReport extends BaseCT2ReportTemplate implements Report
 
             previousYLevel =  currentYLevel;
 
-            float y = addTitle( previousYLevel, "Individual Domains Detailed Information", null );
+            float y = addTitle(previousYLevel, "Individual Domains Detailed Information", null, null, null );
 
             y -= 2*TPAD;  // getHraLogoBlackText().getScaledHeight() - fnt.getSize()*2f;
 
@@ -932,7 +932,7 @@ public class NqeshFeedbackReport extends BaseCT2ReportTemplate implements Report
 
             previousYLevel =  currentYLevel;
 
-            float y = addTitle( previousYLevel, lmsg( "g.PreparationNotes" ), null );
+            float y = addTitle(previousYLevel, lmsg( "g.PreparationNotes" ), null, null, null );
 
             // First create the table
             PdfPCell c;

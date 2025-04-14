@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.tm2score.custom.leader;
+package com.tm2score.custom.leaderstyle;
 
 import com.tm2score.format.*;
 import com.tm2score.global.I18nUtils;
@@ -14,11 +14,11 @@ import com.tm2score.util.StringUtils;
  *
  * @author Mike
  */
-public class LeaderTestTakerHtmlScoreFormatter extends BaseScoreFormatter implements ScoreFormatter
+public class LeaderStyleTestTakerHtmlScoreFormatter extends BaseScoreFormatter implements ScoreFormatter
 {
     public static String HEADER_IMAGE_URL = "https://cdn.hravatar.com/web/orgimage/zrWvh1uNWrg-/img_11x1742479112742.png";
 
-    public LeaderTestTakerHtmlScoreFormatter()
+    public LeaderStyleTestTakerHtmlScoreFormatter()
     {
         super();
 

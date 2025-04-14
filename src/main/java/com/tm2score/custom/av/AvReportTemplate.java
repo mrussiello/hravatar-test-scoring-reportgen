@@ -150,7 +150,7 @@ public abstract class AvReportTemplate extends BaseCT2ReportTemplate  implements
             
             // LogService.logIt( "AvReportTemplate.addAvUploadSampleInfo() BBB1 tesl.size=" + tesl.size() + ", nonCompAvUploads.size()=" +  nonCompAvUploads.size() );
             
-            float y = addTitle( previousYLevel, lmsg( "g.VideoResponsesTitle" ), lmsg( "g.VideoResponsesSubtitle" )  );
+            float y = addTitle(previousYLevel, lmsg( "g.VideoResponsesTitle" ), lmsg( "g.VideoResponsesSubtitle" ), null, null  );
 
             currentYLevel = y;
             
@@ -297,7 +297,7 @@ public abstract class AvReportTemplate extends BaseCT2ReportTemplate  implements
 
             this.addNewPage();
             
-            float y = addTitle( previousYLevel, lmsg( "g.VoiceVibesTitle" ), lmsg( "g.VoiceVibesSubtitle" )  );
+            float y = addTitle(previousYLevel, lmsg( "g.VoiceVibesTitle" ), lmsg( "g.VoiceVibesSubtitle" ), null, null  );
 
             // First create the table
             PdfPCell c;

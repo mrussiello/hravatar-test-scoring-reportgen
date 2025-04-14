@@ -189,7 +189,7 @@ public class PciReport extends BasePciReportTemplate implements ReportTemplate
             
             currentYLevel -= 2*TPAD;
             previousYLevel =  currentYLevel;
-            float y = addTitle( previousYLevel, "Selecting Candidates on Our Values", null );
+            float y = addTitle(previousYLevel, "Selecting Candidates on Our Values", null, null, null );
             y -= TPAD;  
 
             // First, add a table
@@ -277,7 +277,7 @@ public class PciReport extends BasePciReportTemplate implements ReportTemplate
             }
             
             previousYLevel =  currentYLevel;
-            float y = addTitle( previousYLevel, "Other Candidate Criteria", null );
+            float y = addTitle(previousYLevel, "Other Candidate Criteria", null, null, null );
             y -= TPAD;  // getHraLogoBlackText().getScaledHeight() - fnt.getSize()*2f;
 
             PdfPCell c;

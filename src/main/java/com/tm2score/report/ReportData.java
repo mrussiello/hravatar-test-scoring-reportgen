@@ -63,6 +63,11 @@ public class ReportData
 
     public Suborg s;
 
+    /**
+     * Used by custom report to set misc values used by various sections.
+     */
+    Map<String,Object> customReportValues;
+    
     // public List<NVPair> reportRules;
     public ReportRules reportRules;
     
@@ -1074,5 +1079,15 @@ public class ReportData
     public void setNeedsKeyCheck(boolean needsKeyCheck) {
         this.needsKeyCheck = needsKeyCheck;
     }
+
+    public Map<String, Object> getCustomReportValues() {
+        return customReportValues;
+    }
+
+    public void setCustomReportValues(Map<String, Object> customReportValues) {
+        this.customReportValues = customReportValues;
+    }
+    
+    
     
 }

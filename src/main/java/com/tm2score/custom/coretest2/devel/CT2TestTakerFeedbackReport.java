@@ -122,7 +122,7 @@ public class CT2TestTakerFeedbackReport extends BaseCT2ReportTemplate implements
 
             previousYLevel =  currentYLevel;
             
-            float y = addTitle( previousYLevel, lmsg( "g.Introduction" ), null );
+            float y = addTitle(previousYLevel, lmsg( "g.Introduction" ), null, null, null );
 
             y -= TPAD;
                         
@@ -363,7 +363,7 @@ public class CT2TestTakerFeedbackReport extends BaseCT2ReportTemplate implements
             if( subtitle==null || subtitle.isEmpty() )        
                    subtitle = subtitleKey==null || subtitleKey.isEmpty() ?  null : lmsg( subtitleKey );
                         
-            currentYLevel = addTitle(previousYLevel, title, subtitle );
+            currentYLevel = addTitle(previousYLevel, title, subtitle, null, null );
             
             java.util.List<TestEventScore> tesl2 = new ArrayList<>();
             
@@ -764,7 +764,7 @@ public class CT2TestTakerFeedbackReport extends BaseCT2ReportTemplate implements
             
             previousYLevel =  currentYLevel;
 
-            float y = addTitle( previousYLevel, lmsg( "g.PreparationNotes" ), null );
+            float y = addTitle(previousYLevel, lmsg( "g.PreparationNotes" ), null, null, null );
 
             // First create the table
             PdfPCell c;

@@ -225,7 +225,7 @@ public class CT2DevelopmentReport extends BaseCT2ReportTemplate implements Repor
             if( subtitleText==null )
                 subtitleText = subtitleKey==null || subtitleKey.isEmpty() ?  null : lmsg( subtitleKey );
             
-            float y = addTitle(previousYLevel, titleText, subtitleText );
+            float y = addTitle(previousYLevel, titleText, subtitleText, null, null );
 
             // First create the table
             PdfPCell c;
@@ -573,7 +573,7 @@ public class CT2DevelopmentReport extends BaseCT2ReportTemplate implements Repor
 
             previousYLevel =  currentYLevel;
 
-            float y = addTitle( previousYLevel, lmsg( "g.Overall" ), null );
+            float y = addTitle(previousYLevel, lmsg( "g.Overall" ), null, null, null );
 
             y -= TPAD;
 
@@ -1002,7 +1002,7 @@ public class CT2DevelopmentReport extends BaseCT2ReportTemplate implements Repor
             if( howtousereport2!=null && !howtousereport2.isEmpty() )
                 text += ( text.length()>0 ? "\n\n" : "" ) + howtousereport2;
 
-            addTitle( previousYLevel, lmsg( "g.HowToUseReport" ), text );
+            addTitle(previousYLevel, lmsg( "g.HowToUseReport" ), text, null, null );
             
             currentYLevel = this.currentYLevel - 10;
 

@@ -84,7 +84,7 @@ public class PciTalentCard extends BasePciReportTemplate implements ReportTempla
         {
             previousYLevel =  currentYLevel;
 
-            float y = addTitle( previousYLevel, "Talent Card Input", null );
+            float y = addTitle(previousYLevel, "Talent Card Input", null, null, null );
 
             y -= PAD;
 
@@ -400,7 +400,7 @@ public class PciTalentCard extends BasePciReportTemplate implements ReportTempla
 
             previousYLevel =  currentYLevel;
 
-            float y = addTitle( previousYLevel, "Assessment Information", null );
+            float y = addTitle(previousYLevel, "Assessment Information", null, null, null );
 
             y -= PAD;
 

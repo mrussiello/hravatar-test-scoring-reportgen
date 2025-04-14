@@ -163,6 +163,7 @@ public class CT2ReportSettings implements ReportSettings {
     public Font fontLargeWhiteBold;
     public Font fontLargeLight;
     public Font fontLargeLightBold;
+    public Font fontLargeBoldDarkBlue;
     public Font fontLargeBold;
     public Font fontLargeBlueBold;
     public Font fontLargeItalic;
@@ -492,6 +493,7 @@ public class CT2ReportSettings implements ReportSettings {
             fontLarge = new Font(baseFontCalibri, LFONTSZ);
             fontLargeWhite = new Font(baseFontCalibri, LFONTSZ);
             fontLargeWhiteBold = new Font(baseFontCalibriBold, LFONTSZ);
+            fontLargeBoldDarkBlue = new Font(baseFontCalibriBold, LFONTSZ);
             fontLargeLight = new Font(baseFontCalibri, LFONTSZ);
             fontLargeLightBold = new Font(baseFontCalibriBold, LFONTSZ);
             fontLargeBold = new Font(baseFontCalibriBold, LFONTSZ, Font.NORMAL);
@@ -602,6 +604,7 @@ public class CT2ReportSettings implements ReportSettings {
             fontLLBoldItalic.setColor(baseFontColor);
 
             fontLarge.setColor(baseFontColor);
+            fontLargeBoldDarkBlue.setColor(new BaseColor( 0x0b, 0x50, 0x8b));
             fontLargeWhite.setColor(ct2Colors.whiteFontColor);
             fontLargeWhiteBold.setColor(ct2Colors.whiteFontColor);
             fontLargeLight.setColor(ct2Colors.lightFontColor);
@@ -1838,6 +1841,10 @@ public class CT2ReportSettings implements ReportSettings {
     @Override
     public Font getFontXLargeBoldDarkBlue() {
         return fontXLargeBoldDarkBlue;
+    }
+
+    public Font getFontLargeBoldDarkBlue() {
+        return fontLargeBoldDarkBlue;
     }
 
     @Override

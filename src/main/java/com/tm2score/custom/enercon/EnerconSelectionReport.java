@@ -195,7 +195,7 @@ public class EnerconSelectionReport extends BaseCT2ReportTemplate implements Rep
         try
         {
             float startY = this.currentYLevel-2*PAD;
-            addTitle( startY, howToUseThisReport[0], howToUseThisReport[1] );           
+            addTitle(startY, howToUseThisReport[0], howToUseThisReport[1], null, null );           
         }
         catch( Exception e )
         {

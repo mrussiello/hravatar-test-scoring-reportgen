@@ -157,7 +157,7 @@ public abstract class BaseSpReportTemplate extends BaseCT2ReportTemplate impleme
             //boolean hideOverallGraph = true; // reportData.getReportRuleAsBoolean( "ovrgrphoff" );
             //boolean hideOverallScoreText = true; // reportData.getReportRuleAsBoolean( "ovrscrtxtoff" );
                         
-            float y = addTitle( previousYLevel, lmsg( "g.Overall" ), null );
+            float y = addTitle(previousYLevel, lmsg( "g.Overall" ), null, null, null );
 
             y -= TPAD;
 
@@ -456,7 +456,7 @@ public abstract class BaseSpReportTemplate extends BaseCT2ReportTemplate impleme
 
             previousYLevel =  currentYLevel;
                         
-            float y = addTitle( previousYLevel, bmsg( "g.ClusterAndDimensionSummary" ), competencySummaryStr );
+            float y = addTitle(previousYLevel, bmsg( "g.ClusterAndDimensionSummary" ), competencySummaryStr, null, null );
 
             y -= TPAD;
             
@@ -778,7 +778,7 @@ public abstract class BaseSpReportTemplate extends BaseCT2ReportTemplate impleme
             
             previousYLevel =  currentYLevel;
             
-            currentYLevel = addTitle( previousYLevel, bmsg( "g.ClusterAndDimensionDetail" ), competencySummaryStr );
+            currentYLevel = addTitle(previousYLevel, bmsg( "g.ClusterAndDimensionDetail" ), competencySummaryStr, null, null );
 
             // currentYLevel -= TPAD;  // getHraLogoBlackText().getScaledHeight() - fnt.getSize()*2f;
                             

@@ -640,7 +640,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
             boolean useRawOverallScore = ScoreUtils.getIncludeRawOverallScore(reportData.getOrg(), reportData.getTestEvent()) &&
                                          reportData.getTestEvent().getOverallTestEventScore()!=null; //  && reportData.getTestEvent().getOverallTestEventScore().getRawScore()>=0;
 
-            float y = addTitle( previousYLevel, lmsg( "g.Overall" ), null );
+            float y = addTitle(previousYLevel, lmsg( "g.Overall" ), null, null, null );
 
             y -= TPAD;
 
@@ -1711,7 +1711,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             // LogService.logIt( "AvReportTemplate.addAnyCompetenciesInfo() titleKey=" + titleKey + ", subtitleKey=" + subtitleKey + ", )subtitle=" + (subtitleKey==null ? "" : lmsg( subtitleKey ) )  );
 
-            float y = addTitle( previousYLevel, lmsg( "g.UploadedUserFilesTitle" ), lmsg( "g.UploadedUserFilesSubtitle" )  );
+            float y = addTitle(previousYLevel, lmsg( "g.UploadedUserFilesTitle" ), lmsg( "g.UploadedUserFilesSubtitle" ), null, null  );
 
             currentYLevel = y;
 
@@ -2089,7 +2089,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             previousYLevel =  currentYLevel;
 
-            float y = addTitle( previousYLevel, lmsg( "g.RiskFactors" ), null );
+            float y = addTitle(previousYLevel, lmsg( "g.RiskFactors" ), null, null, null );
 
             y -= TPAD;
 
@@ -3052,7 +3052,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
             }
             //}
 
-            float y = addTitle( previousYLevel, ttext, competencySummaryStr );
+            float y = addTitle(previousYLevel, ttext, competencySummaryStr, null, null );
 
             y -= TPAD;  // getHraLogoBlackText().getScaledHeight() - fnt.getSize()*2f;
 
@@ -3840,7 +3840,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                 y = currentYLevel;
             }
 
-            y = addTitle( y, lmsg( "g.ComparisonPcts" ), validCount > 0 ? lmsg( devel ? "g.PercentileNoteDevel" : "g.PercentileNote" ) : null );
+            y = addTitle(y, lmsg( "g.ComparisonPcts" ), validCount > 0 ? lmsg( devel ? "g.PercentileNoteDevel" : "g.PercentileNote" ) : null, null, null );
 
             y -= TPAD;
 
@@ -3971,7 +3971,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             // float y = previousYLevel - 6*PAD - getFont().getSize();
 
-            float y = addTitle( previousYLevel, lmsg( "g.AssessmentOverview" ), null );
+            float y = addTitle(previousYLevel, lmsg( "g.AssessmentOverview" ), null, null, null );
 
             y -= PAD;
 
@@ -4172,7 +4172,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             previousYLevel =  currentYLevel;
 
-            float y = addTitle( previousYLevel, titleStr, null );
+            float y = addTitle(previousYLevel, titleStr, null, null, null );
 
             y -= PAD;
 
@@ -4834,7 +4834,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
             if( ttl.isEmpty() )
                 return;
 
-            float y = addTitle( previousYLevel, lmsg( "g.MinQualGuidelines" ), lmsg( "g.MinQualGuidelinesSubtitle" ) );
+            float y = addTitle(previousYLevel, lmsg( "g.MinQualGuidelines" ), lmsg( "g.MinQualGuidelinesSubtitle" ), null, null );
 
             // First create the table
             PdfPCell c;
@@ -5714,7 +5714,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             previousYLevel =  currentYLevel;
 
-            float y = addTitle( previousYLevel, lmsg( "g.ScoreCalculation" ), lmsg( scoreCalcKey, params ) );
+            float y = addTitle(previousYLevel, lmsg( "g.ScoreCalculation" ), lmsg( scoreCalcKey, params ), null, null );
 
             currentYLevel = addTableToDocument(y, t, false, true );
         }
@@ -5836,7 +5836,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
                 previousYLevel =  currentYLevel; // - 10;
 
-                float y = addTitle( previousYLevel, lmsg( "g.BestJobsTopMatches" ), lmsg( embeddedRiasec ? "g.BestJobsTopMatchesInfoEmbedded" : "g.BestJobsTopMatchesInfo" ) );
+                float y = addTitle(previousYLevel, lmsg( "g.BestJobsTopMatches" ), lmsg( embeddedRiasec ? "g.BestJobsTopMatchesInfoEmbedded" : "g.BestJobsTopMatchesInfo" ), null, null );
 
                 y -= TPAD;
 
@@ -6072,7 +6072,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
                 previousYLevel =  currentYLevel; // - 10;
 
-                float y = addTitle( previousYLevel, lmsg( "g.JobCategoryMatchesCand" ), null );
+                float y = addTitle(previousYLevel, lmsg( "g.JobCategoryMatchesCand" ), null, null, null );
 
                 y -= TPAD;
 
@@ -6667,7 +6667,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             previousYLevel =  currentYLevel;
 
-            float y = addTitle( previousYLevel, lmsg( "g.PreparationNotes" ), null );
+            float y = addTitle(previousYLevel, lmsg( "g.PreparationNotes" ), null, null, null );
 
             // First create the table
             PdfPCell c;
@@ -7011,7 +7011,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
             }
 
             // add title
-            y = addTitle(previousYLevel, titleText, subtitleText );
+            y = addTitle(previousYLevel, titleText, subtitleText, null, null );
 
             currentYLevel = addTableToDocument(y, t, false, true );
 
@@ -8372,7 +8372,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
             }
 
             // add title
-            y = addTitle( previousYLevel, lmsg( "g.WritingSampleTitle" ), lmsg( "g.WritingSampleSubtitle" ) );
+            y = addTitle(previousYLevel, lmsg( "g.WritingSampleTitle" ), lmsg( "g.WritingSampleSubtitle" ), null, null );
 
             currentYLevel = addTableToDocument(y, t, false, true );
 
@@ -8548,7 +8548,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             float y = currentYLevel;
 
-            y = addTitle( previousYLevel,  lmsg( "g.IbmInsightInfoTitle" ), lmsg( "g.IbmInsightInfoSubtitle") );
+            y = addTitle(previousYLevel,  lmsg( "g.IbmInsightInfoTitle" ), lmsg( "g.IbmInsightInfoSubtitle"), null, null );
 
             // First create the table
             PdfPCell c;
@@ -8976,7 +8976,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                 previousYLevel = currentYLevel;
             }
 
-            float y = addTitle( previousYLevel, lmsg( "g.AvgResponseRatings" ), lmsg( "g.AvgResponseRatingsSubtitle" ) );
+            float y = addTitle(previousYLevel, lmsg( "g.AvgResponseRatings" ), lmsg( "g.AvgResponseRatingsSubtitle" ), null, null );
 
             // First create the table
             PdfPCell c;
@@ -9173,7 +9173,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                 previousYLevel = currentYLevel;
             }
 
-            float y = addTitle( previousYLevel, lmsg( "g.ItemScoresInfoTitle" ), lmsg( "g.ItemScoresInfoSubtitle" ) );
+            float y = addTitle(previousYLevel, lmsg( "g.ItemScoresInfoTitle" ), lmsg( "g.ItemScoresInfoSubtitle" ), null, null );
 
             // First create the table
             PdfPCell c;
@@ -9410,7 +9410,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             previousYLevel =  currentYLevel;
 
-            float y = addTitle( previousYLevel, lmsg( "g.SuspensionHistoryTitle" ), satt==null || satt.getSuspiciousActivityThresholdTypeId()<=0 ? null : lmsg( "g.SuspensionHistorySubtitleX", new String[]{Integer.toString( satt==null ? 0 : satt.getSuspiciousActivityThresholdTypeId())} ) );
+            float y = addTitle(previousYLevel, lmsg( "g.SuspensionHistoryTitle" ), satt==null || satt.getSuspiciousActivityThresholdTypeId()<=0 ? null : lmsg( "g.SuspensionHistorySubtitleX", new String[]{Integer.toString( satt==null ? 0 : satt.getSuspiciousActivityThresholdTypeId())} ), null, null );
 
             PdfPCell c;
             PdfPTable t;
@@ -9613,7 +9613,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             previousYLevel =  currentYLevel;
 
-            float y = addTitle( previousYLevel, lmsg( "g.ProctorCerts" ), null );
+            float y = addTitle(previousYLevel, lmsg( "g.ProctorCerts" ), null, null, null );
 
             PdfPCell c;
             PdfPTable t;
@@ -9778,7 +9778,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             previousYLevel =  currentYLevel;
 
-            float y = addTitle( previousYLevel, lmsg( "g.SuspiciousActivityTitle" ), lmsg( "g.SuspiciousActivitySubtitle",new String[]{RuntimeConstants.getStringValue("baseadmindomain")} ) );
+            float y = addTitle(previousYLevel, lmsg( "g.SuspiciousActivityTitle" ), lmsg( "g.SuspiciousActivitySubtitle",new String[]{RuntimeConstants.getStringValue("baseadmindomain")} ), null, null );
 
             PdfPCell c;
             PdfPTable t;
@@ -10049,7 +10049,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             addNewPage();
             previousYLevel =  currentYLevel;
-            float y = addTitle( previousYLevel, lmsg( "g.ImgCapReportTitle" ), lmsg( "g.ImgCapReportSubtitle.Premium" ) );
+            float y = addTitle(previousYLevel, lmsg( "g.ImgCapReportTitle" ), lmsg( "g.ImgCapReportSubtitle.Premium" ), null, null );
 
             currentYLevel = addTableToDocument(y, t, false, true );
 
@@ -10127,7 +10127,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             addNewPage();
             previousYLevel =  currentYLevel;
-            float y = addTitle( previousYLevel, lmsg( "g.ImgCapReportTitle" ), lmsg( "g.ImgCapReportSubtitle" ) );
+            float y = addTitle(previousYLevel, lmsg( "g.ImgCapReportTitle" ), lmsg( "g.ImgCapReportSubtitle" ), null, null );
             currentYLevel = addTableToDocument(y, t, false, true );
 
             t = getBasicIdentityImageCaptureTableImages( reportData, tesl , pageWidth );
@@ -10190,7 +10190,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             previousYLevel =  currentYLevel;
 
-            float y = addTitle( previousYLevel, lmsg( "g.AltScoresTitle" ), lmsg( "g.AltScoresSubtitle" ) );
+            float y = addTitle(previousYLevel, lmsg( "g.AltScoresTitle" ), lmsg( "g.AltScoresSubtitle" ), null, null );
 
             // First create the table
             PdfPCell c;
@@ -10285,7 +10285,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
             if( ttl.isEmpty() )
                 return;
 
-            float y = addTitle( previousYLevel, lmsg( "g.AppDataAndMinQualsTitle" ), lmsg( "g.AppDataAndMinQualsSubtitle" ) );
+            float y = addTitle(previousYLevel, lmsg( "g.AppDataAndMinQualsTitle" ), lmsg( "g.AppDataAndMinQualsSubtitle" ), null, null );
 
             // First create the table
             PdfPCell c;
@@ -10388,7 +10388,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
         if( reportData.getReportRuleAsBoolean( "usernotesoff" ) )
             return;
 
-        addTitle( 0 , lmsg("g.Notes"), lmsg( "g.NotesSubtitle" ) );
+        addTitle(0 , lmsg("g.Notes"), lmsg( "g.NotesSubtitle" ), null, null );
     }
 
 
@@ -10724,6 +10724,9 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                 }
             }
 
+            if( reportData.getCustomReportValues()!=null && reportData.getCustomReportValues().get("whatsincludedlist")!=null )
+                whatsContained = (List<String>) reportData.getCustomReportValues().get("whatsincludedlist");
+                        
             if( whatsContained.size()>3 )
                 lowerTableAdj += (whatsContained.size()-3)*lineHeight;
 
@@ -11380,7 +11383,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
 
 
-    public float addTitle( float startY, String title, String subtitle ) throws Exception
+    public float addTitle( float startY, String title, String subtitle, Font forceTitleFont, Font forceSubtitleFont) throws Exception
     {
         try
         {
@@ -11403,8 +11406,8 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             previousYLevel =  currentYLevel;
 
-            Font fnt =   getHeaderFontXLarge();
-            float leading = fnt.getSize();
+            Font fnt = forceTitleFont!=null ? forceTitleFont : getHeaderFontXLarge();
+            // float leading = fnt.getSize();
 
             float y = startY>0 ? startY - fnt.getSize() - TPAD :  pageHeight - headerHgt - fnt.getSize() - TPAD;
             // float y = startY>0 ? startY - fnt.getSize() - 2*PAD :  pageHeight - headerHgt - fnt.getSize() - 2*PAD;
@@ -11419,9 +11422,9 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                 return y;
 
             // Change getFont()
-            fnt =  getFont();
+            fnt = forceSubtitleFont!=null ? forceSubtitleFont : getFont();
 
-            leading = fnt.getSize();
+            float leading = fnt.getSize();
 
             float spaceLeft = y - PAD - footerHgt;
 

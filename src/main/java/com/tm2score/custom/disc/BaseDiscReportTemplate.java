@@ -648,7 +648,7 @@ public abstract class BaseDiscReportTemplate extends BaseCT2ReportTemplate imple
         {
             previousYLevel =  currentYLevel;
 
-            float y = addTitle( previousYLevel, lmsg_spec( "disc.StylesExplained" ), null );
+            float y = addTitle(previousYLevel, lmsg_spec( "disc.StylesExplained" ), null, null, null );
 
             y -= TPAD;
 
@@ -1750,7 +1750,7 @@ public abstract class BaseDiscReportTemplate extends BaseCT2ReportTemplate imple
             previousYLevel =  currentYLevel;
 
 
-            float y = addTitle( previousYLevel, lmsg_spec("disc.InfoForManagers"), null );
+            float y = addTitle(previousYLevel, lmsg_spec("disc.InfoForManagers"), null, null, null );
 
             y -= TPAD;
 
