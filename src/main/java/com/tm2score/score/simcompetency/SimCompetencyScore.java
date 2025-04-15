@@ -1166,6 +1166,9 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
                     if( competencyScoreType.isDichotomous() && !competencyScoreType.equals( CompetencyScoreType.TOTAL_CORRECT) )
                         relevantValue = fractionScoreValue;
 
+                    if( competencyScoreType.isPointAccum() && competencyScoreType.isPercentOfTotal() )
+                        relevantValue = fractionScoreValue;
+                    
                     // Use the local sim-specific value if present (std >0).
                     if( simCompetencyObj.getStddeviation()>0 )
                     {

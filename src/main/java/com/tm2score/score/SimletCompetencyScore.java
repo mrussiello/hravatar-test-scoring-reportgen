@@ -227,7 +227,7 @@ public class SimletCompetencyScore
         }
 
         if( ScoreManager.DEBUG_SCORING )
-            LogService.logIt( "SimletCompetencyScore.initForScoring() " + this.competencyScoreObj.getName() + ", totalScorableItems=" + totalScorableItems + ", irList.size=" + irList.size() + ", useTotalItemsSimLevel=" + useTotalItemsSimLevel + ", useTotalItemsSimletCompetencyLevel=" + useTotalItemsSimletCompetencyLevel );
+            LogService.logIt( "SimletCompetencyScore.initForScoring() " + this.competencyScoreObj.getName() + ", totalScorableItems=" + totalScorableItems + ", maxPoints=" + maxPoints + ", irList.size=" + irList.size() + ", useTotalItemsSimLevel=" + useTotalItemsSimLevel + ", useTotalItemsSimletCompetencyLevel=" + useTotalItemsSimletCompetencyLevel );
     }
 
 
