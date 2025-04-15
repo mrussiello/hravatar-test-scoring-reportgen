@@ -10442,7 +10442,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             boolean compNameForAdmin = reportData.getReportRuleAsBoolean("compnameforprep") && includeCompanyInfo;
 
-            LogService.logIt( "BaseCT2ReportTemplate.addCoverPage()  CCC.1 includeCompanyInfo=" + includeCompanyInfo + ", reportCompanyName=" + reportCompanyName + ", compNameForAdmin=" + compNameForAdmin + ", omitCoverImages=" + omitCoverImages );
+            // LogService.logIt( "BaseCT2ReportTemplate.addCoverPage()  CCC.1 includeCompanyInfo=" + includeCompanyInfo + ", reportCompanyName=" + reportCompanyName + ", compNameForAdmin=" + compNameForAdmin + ", omitCoverImages=" + omitCoverImages );
 
             if( compNameForAdmin && !reportData.hasCustLogo() )
                 includeCompanyInfo = false;
@@ -10471,7 +10471,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                 ITextUtils.addDirectImage( pdfWriter, hraCover, pageWidth-hraCover.getScaledWidth() + 1, 0, true );
 
                 Image hraCover2 = getHraCoverImage2();
-                LogService.logIt( "BaseCT2ReportTemplate.addCoverPageV2() hraCover2=" + (hraCover2==null ? "null" : "not null") );
+                // LogService.logIt( "BaseCT2ReportTemplate.addCoverPageV2() hraCover2=" + (hraCover2==null ? "null" : "not null") );
                 if( hraCover2 !=null )
                 {
                     hraCover2.scalePercent(64);

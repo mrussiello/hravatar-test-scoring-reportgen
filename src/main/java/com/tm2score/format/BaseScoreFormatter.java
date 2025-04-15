@@ -530,7 +530,7 @@ public class BaseScoreFormatter
 
     public boolean getReportRuleAsBoolean( String name )
     {
-       return getReportRuleAsInt( name ) == 1;
+       return getReportRuleAsInt( name )==1;
     }
 
 
@@ -935,7 +935,7 @@ public class BaseScoreFormatter
 
             if( te.hasProfile() && te.getProfile()!=null && te.getProfile().getStrParam3()!=null && !te.getProfile().getStrParam3().isEmpty() )
                 custClrs = "&cs=" + te.getProfile().getStrParam3().trim();
-
+            
             sb.append("<img style=\"width:" + (Constants.CT2_COLORGRAPHWID_EML + 8) + "px;height:20px\" alt=\"" + MessageFactory.getStringMessage(locale, "g.CT2GraphicAlt" ) + "\" src=\"" + RuntimeConstants.getStringValue("baseprotocol") +  "://" + RuntimeConstants.getStringValue( "baseadmindomain" ) + "/ta/" + (getTestEvent().getUseBellGraphs() ? "bellscorechart" : "ct2scorechart") + "/" + tes.getTestEventScoreIdEncrypted()  + ".png?ss=" + imgUrl.toString() + "&tw=" + Constants.CT2_COLORGRAPHWID_EML + "&p=" + ptrPos + pflPrms + custClrs + "\"/>" );
         }
 

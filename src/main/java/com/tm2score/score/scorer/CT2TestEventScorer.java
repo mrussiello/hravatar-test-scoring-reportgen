@@ -168,6 +168,7 @@ public class CT2TestEventScorer extends StandardTestEventScorer {
     }
 
     
+    @Override
     public String toString()
     {
         return "Ct2TestEventScorer() ";

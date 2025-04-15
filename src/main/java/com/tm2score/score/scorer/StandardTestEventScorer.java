@@ -440,9 +440,10 @@ public class StandardTestEventScorer extends BaseTestEventScorer implements Test
 
 
 
+    @Override
     public String toString()
     {
-        return "StandardTestEventScorer() ";
+        return "StandardTestEventScorer() testEventId=" + (this.te==null ? "null" : te.getTestEventId() + ", testKeyId=" + te.getTestKeyId());
     }
 
 }

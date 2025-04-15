@@ -61,17 +61,17 @@ public class DiscPieGraphCellEvent implements PdfPCellEvent {
 
             Rectangle imgRect = new Rectangle( rctngl.getLeft(),rctngl.getBottom(),rctngl.getRight(),rctngl.getTop());
 
-            LogService.logIt( "DiscPieGraphCellEvent.cellLayout() wid=" + wid + ", hgt=" + hgt );
+            // LogService.logIt( "DiscPieGraphCellEvent.cellLayout() wid=" + wid + ", hgt=" + hgt );
 
             BufferedImage bufImg = DiscReportUtils.getDiscPieGraphImage2(scoreValMap, scrDigits, (int) wid, (int)hgt);
 
-            LogService.logIt( "DiscPieGraphCellEvent.cellLayout() image.width=" + bufImg.getWidth() + ", image.hgt=" + bufImg.getHeight() );
+            // LogService.logIt( "DiscPieGraphCellEvent.cellLayout() image.width=" + bufImg.getWidth() + ", image.hgt=" + bufImg.getHeight() );
 
             Image img = Image.getInstance(bufImg, null );
             img.setAbsolutePosition( rctngl.getLeft(), rctngl.getBottom() );
             img.scaleToFit(imgRect);
 
-            LogService.logIt( "DiscPieGraphCellEvent.cellLayout() Itext.img.width=" + img.getWidth() + ", .itext.image.hgt=" + img.getHeight() );
+            // LogService.logIt( "DiscPieGraphCellEvent.cellLayout() Itext.img.width=" + img.getWidth() + ", .itext.image.hgt=" + img.getHeight() );
 
             PdfContentByte pcb = pcbs[ PdfPTable.TEXTCANVAS ];
             pcb.saveState();

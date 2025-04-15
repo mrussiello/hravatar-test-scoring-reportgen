@@ -1339,6 +1339,8 @@ public class ReportManager extends BaseReportManager
             // tk.authUser
             User authUser = userFacade.getUser( tk.getAuthorizingUserId() );
 
+            Report report = reportId>0 ? eventFacade.getReport(reportId) : null;
+            
             tk.setProductId(productId);
             tk.setProductTypeId( product.getProductTypeId() );
             tk.setCorpId( RuntimeConstants.getIntValue( "defaultcorpid" ));
@@ -1386,8 +1388,10 @@ public class ReportManager extends BaseReportManager
             te.setExperTypeId( simJ.getExper() );
             te.setTrainTypeId( simJ.getTrn() );
             
+            ReportRules reportRules = new ReportRules( org, null, te.getProduct(), report, null );
+            
             //if( simJ.getUsesstdhrascoring()==1 )
-            te.setStdHraScoring(SimJUtils.getHasAnyNormativeScoring( simJ ) ? 1 : 0 );
+            te.setStdHraScoring(SimJUtils.getHasAnyNormativeScoring( simJ ) && !reportRules.getReportRuleAsBoolean("bellgraphsoff") ? 1 : 0 );
                         
             List<TestEventScore> tesl = new ArrayList<>();
 

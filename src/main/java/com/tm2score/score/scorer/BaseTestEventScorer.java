@@ -299,7 +299,7 @@ public class BaseTestEventScorer
             te.setEducTypeId( te.getSimXmlObj().getEduc() );
             te.setExperTypeId( te.getSimXmlObj().getExper() );
             te.setTrainTypeId( te.getSimXmlObj().getTrn() );
-            te.setStdHraScoring( SimJUtils.getHasAnyNormativeScoring( te.getSimXmlObj() ) ? 1 : 0 );
+            te.setStdHraScoring( SimJUtils.getHasAnyNormativeScoring( te.getSimXmlObj() ) && (reportRules==null || !reportRules.getReportRuleAsBoolean("bellgraphsoff")) ? 1 : 0 );
 
             setExcludeFmNorms();
 
@@ -2224,7 +2224,7 @@ public class BaseTestEventScorer
             //if( tes.getTextParam1() != null && tes.getTextParam1().isEmpty() )
             //    tes.setTextParam1( null );
 
-            if( ScoreManager.DEBUG_SCORING )
+             if( ScoreManager.DEBUG_SCORING )
                 LogService.logIt( "BaseTestEventScorer.setCompetencyTestEventScores() saving " + tes.getName() + ", raw=" + tes.getRawScore() + ", scaled score=" + tes.getScore() + ", totalUsed=" + tes.getTotalUsed() );
 
             eventFacade.saveTestEventScore(tes);
