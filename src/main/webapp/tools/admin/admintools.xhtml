@@ -231,7 +231,7 @@
                                 </h:panelGroup>
 
 
-
+                                <!--
                                 <h:panelGroup>
                                     <div class="bodysmallbold" style="text-align: right">Rescore SimId/VersionId:</div>
                                 </h:panelGroup>
@@ -240,7 +240,16 @@
                                     <p:inputText value="#{userBean.simVersionId}" size="3" placeholder="Ver"/>
                                 </h:panelGroup>
                                 <h:panelGroup></h:panelGroup>
+                                -->
 
+                                <h:panelGroup>
+                                    <div class="bodysmallbold" style="text-align: right">Rescore SimId/VersionId Pairs:</div>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:inputText value="#{userBean.simIdVersionIdPairs}" size="40" placeholder="Id,Ver,Id,Ver,..."/>&#160;
+                                </h:panelGroup>
+                                <h:panelGroup></h:panelGroup>
+                                
                                 <h:panelGroup>
                                     <div class="bodysmallbold" style="text-align: right">OrgId/SuborgId:</div>
                                 </h:panelGroup>
@@ -274,7 +283,7 @@
                                 <h:panelGroup>
                                     <p:selectBooleanCheckbox value="#{userBean.booleanParam1}"/>&#160;Percentiles Only.
                                 </h:panelGroup>
-                                <p:commandButton ajax="false" action="#{userUtils.processRescoreSimOrOrg}" value="Rescore Sim / Org"/>
+                                <p:commandButton ajax="false" action="#{userUtils.processRescoreSimIdVersionIdPairsOrOrg}" value="Rescore Sim(s) / Org"/>
 
 
 

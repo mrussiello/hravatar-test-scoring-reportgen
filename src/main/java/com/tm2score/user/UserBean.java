@@ -31,6 +31,7 @@ public class UserBean implements Serializable
     private long logonHistoryId = 0;
     private int testKeyEventSelectionTypeId = 0;
     
+    private String simIdVersionIdPairs;
     private long simId;
     private int simVersionId;
     private long simId2;
@@ -716,6 +717,14 @@ public class UserBean implements Serializable
 
     public void setResultStr1(String resultStr1) {
         this.resultStr1 = resultStr1;
+    }
+
+    public String getSimIdVersionIdPairs() {
+        return simIdVersionIdPairs;
+    }
+
+    public void setSimIdVersionIdPairs(String simIdVersionIdPairs) {
+        this.simIdVersionIdPairs = simIdVersionIdPairs;
     }
     
     

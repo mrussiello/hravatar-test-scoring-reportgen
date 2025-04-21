@@ -1484,7 +1484,7 @@ public class UserUtils extends FacesUtils
 
             if( tel.size()>20 )
             {
-                TestEventRescoreThread ters = new TestEventRescoreThread( tel, this, descrip, userBean.getSimDescripXml(), false, userBean.isClearExternal(), userBean.isSkipVersionCheck(), userBean.isResetSpeechText(), survey );
+                TestEventRescoreThread ters = new TestEventRescoreThread( userBean.getUser(), tel, this, descrip, userBean.getSimDescripXml(), false, userBean.isClearExternal(), userBean.isSkipVersionCheck(), userBean.isResetSpeechText(), survey );
 
                 new Thread( ters ).start();
 
@@ -1519,6 +1519,118 @@ public class UserUtils extends FacesUtils
     }
 
 
+    public String processRescoreSimIdVersionIdPairsOrOrg()
+    {
+        getUserBean();
+        long simId = userBean.getSimId();
+        int orgId = userBean.getSimOrgId();
+        int suborgId = userBean.getSimSuborgId();
+
+
+        try
+        {
+            if( !userBean.getUserLoggedOnAsAdmin() )
+            {
+                this.setStringErrorMessage( "You are not authorized to perform this action.");
+                return "/index.xhtml";
+            }
+            
+            List<Long[]> simIdPairs = new ArrayList<>();
+            
+            if( userBean.getSimIdVersionIdPairs()!=null && !userBean.getSimIdVersionIdPairs().isBlank() )
+            {
+                String[] pairinfo = userBean.getSimIdVersionIdPairs().trim().split(",");
+                
+                for( int i=0;i<pairinfo.length-1;i+=2  )
+                {
+                    if( Long.parseLong(pairinfo[i])<=0 || Long.parseLong(pairinfo[i+1])<=0 )
+                    {
+                        this.setStringErrorMessage( "BOTH Sim Id AND SimVersionId are required for each sim to be rescored (unless it's for the whole org then leave simIds blank)" );
+                        return "StayInSamePlace";
+                        
+                    }                        
+                   simIdPairs.add(new Long[] { Long.valueOf(pairinfo[i]), Long.valueOf(pairinfo[i+1])}); 
+                }
+            }
+
+            //if( userBean.getTestEventId() <= 0 )
+            //    throw new Exception( "TestEventId is invalid. " + userBean.getTestEventId() );
+
+            Date start = userBean.getStartDate();
+            Date end = userBean.getEndDate();
+            
+            if( simIdPairs.size()<=0 && orgId<=0 )
+            {
+                this.setStringErrorMessage( "Either at least one Sim ID/simversionId pair, or orgId (and optionally subOrgId) is required." );
+                return "StayInSamePlace";
+            }
+
+            //if( simId > 0 && userBean.getSimVersionId()<=0 )
+            //{
+            //    this.setStringErrorMessage("Sim Version ID is required when SimId is specified." );
+            //    return "StayInSamePlace";
+            //}
+
+            if( orgId>0 && suborgId<0 )
+                suborgId=0;
+
+            if( eventFacade==null )
+                eventFacade = EventFacade.getInstance();
+
+            boolean percentilesOnly = userBean.getBooleanParam1();
+            
+            TestEventRescoreThread ters;
+            // Full Org
+            if( simIdPairs.isEmpty() )
+            {
+                List<Long> tel = eventFacade.getTestEventIdsForSimIdAndOrOrg(0, 0, orgId, suborgId, 0, percentilesOnly ? TestEventStatusType.SCORED.getTestEventStatusTypeId() : TestEventStatusType.COMPLETED.getTestEventStatusTypeId(), TestEventStatusType.REPORT_COMPLETE.getTestEventStatusTypeId(), new int[]{TestEventStatusType.SCORE_ERROR.getTestEventStatusTypeId(), TestEventStatusType.REPORT_ERROR.getTestEventStatusTypeId()}, start, end, 0, 0 );
+
+                ters = new TestEventRescoreThread( userBean.getUser(), tel, this, "Rescore / Recalc Percentiles for Org. orgId=" + orgId + ", suborgId=" + suborgId, null, percentilesOnly, userBean.isClearExternal2(), false, false, false );
+                new Thread( ters ).start();
+                setStringInfoMessage( "More than 1 TestEvent was identified for " + (percentilesOnly ? "percentile recalculation" : "rescoring,") + " so this process is being executed in the background. Check the system logs for information." );
+                userBean.clear();
+                return null;
+            }
+            
+            ters = new TestEventRescoreThread(userBean.getUser(), simIdPairs, orgId, suborgId, start, end, null, this, "Rescore / Recalc Percentiles for " + (simIdPairs==null ? "null" : simIdPairs.size()) +  " simId sim/versionId pairs and orgId=" + orgId + ", suborgId=" + suborgId, percentilesOnly, userBean.isClearExternal2(), false, false, false );
+            new Thread( ters ).start();
+            setStringInfoMessage( "Process for rescoring " + simIdPairs.size() + " sims is being executed in the background. Check the system logs for information." );
+            userBean.clear();
+            return null;
+        }                
+        catch(STException e )
+        {
+            setMessage( e );
+        }
+        catch( ScoringException  e )
+        {
+            LogService.logIt( "UserUtils.processRescoreSimOrOrg() STERR " + e.toString() + ", simId=" + simId );
+            setMessage( e );
+            if( userBean.getUser()!=null )
+            {
+                EmailUtils emu = new EmailUtils();
+                emu.sendEmailToAdmin( "TestEvent Rescore Process FAILED", "TestEventRescoreThread.run() FAILED " + e.toString() );
+            }
+        }
+
+        catch( Exception e )
+        {
+            LogService.logIt( e, "UserUtils.processRescoreSimOrOrg() " + ", simId=" + simId  );
+            setMessage( e );
+            if( userBean.getUser()!=null )
+            {
+                EmailUtils emu = new EmailUtils();
+                emu.sendEmailToAdmin( "TestEvent Rescore Process FAILED", "TestEventRescoreThread.run() FAILED " + e.toString() );
+            }
+            
+        }
+
+        return null;
+    }
+
+    
+    
+    /*
     public String processRescoreSimOrOrg()
     {
         getUserBean();
@@ -1581,10 +1693,7 @@ public class UserUtils extends FacesUtils
             rescoreTestOrSurveyEvents(tel, null, false, percentilesOnly, userBean.isClearExternal2(), false, false, false  );
 
             userBean.clear();
-        }
-
-        
-        
+        }                
         catch(STException e )
         {
             setMessage( e );
@@ -1603,7 +1712,8 @@ public class UserUtils extends FacesUtils
 
         return null;
     }
-
+    */    
+    
 
     public void recalcPercentilesForTestEvents( List<Long> tel, String simDescripXml, boolean isThread ) throws Exception
     {
