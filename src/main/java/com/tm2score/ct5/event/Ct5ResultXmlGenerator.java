@@ -176,7 +176,7 @@ public class Ct5ResultXmlGenerator {
                 cfi.setSs( ct5ItemType.getSelectedSubnodeSeq(ir,sji) ); // only really used in mult choice
 
                 cfi.setValue( ct5ItemType.getResultXmlIntnValue(ir,sji));
-
+                
                 ch.getIntnOrClip().add(cfi);
             }
 

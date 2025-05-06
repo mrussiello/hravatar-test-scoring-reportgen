@@ -1543,13 +1543,13 @@ public class UserUtils extends FacesUtils
                 
                 for( int i=0;i<pairinfo.length-1;i+=2  )
                 {
-                    if( Long.parseLong(pairinfo[i])<=0 || Long.parseLong(pairinfo[i+1])<=0 )
+                    if( Long.parseLong(pairinfo[i].trim())<=0 || Long.parseLong(pairinfo[i+1].trim())<=0 )
                     {
                         this.setStringErrorMessage( "BOTH Sim Id AND SimVersionId are required for each sim to be rescored (unless it's for the whole org then leave simIds blank)" );
                         return "StayInSamePlace";
                         
                     }                        
-                   simIdPairs.add(new Long[] { Long.valueOf(pairinfo[i]), Long.valueOf(pairinfo[i+1])}); 
+                   simIdPairs.add(new Long[] { Long.valueOf(pairinfo[i].trim()), Long.valueOf(pairinfo[i+1].trim())}); 
                 }
             }
 

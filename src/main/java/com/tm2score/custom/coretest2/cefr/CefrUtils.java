@@ -288,7 +288,7 @@ public class CefrUtils
             }
             
             // failed this level.
-            if( percentCorrectArray[i]<66.66f )
+            if( percentCorrectArray[i]<66.7f )
             {
                 LogService.logIt( "CefrUtils.getCefrScoreTypeForSimCompetency() DDD.1 failed level " + i );
                 

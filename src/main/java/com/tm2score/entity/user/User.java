@@ -189,6 +189,9 @@ public class User implements Serializable
 
 
     @Transient
+    private Resume resume;
+    
+    @Transient
     private String password;
 
     @Override
@@ -855,6 +858,14 @@ public class User implements Serializable
 
     public void setNationality(String nationality) {
         this.nationality = nationality;
+    }
+
+    public Resume getResume() {
+        return resume;
+    }
+
+    public void setResume(Resume resume) {
+        this.resume = resume;
     }
 
 

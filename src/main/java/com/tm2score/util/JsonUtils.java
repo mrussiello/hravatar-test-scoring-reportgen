@@ -5,6 +5,10 @@
  */
 package com.tm2score.util;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.tm2score.service.LogService;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -53,6 +57,18 @@ public class JsonUtils {
     {
         return Json.createArrayBuilder();
     }    
+    
+    public static String getPrettyJsonStr( String jsonStr )
+    {
+        if( jsonStr==null || jsonStr.trim().isEmpty() )
+            return "";
+        
+        // JsonParser parser = new JsonParser();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        JsonElement el = JsonParser.parseString(jsonStr); // .parse(jsonStr);
+        return gson.toJson(el); // done        
+    }
     
     
     public static JsonObjectBuilder jsonObjectToBuilder(JsonObject jo) 

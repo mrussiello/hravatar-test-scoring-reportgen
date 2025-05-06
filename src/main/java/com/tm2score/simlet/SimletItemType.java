@@ -17,6 +17,7 @@ public enum SimletItemType
     MANUAL_UPLOAD(5, "(Manual) File Upload" ),
     AUTO_AV_UPLOAD(9, "(Auto) Audio/Video File Upload" ),
     IMAGE_CAPTURE(10, "(Auto) Participant Image Capture" ),
+    RESUME_CAPTURE(11, "(Manual) Resume Capture" ),
     OTHER_TRACK(99,"Other Trackable Response" );
 
     private final int simletItemTypeId;

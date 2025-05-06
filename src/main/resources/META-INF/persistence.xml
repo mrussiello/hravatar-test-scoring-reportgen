@@ -51,6 +51,7 @@
     <class>com.tm2score.entity.proctor.ProctorEntry</class>
     <class>com.tm2score.entity.proctor.ProctorSuspension</class>
     <class>com.tm2score.entity.event.TestEventResponseRating</class>
+    <class>com.tm2score.entity.user.Resume</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
     <properties/>

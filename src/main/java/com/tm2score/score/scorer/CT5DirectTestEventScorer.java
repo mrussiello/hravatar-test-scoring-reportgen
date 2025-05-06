@@ -13,7 +13,6 @@ import com.tm2score.entity.ct5.event.Ct5TestEvent;
 import com.tm2score.entity.event.SurveyEvent;
 import com.tm2score.entity.event.TestEvent;
 import com.tm2score.entity.sim.SimDescriptor;
-import com.tm2score.entity.user.User;
 import com.tm2score.event.EventFacade;
 import com.tm2score.event.TestEventStatusType;
 import com.tm2score.file.FileUploadFacade;

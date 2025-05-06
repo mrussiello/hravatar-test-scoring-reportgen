@@ -16,7 +16,8 @@ public enum NonCompetencyItemType
     WRITING_SAMPLE(9,"Writing Sample","WRITINGSAMPLE","g.WritingSamples" ),
     SPEAKING_SAMPLE(10,"Speaking Sample","SPEAKINGSAMPLE","g.SpeakingSamples" ),
     FILEUPLOAD(11,"General Uploaded File","UPLOADEDFILE","g.UploadedFiles"),
-    AV_UPLOAD(12,"Uploaded Audio/Video File","UPLOADEDAV","g.UploadedAVFiles" );
+    AV_UPLOAD(12,"Uploaded Audio/Video File","UPLOADEDAV","g.UploadedAVFiles" ),
+    RESUME_CAPTURE(13,"Resume - Text or Uploaded File","RESUME","g.ResumeCapture" );
 
 
     private final int nonCompetencyItemTypeId;

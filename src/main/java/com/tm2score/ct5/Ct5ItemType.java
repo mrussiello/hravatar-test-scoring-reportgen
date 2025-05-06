@@ -30,6 +30,7 @@ public enum Ct5ItemType {
     MATCHING(5,"c5it.Matching", "matching"),
     FILE_UPLOAD(6,"c5it.FileUpload", "fileupload" ),
     SCORED_MEDIA(10,"c5it.ScoredMedia", "scoredmedia" ),
+    RESUME(11,"c5it.Resume", "resume" ),
     VIDEO_INTERVIEW(50,"c5it.VideoInterview", "videointerview" ),
     INFORMATIONAL(100,"c5it.Informational", "info");
 
@@ -50,10 +51,10 @@ public enum Ct5ItemType {
     }
     
     
-    public boolean getUsesInlineIntnItems()
-    {
-        return getIsInfo() || getIsAnyEssay() || getIsAnyMultipleChoice() || getIsAnyMultipleCorrect()|| getIsFillBlank();
-    }
+    //public boolean getUsesInlineIntnItems()
+    //{
+    //    return getIsInfo() || getIsAnyEssay() || getIsResume() || getIsAnyMultipleChoice() || getIsAnyMultipleCorrect()|| getIsFillBlank();
+    //}
     
     //public boolean getIsSurvey()
     //{
@@ -70,6 +71,11 @@ public enum Ct5ItemType {
         return equals(FILE_UPLOAD);
     }
 
+    public boolean getIsResume()
+    {
+        return equals(FILE_UPLOAD);
+    }
+
     
     public boolean getUsesChoices()
     {
@@ -81,10 +87,10 @@ public enum Ct5ItemType {
         return !equals( INFORMATIONAL );
     }
         
-    public boolean getIsKsa()
-    {
-        return equals(FILL_BLANK) || equals(ESSAY) || getIsMultipleChoice() || getIsMultipleCorrect() || getIsMatching(); //  || getIsSurvey();
-    }
+    //public boolean getIsKsa()
+    //{
+    //    return equals(FILL_BLANK) || equals(ESSAY) || getIsMultipleChoice() || getIsMultipleCorrect() || getIsMatching(); //  || getIsSurvey();
+    //}
     
     public boolean getIsMatching()
     {
@@ -98,10 +104,10 @@ public enum Ct5ItemType {
 
     
 
-    public boolean getSupportsBranching()
-    {
-        return getIsInfo() || getIsAnyMultipleChoice() || getIsAnyMultipleCorrect() || getIsRating() || getIsEssay() || getIsFillBlank(); // getIsSurvey() || 
-    }
+    //public boolean getSupportsBranching()
+    //{
+    //    return getIsInfo() || getIsAnyMultipleChoice() || getIsAnyMultipleCorrect() || getIsRating() || getIsEssay() || getIsResume() || getIsFillBlank(); // getIsSurvey() || 
+    //}
 
     public boolean getIsAnyMultipleChoice()
     {
@@ -170,24 +176,24 @@ public enum Ct5ItemType {
         return equals( INFORMATIONAL );
     }
     
-    public boolean getUsesTopic()
-    {
-        return !getIsVideo() && !getIsInfo();
-    }
+    //public boolean getUsesTopic()
+    //{
+    //    return !getIsVideo() && !getIsInfo() && !getIsResume();
+    //}
 
-    public boolean getUsesSubtopic()
-    {
-        return  getUsesTopic() && !getIsEssay(); //  && !getIsSurvey();
-    }
+    //public boolean getUsesSubtopic()
+    //{
+    //    return  getUsesTopic() && !getIsEssay(); //  && !getIsSurvey();
+    //}
 
     
-    public boolean okForCt5TestType( Ct5TestType ct5TestType )
-    {
-        if( ct5TestType.getIsDefault() && getIsVideo() )
-            return false;
+    //public boolean okForCt5TestType( Ct5TestType ct5TestType )
+    //{
+    //    if( ct5TestType.getIsDefault() && getIsVideo() )
+    //        return false;
         
-        return true;
-    }    
+    //    return true;
+    //}    
 
     
     
@@ -238,6 +244,7 @@ public enum Ct5ItemType {
         drag drop: tgt:dragable1;dragable2;dragable3,tgt:dragable4, ...
         fill blank: question:URL-Encoded(text entered)
         essay: blank           
+        resume: blank           
     */
     public String getResultXmlIntnValue(Ct5ItemResponse ir, SimJ.Intn sji )
     {
@@ -252,7 +259,7 @@ public enum Ct5ItemType {
         String DELIM = "~";
         SimJ.Intn.Intnitem sjii = null;
         
-        // Essay. Stored in responseText.
+        // Essay or Resume. Stored in responseText.
         if( getIsEssay() )
         {
             sjii = getFirstSimJIntnItem( sji, G2ChoiceFormatType.TEXT_BOX , Ct5ItemPartType.WIDGET );            
@@ -440,7 +447,36 @@ public enum Ct5ItemType {
 
             sb.append( (sjii==null ? "0" : sjii.getCt5Itempartid()) + DELIM + encVals );
         }
-               
+
+        if( getIsResume() )
+        {
+            String res = "";
+            
+            if( ir.getUploadedUserFile()!=null )
+            {
+                sjii = getFirstSimJIntnItem( sji, G2ChoiceFormatType.FILEUPLOADBTN, Ct5ItemPartType.WIDGET );
+
+                String encVals = "medcap_" + sji.getCt5Itemid() + "-" + (sjii==null ? "0" : sjii.getCt5Itempartid()) + ";" + ir.getUploadedUserFile().getInitialFileSize() + ";" + ir.getUploadedUserFile().getInitialMime();
+                encVals = StringUtils.getUrlEncodedValue(encVals);
+
+                res = (sjii==null ? "0" : sjii.getCt5Itempartid()) + DELIM + encVals;
+            }
+            
+            sjii = getFirstSimJIntnItem( sji, G2ChoiceFormatType.TEXT_BOX , Ct5ItemPartType.WIDGET );            
+            String rt = ir.getResponseText();
+            if( rt!=null && !rt.isBlank() )
+            {
+                rt = StringUtils.replaceStr(rt, DELIM, "@#@" );
+                rt = StringUtils.replaceStr(rt, "|", "&#&" );
+                rt = StringUtils.replaceStr(rt, "^", "&#&" ); 
+                
+                if( !res.isBlank() )
+                    res += DELIM;                
+                res += (sjii==null ? "" : sjii.getCt5Itempartid()) + DELIM + XmlUtils.encodeURIComponent(rt);            
+            } 
+            sb.append( res );
+        }        
+        
         return sb.toString() + (commentStr==null ? "" : DELIM + commentStr );
     }
 
@@ -456,6 +492,7 @@ public enum Ct5ItemType {
         drag drop: tgt:dragable1;dragable2;dragable3,tgt:dragable4, ...
         fill blank: question:URL-Encoded(text entered)
         essay: blank 
+        resume: blank 
     */
     public Map<Integer,String> getResponseMap( Ct5ItemResponse ir, SimJ.Intn sji )
     {
@@ -497,7 +534,7 @@ public enum Ct5ItemType {
         return respMap;
     }
     
-    private void dumpRespMap( int ct5ItemId, Map<Integer,String> respMap )
+    protected void dumpRespMap( int ct5ItemId, Map<Integer,String> respMap )
     {
         StringBuilder sb = new StringBuilder();        
         for( Integer s : respMap.keySet() )

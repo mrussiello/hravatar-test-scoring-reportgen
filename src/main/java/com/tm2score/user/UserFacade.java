@@ -9,6 +9,7 @@ import com.tm2score.entity.user.Country;
 import com.tm2score.entity.user.LogonHistory;
 import com.tm2score.entity.user.Org;
 import com.tm2score.entity.user.OrgAutoTest;
+import com.tm2score.entity.user.Resume;
 import com.tm2score.entity.user.Suborg;
 import com.tm2score.entity.user.User;
 import com.tm2score.global.RuntimeConstants;
@@ -308,22 +309,52 @@ public class UserFacade
                 em.detach( user );
                 em.persist( user );
             }
-
-            // em.flush();
-
-            // utx.commit();
         }
-
         catch( Exception e )
         {
             LogService.logIt( e, "UserFacade.saveUser() " + user.toString() );
-
             throw new STException( e );
         }
 
         return user;
     }
 
+    
+    public Resume saveResume( Resume resume ) throws Exception
+    {
+        try
+        {
+            if( resume.getUserId()<=0 )
+                throw new Exception( "Resume.userId is invalid: " + resume.getUserId() );
+            
+            if( resume.getLocaleStr() == null || resume.getLocaleStr().isEmpty() )
+                resume.setLocaleStr( "en_US" );
+
+            if( resume.getCreateDate()==null )
+                resume.setCreateDate( new Date() );
+            
+            resume.setLastUpdate(new Date());
+            
+            if( resume.getResumeId() > 0 )
+            {
+                em.merge(resume );
+            }
+
+            else
+            {
+                em.detach(resume );
+                em.persist(resume );
+            }
+        }
+        catch( Exception e )
+        {
+            LogService.logIt(e, "UserFacade.saveResume() " + resume.toString() );
+            throw new STException( e );
+        }
+
+        return resume;
+    }
+    
 
     public Org saveOrg(Org org) throws Exception
     {
@@ -648,6 +679,36 @@ public class UserFacade
     }
 
 
+    // Changed to always use the latest without cache because people update!
+    public Resume getResumeForUser( long userId ) throws Exception
+    {
+        try
+        {
+            // if( tm2Factory == null )
+            //     tm2Factory = PersistenceManager.getInstance().getEntityManagerFactory();
+
+            // EntityManager em = tm2Factory.createEntityManager();
+
+            Query q = em.createNamedQuery( "Resume.findByUserId" );
+
+            q.setParameter( "userId", userId );
+
+            q.setHint( "jakarta.persistence.cache.retrieveMode", "BYPASS" );
+
+            return (Resume) q.getSingleResult();
+        }
+        catch( NoResultException e )
+        {
+            return null;
+        }
+        catch( Exception e )
+        {
+            LogService.logIt( e, "UserFacade.getResumeForUser( " + userId + " ) " );
+            throw new STException( e );
+        }
+    }
+    
+    
 
 
     // Changed to always use the latest without cache because people update!
@@ -671,17 +732,13 @@ public class UserFacade
             //return em.find(User.class, userId );
         //}
         }
-
         catch( NoResultException e )
         {
             return null;
         }
-
-
         catch( Exception e )
         {
             LogService.logIt( e, "getUser( " + userId + " ) " );
-
             throw new STException( e );
         }
     }
