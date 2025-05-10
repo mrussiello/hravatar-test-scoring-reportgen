@@ -274,7 +274,9 @@ public class Battery implements Serializable
                 }
                 
                 else
+                {
                     teScore = te.getOverallScore();
+                }
 
                 // LogService.logIt( "Battery.scoreTestBattery() pid=" + pid + ", wt=" + wt + ", teScore=" + teScore );
                 

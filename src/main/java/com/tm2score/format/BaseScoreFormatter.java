@@ -1440,9 +1440,22 @@ public class BaseScoreFormatter
                 {
                     if( isIncludeNumeric() && BatteryScoreType.getValue(getBatteryScore().getBatteryScoreTypeId()).needsScore() )
                     {
+                        // need to calc score digits
+                        int scrDigits = ScoreFormatType.NUMERIC_0_TO_100.getScorePrecisionDigits();
+                        
+                        for( TestEvent tev : tk.getTestEventList() )
+                        {
+                            if( tev!=null )
+                            {
+                                scrDigits = tev.getScoreFormatType().getScorePrecisionDigits();
+                                break;
+                            }
+                        }
+                        
+                        
                         tog = !tog;
                         style = tog ? rowStyle1 : rowStyle2;
-                        value = I18nUtils.getFormattedNumber(locale, getBatteryScore().getScore(), 0);
+                        value = I18nUtils.getFormattedNumber(locale, getBatteryScore().getScore(), scrDigits);
                         label = lmsg(  "g.OverallBatteryScoreC" , null );
                         if( value != null && value.length() > 0 )
                         {
