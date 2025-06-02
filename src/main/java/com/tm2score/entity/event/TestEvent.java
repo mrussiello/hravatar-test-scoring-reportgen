@@ -18,6 +18,7 @@ import com.tm2score.sim.MultiCompetenciesPerItemType;
 import com.tm2score.imo.xml.Clicflic;
 import com.tm2score.service.LogService;
 import com.tm2builder.sim.xml.SimJ;
+import com.tm2score.ct5.event.Ct5ResumeUtils;
 import com.tm2score.entity.proctor.RemoteProctorEvent;
 import com.tm2score.entity.profile.Profile;
 import com.tm2score.entity.user.User;
@@ -694,6 +695,11 @@ public class TestEvent implements Serializable, Comparable<TestEvent>, ErrorTxtO
                 }
             }
 
+            // Interaction still not found in SimXmlObj - check to see if it is a resume intn.
+            if( intnObj==null && intRespObj.getUnqid()!=null && !intRespObj.getUnqid().isBlank() )
+                intnObj = Ct5ResumeUtils.getResumeIntnByUniqueId(intRespObj.getUnqid());
+            
+            
             // Interaction not found in SimXmlObj - skip it.
             if( intnObj==null )
             {
@@ -701,14 +707,16 @@ public class TestEvent implements Serializable, Comparable<TestEvent>, ErrorTxtO
                 continue;
             }
 
-            // LogService.logIt( "TestEvent.initScoreAndResponseLists() STARTING For Interaction unique=" + intnObj.getUniqueid() + " (" + intRespObj.getNdseq() +") validItemsCanHaveZeroMaxPoints=" + validItemsCanHaveZeroMaxPoints );
+            if( ScoreManager.DEBUG_SCORING )
+                LogService.logIt( "TestEvent.initScoreAndResponseLists() STARTING For Interaction unique=" + intnObj.getUniqueid() + " (" + intRespObj.getNdseq() +") validItemsCanHaveZeroMaxPoints=" + validItemsCanHaveZeroMaxPoints );
             
             // create object
             iactnResp = IactnRespFactory.getIactnResp(intRespObjO, intnObj, simXmlObj, this ); //   new IactnResp( intRespObj );
 
             iactnResp.init( simXmlObj , simletScoreList, this, validItemsCanHaveZeroMaxPoints );
 
-            // LogService.logIt( "TestEvent.initScoreAndResponseLists() have " + iactnResp.toString() + ", autoscorable="+ iactnResp.isAutoScorable() );
+            if( ScoreManager.DEBUG_SCORING )
+                LogService.logIt( "TestEvent.initScoreAndResponseLists() have " + iactnResp.toString() + ", autoscorable="+ iactnResp.isAutoScorable() );
 
             // if this item is not found in SimXMLObj, it must not be important so ignore it.
             if( iactnResp.getIntnObj()==null )

@@ -168,6 +168,9 @@ public class TestKeyArchive implements Serializable
     @Column(name="emailonettasklistok")
     private int enhancedAccessibilityTypeId;
 
+    @Column( name = "includeresume" )
+    private int includeResume;
+    
     @Column(name="emailactivitylistok")
     private int emailActivityListOk;
 
@@ -318,6 +321,7 @@ public class TestKeyArchive implements Serializable
         tk.setEmailLogoMessageOk(emailLogoMessageOk);
         tk.setEmailActivityListOk(emailActivityListOk);
         tk.setEnhancedAccessibilityTypeId(enhancedAccessibilityTypeId);
+        tk.setIncludeResume(includeResume);
         tk.setEmailOverallScoresOk(emailOverallScoresOk);
         tk.setEmailCompetencyScoresOk(emailCompetencyScoresOk);
         tk.setEmailTaskScoresOk(emailTaskScoresOk);
@@ -915,6 +919,14 @@ public class TestKeyArchive implements Serializable
 
     public void setSendStartDate(Date sendStartDate) {
         this.sendStartDate = sendStartDate;
+    }
+
+    public int getIncludeResume() {
+        return includeResume;
+    }
+
+    public void setIncludeResume(int includeResume) {
+        this.includeResume = includeResume;
     }
 
 }

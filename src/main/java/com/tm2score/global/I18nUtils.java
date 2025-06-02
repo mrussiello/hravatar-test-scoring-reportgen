@@ -255,6 +255,9 @@ public class I18nUtils
     public static String getFormattedDate(  Locale _locale, TimeZone _tz, Date _date)
     {
 
+        if( _date==null )
+            return "";
+        
         DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.LONG, _locale); 
         return dateFormatter.format( _date );
         // return getFormattedDate(  _locale, _tz, _date, DateFormat.LONG  );

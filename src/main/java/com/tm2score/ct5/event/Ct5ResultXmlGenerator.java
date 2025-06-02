@@ -15,12 +15,17 @@ import com.tm2score.imo.xml.Clicflic;
 import com.tm2score.score.ScoringException;
 import com.tm2score.service.LogService;
 import java.util.Collections;
+import java.util.List;
 
 /**
  *
  * @author miker_000
  */
 public class Ct5ResultXmlGenerator {
+    
+    public static SimJ resumeSimJ;
+    
+    
     
     public static Clicflic createResultXmlObj( TestEvent te, SurveyEvent se, Ct5TestEvent ct5Te, SimJ simJ, User user) throws Exception
     {
@@ -112,6 +117,10 @@ public class Ct5ResultXmlGenerator {
                 cfi = new Clicflic.History.Intn();
                 sji = getSimJIntn( simJ, ir.getCt5ItemId() );
 
+                // Check for resume item.
+                if( sji==null && ir.getCt5ItemId()>0 )
+                    sji = Ct5ResumeUtils.getResumeIntn( ir.getCt5ItemId() );
+                
                 if( sji==null )
                 {
                     LogService.logIt( "Ct5ResultXmlGenerator.createResultXmlObj() NON-FATAL SimJ.intn for Ct5ItemId=" + ir.getCt5ItemId() + " not found in SimJ. Assuming this is because of a forced version mismatch and ingnoring.");

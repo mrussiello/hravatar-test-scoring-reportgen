@@ -58,6 +58,9 @@ public class IactnRespFactory {
             if( sit.equals( SimletItemType.AUTO_AV_UPLOAD ) )
                 return new ScoredAvIactnResp( intRespObj, intn, testEvent );
 
+            if( sit.equals( SimletItemType.RESUME_CAPTURE ) )
+                return new ResumeIactnResp( intRespObj, intn, testEvent );
+
             //if( sit.equals(SimletItemType.IMAGE_CAPTURE ) )
             //    return new ImageCaptureIactnResp( intRespObj, intn );
 

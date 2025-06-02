@@ -17,6 +17,7 @@ import com.tm2score.imo.xml.Clicflic;
 import com.tm2score.interview.InterviewQuestion;
 import com.tm2builder.sim.xml.SimJ;
 import com.tm2score.ct5.Ct5ItemType;
+import com.tm2score.ct5.event.Ct5ResumeUtils;
 import com.tm2score.global.Constants;
 import com.tm2score.global.I18nUtils;
 import com.tm2score.ivr.IvrStringUtils;
@@ -271,7 +272,7 @@ public class IactnResp implements ScorableResponse
             this.validItemsCanHaveZeroMaxPoints = validItemsCanHaveZeroMaxPoints;
 
             // Next, look first by unique ids - this implies that the SimJ object has changed a bit. So be sure to use the
-            if( intnResultObj.getUnqid()!=null && !intnResultObj.getUnqid().isEmpty() )
+            if( intnResultObj.getUnqid()!=null && !intnResultObj.getUnqid().isBlank())
             {
                 int ct = 0;
                 SimJ.Intn ii=null ;
@@ -306,6 +307,9 @@ public class IactnResp implements ScorableResponse
                 }
             }
 
+            if( intnObj==null && intnResultObj.getUnqid()!=null && !intnResultObj.getUnqid().isBlank() )
+                intnObj = Ct5ResumeUtils.getResumeIntnByUniqueId(intnResultObj.getUnqid());
+            
             // next get all IactnItemResp objects
             iactnItemRespLst = new ArrayList<>();
 
@@ -320,6 +324,9 @@ public class IactnResp implements ScorableResponse
 
 
             // LogService.logIt( "TestEvent.initScoreAndResponseLists() AAA.2 uniqueId=" + intnObj.getUniqueid() );
+            if( intnObj.getTextscoreparam1() != null && !intnObj.getTextscoreparam1().isEmpty() )
+                intnObj.setTextscoreparam1( UrlEncodingUtils.decodeKeepPlus(intnObj.getTextscoreparam1(), "UTF8") );
+
 
             if( intnObj.getSimletid() > 0 )
             {
@@ -334,11 +341,8 @@ public class IactnResp implements ScorableResponse
 
                         break;
                     }
-                }
+                }                
             }
-
-            if( intnObj.getTextscoreparam1() != null && !intnObj.getTextscoreparam1().isEmpty() )
-                intnObj.setTextscoreparam1( UrlEncodingUtils.decodeKeepPlus(intnObj.getTextscoreparam1(), "UTF8") );
 
 
             // This is possible since interaction could be from a sim template. However, in this case we will ignore it since Sim Templates do not

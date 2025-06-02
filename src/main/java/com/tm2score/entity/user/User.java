@@ -1,6 +1,7 @@
 package com.tm2score.entity.user;
 
 import com.tm2score.global.I18nUtils;
+import com.tm2score.service.EncryptUtils;
 import com.tm2score.service.LogService;
 import com.tm2score.user.RoleType;
 import com.tm2score.user.UserType;
@@ -199,6 +200,20 @@ public class User implements Serializable
         return "User{" + "userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", username=" + username + ", roleId=" + roleId + ", orgId=" + orgId + ", suborgId=" + suborgId + ", userStatusTypeId=" + userStatusTypeId + ", localeStr=" + localeStr + ", countryCode=" + countryCode + '}';
     }
 
+
+    public String getUserIdEncrypted()
+    {
+        try
+        {
+            return EncryptUtils.urlSafeEncrypt( userId );
+        }
+
+        catch( Exception e )
+        {
+            LogService.logIt(e,  "User.getUserIdEncrypted() " + toString() );
+            return "";
+        }
+    }
 
 
 

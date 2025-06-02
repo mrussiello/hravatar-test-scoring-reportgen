@@ -17,7 +17,7 @@ public enum SimletItemType
     MANUAL_UPLOAD(5, "(Manual) File Upload" ),
     AUTO_AV_UPLOAD(9, "(Auto) Audio/Video File Upload" ),
     IMAGE_CAPTURE(10, "(Auto) Participant Image Capture" ),
-    RESUME_CAPTURE(11, "(Manual) Resume Capture" ),
+    RESUME_CAPTURE(13, "(Manual) Resume Capture" ),
     OTHER_TRACK(99,"Other Trackable Response" );
 
     private final int simletItemTypeId;
@@ -181,7 +181,7 @@ public enum SimletItemType
 
     public boolean supportsManualScoringViaReport()
     {
-        return equals( MANUAL_TEXT ) || equals( AUTO_ESSAY ) || equals( AUTO_CHAT ) || equals( AUTO_AUDIO ) || equals(AUTO_AV_UPLOAD ) || equals( MANUAL_UPLOAD ) || equals( IMAGE_CAPTURE );
+        return equals( MANUAL_TEXT ) || equals( AUTO_ESSAY ) || equals( AUTO_CHAT ) || equals( AUTO_AUDIO ) || equals(AUTO_AV_UPLOAD ) || equals( MANUAL_UPLOAD )  || equals( RESUME_CAPTURE ) || equals( IMAGE_CAPTURE );
     }
 
 

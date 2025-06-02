@@ -19,3 +19,7 @@ ssh -i "${identityfile}" ec2-user@${baseurl} "mkdir /backup/sw/${DateTime}"
 scp -i "${identityfile}"  "${backupdir}/${app}.zip"  ec2-user@${baseurl}:/backup/sw/${DateTime}
 
 cd ${basedir}/a
+
+
+$datetimefull = (Get-Date -Format "MM-dd-yyyy HH:mm:ss")
+echo "Completed: ${datetimefull}"

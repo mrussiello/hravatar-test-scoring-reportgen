@@ -37,5 +37,7 @@ ssh -i "${identityfile}" ec2-user@${baseurl} "$glassfishlocation/bin/asadmin  --
 ssh -i "${identityfile}" ec2-user@${baseurl} "$glassfishlocation/bin/asadmin --user admin --passwordfile /home/payara/passwd.gf deploy --virtualservers server --contextroot ${contextroot} --force=true ${proddistdir}/${prefix}.war"
 
 
+$datetimefull = (Get-Date -Format "MM-dd-yyyy HH:mm:ss")
+echo "Completed: ${datetimefull}"
 
 

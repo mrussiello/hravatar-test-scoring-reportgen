@@ -381,29 +381,40 @@ public class ReportData
 
     public String getSimAuthorizationDateFormatted()
     {
+        if( tk.getStartDate()==null )
+            return "";
         return I18nUtils.getFormattedDate(getLocale() , getTimeZone(), tk.getStartDate() );
     }
 
 
     public String getSimStartDateFormatted()
     {
+        if( tk.getFirstAccessDate()==null )
+            return "";
         return I18nUtils.getFormattedDate(getLocale() , getTimeZone(), tk.getFirstAccessDate());
     }
 
 
     public String getSimStartDateTimeFormatted()
     {
+        if( tk.getFirstAccessDate()==null )
+            return "";
+        
         return I18nUtils.getFormattedDateTime(getLocale() , tk.getFirstAccessDate(), getTimeZone() );
     }
 
 
     public String getSimCompleteDateFormatted()
     {
+        if( tk.getLastAccessDate()==null )
+            return "";
         return I18nUtils.getFormattedDate(getLocale() , getTimeZone(), tk.getLastAccessDate() );
     }
 
     public String getSimCompleteDateTimeFormatted()
     {
+        if( tk.getLastAccessDate()==null )
+            return "";
         return I18nUtils.getFormattedDateTime(getLocale() , tk.getLastAccessDate(), getTimeZone() );
     }
 

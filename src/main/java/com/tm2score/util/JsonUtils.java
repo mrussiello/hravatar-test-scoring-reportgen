@@ -105,7 +105,7 @@ public class JsonUtils {
     
     
     
-    public static JsonObject convertJsonStringtoObject(String jsonStr) throws Exception
+    public static JsonObject convertJsonStringToObject(String jsonStr) throws Exception
     {
         try
         {
@@ -116,7 +116,7 @@ public class JsonUtils {
 
         catch( Exception e )
         {
-            LogService.logIt( e, "JsonUtils.convertJsonStringtoObject() jsonStr=" + jsonStr  );
+            LogService.logIt( e, "JsonUtils.convertJsonStringToObject() jsonStr=" + jsonStr  );
         }
 
         return null;

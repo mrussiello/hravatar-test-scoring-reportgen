@@ -34,11 +34,11 @@ public enum Ct5ItemType {
     VIDEO_INTERVIEW(50,"c5it.VideoInterview", "videointerview" ),
     INFORMATIONAL(100,"c5it.Informational", "info");
 
-    
+
     private final int ct5ItemTypeId;
 
     private final String key;
-    
+
     private final String renderPageStub;
 
 
@@ -49,18 +49,18 @@ public enum Ct5ItemType {
         this.key = n;
         this.renderPageStub = w;
     }
-    
-    
+
+
     //public boolean getUsesInlineIntnItems()
     //{
     //    return getIsInfo() || getIsAnyEssay() || getIsResume() || getIsAnyMultipleChoice() || getIsAnyMultipleCorrect()|| getIsFillBlank();
     //}
-    
+
     //public boolean getIsSurvey()
     //{
     //    return equals(SURVEY_MULT_CHOICE) || equals(SURVEY_MULT_CORRECT_ANSWER) || equals(SURVEY_ESSAY) || equals(SURVEY_RATING);
     //}
-    
+
     public boolean getIsScoredMedia()
     {
         return equals(SCORED_MEDIA);
@@ -73,10 +73,10 @@ public enum Ct5ItemType {
 
     public boolean getIsResume()
     {
-        return equals(FILE_UPLOAD);
+        return equals(RESUME);
     }
 
-    
+
     public boolean getUsesChoices()
     {
         return getIsMultipleChoice() || getIsMultipleCorrect() || getIsMatching(); //  || equals(SURVEY_MULT_CHOICE) || equals(SURVEY_MULT_CORRECT_ANSWER);
@@ -86,27 +86,27 @@ public enum Ct5ItemType {
     {
         return !equals( INFORMATIONAL );
     }
-        
+
     //public boolean getIsKsa()
     //{
     //    return equals(FILL_BLANK) || equals(ESSAY) || getIsMultipleChoice() || getIsMultipleCorrect() || getIsMatching(); //  || getIsSurvey();
     //}
-    
+
     public boolean getIsMatching()
     {
         return equals(MATCHING);
     }
-    
+
     public boolean getIsAnyRating()
     {
         return equals( RATING ); //  ||  equals( SURVEY_RATING );
     }
 
-    
+
 
     //public boolean getSupportsBranching()
     //{
-    //    return getIsInfo() || getIsAnyMultipleChoice() || getIsAnyMultipleCorrect() || getIsRating() || getIsEssay() || getIsResume() || getIsFillBlank(); // getIsSurvey() || 
+    //    return getIsInfo() || getIsAnyMultipleChoice() || getIsAnyMultipleCorrect() || getIsRating() || getIsEssay() || getIsResume() || getIsFillBlank(); // getIsSurvey() ||
     //}
 
     public boolean getIsAnyMultipleChoice()
@@ -114,27 +114,27 @@ public enum Ct5ItemType {
         return equals( MULT_CHOICE ); //  || equals( SURVEY_MULT_CHOICE );
     }
 
-    
+
     public boolean getIsMultipleChoice()
     {
         return equals( MULT_CHOICE );
     }
-    
+
     public boolean getIsMultipleCorrect()
     {
         return equals( MULT_CORRECT_ANSWER );
     }
-    
+
     public boolean getIsAnyMultipleCorrect()
     {
         return equals( MULT_CORRECT_ANSWER ); //  || equals( SURVEY_MULT_CORRECT_ANSWER );
     }
-    
+
     public boolean getIsFillBlank()
     {
         return equals( FILL_BLANK );
     }
-    
+
     public boolean getIsEssay()
     {
         return equals( ESSAY );
@@ -144,12 +144,12 @@ public enum Ct5ItemType {
     {
         return equals( ESSAY ); //  || equals( SURVEY_ESSAY );
     }
-    
+
     public boolean getIsInfo()
     {
         return equals( INFORMATIONAL );
     }
-    
+
     public boolean getIsVideo()
     {
         return equals( VIDEO_INTERVIEW );
@@ -164,18 +164,18 @@ public enum Ct5ItemType {
         return equals( VIDEO_INTERVIEW ) || equals( SCORED_MEDIA ) || equals( FILE_UPLOAD );
     }
 
-    
+
     public boolean getIsRating()
     {
         return equals(RATING);
     }
 
-    
+
     public boolean getIsInfoRequired()
     {
         return equals( INFORMATIONAL );
     }
-    
+
     //public boolean getUsesTopic()
     //{
     //    return !getIsVideo() && !getIsInfo() && !getIsResume();
@@ -186,17 +186,17 @@ public enum Ct5ItemType {
     //    return  getUsesTopic() && !getIsEssay(); //  && !getIsSurvey();
     //}
 
-    
+
     //public boolean okForCt5TestType( Ct5TestType ct5TestType )
     //{
     //    if( ct5TestType.getIsDefault() && getIsVideo() )
     //        return false;
-        
-    //    return true;
-    //}    
 
-    
-    
+    //    return true;
+    //}
+
+
+
     /*
      For Format is a string of the raw responses. Always a pair of itempartid,value (string)
         rating:   question:value
@@ -205,14 +205,14 @@ public enum Ct5ItemType {
         matching dragable:tgt,dragable:tgt,dragable:tgt
         drag drop: tgt:dragable1;dragable2;dragable3,tgt:dragable4, ...
         fill blank: question:URL-Encoded(text entered)
-        essay: blank    
+        essay: blank
     */
     public int getSelectedSubnodeSeq( Ct5ItemResponse ir, SimJ.Intn sji )
     {
         if( ir==null || ir.getResponseStr1()==null || ir.getResponseStr1().isBlank() || !ir.getIsComplete() )
             return 0;
-        
-                
+
+
         if( getIsMultipleChoice() )
         {
             Map<Integer,String> respMap = getResponseMap(ir,sji);
@@ -221,18 +221,18 @@ public enum Ct5ItemType {
             if( !ks.isEmpty() )
                 return ks.get(0);
         }
-        
+
         SimJ.Intn.Intnitem sjii = getSubmitButtonIntnItem( sji );
-        
+
         if( sjii!=null )
             return sjii.getCt5Itempartid();
-        
-        return 0;            
+
+        return 0;
     }
-    
-    
-    
-    
+
+
+
+
     /*
      responseStr1:
      For Format is a string of the raw responses. Always a pair of itempartid,value (string)
@@ -243,34 +243,34 @@ public enum Ct5ItemType {
         matching dragable:tgt,dragable:tgt,dragable:tgt
         drag drop: tgt:dragable1;dragable2;dragable3,tgt:dragable4, ...
         fill blank: question:URL-Encoded(text entered)
-        essay: blank           
-        resume: blank           
+        essay: blank
+        resume: blank
     */
     public String getResultXmlIntnValue(Ct5ItemResponse ir, SimJ.Intn sji )
     {
-        
-        // LogService.logIt( "Ct5ItemType.getResultXmlIntnValue() START " + sji.getUniqueid() + ", " + ir.toString() );
-        
+
+        LogService.logIt( "Ct5ItemType.getResultXmlIntnValue() START " + sji.getUniqueid() + ", " + ir.toString() + ", isResume=" + getIsResume());
+
         // no response?
         if( ir==null || !ir.getIsComplete() )
             return "";
 
-        
+
         String DELIM = "~";
         SimJ.Intn.Intnitem sjii = null;
-        
-        // Essay or Resume. Stored in responseText.
+
+        // Essay. Stored in responseText.
         if( getIsEssay() )
         {
-            sjii = getFirstSimJIntnItem( sji, G2ChoiceFormatType.TEXT_BOX , Ct5ItemPartType.WIDGET );            
+            sjii = getFirstSimJIntnItem( sji, G2ChoiceFormatType.TEXT_BOX , Ct5ItemPartType.WIDGET );
             String rt = ir.getResponseText();
             if( rt==null )
                 return "";
             rt = StringUtils.replaceStr(rt, DELIM, "@#@" );
             rt = StringUtils.replaceStr(rt, "|", "&#&" );
-            rt = StringUtils.replaceStr(rt, "^", "&#&" );            
-            return (sjii==null ? "" : sjii.getCt5Itempartid()) + DELIM + XmlUtils.encodeURIComponent(rt);            
-            // return (sjii==null ? "" : sjii.getCt5Itempartid()) + DELIM + StringUtils.getUrlEncodedValue(rt);            
+            rt = StringUtils.replaceStr(rt, "^", "&#&" );
+            return (sjii==null ? "" : sjii.getCt5Itempartid()) + DELIM + XmlUtils.encodeURIComponent(rt);
+            // return (sjii==null ? "" : sjii.getCt5Itempartid()) + DELIM + StringUtils.getUrlEncodedValue(rt);
         }
 
         String commentStr = null;
@@ -282,38 +282,38 @@ public enum Ct5ItemType {
             {
                 rt = StringUtils.replaceStr(rt, DELIM, "@#@" );
                 rt = StringUtils.replaceStr(rt, "|", "&#&" );
-                rt = StringUtils.replaceStr(rt, "^", "&#&" );                  
+                rt = StringUtils.replaceStr(rt, "^", "&#&" );
                 commentStr = (sjii==null ? "" : sjii.getCt5Itempartid()) + DELIM + XmlUtils.encodeURIComponent(rt);
                 // commentStr = (sjii==null ? "" : sjii.getCt5Itempartid()) + DELIM + StringUtils.getUrlEncodedValue(rt);
-            }            
+            }
         }
-        
+
         // not used for these items.
         if( (getIsAnyMultipleChoice() && sji.getMultiplechoiceformat()!=Ct5MultipleChoiceFormatType.COMBO.getCt5MultipleChoiceFormatTypeId()) || getIsInfo() )
             return commentStr==null ? "" : commentStr;
-        
-        if( !getIsVideoOrScoredMediaOrGenFileUpload() && (ir.getResponseStr1()==null || ir.getResponseStr1().isBlank()) )
+
+        if( !getIsVideoOrScoredMediaOrGenFileUpload() && !getIsResume() && (ir.getResponseStr1()==null || ir.getResponseStr1().isBlank()) )
             return commentStr==null ? "" : commentStr;
-        
+
         // will only include the non-hidden targets if matching.
         Map<Integer,String> respMap = getResponseMap(ir,sji);
-        
+
         if( getIsFillBlank() )
-        {            
+        {
             sjii = getQuestionSimJIntnItem( sji );
             if( sjii!=null  )
             {
-                String rt = respMap.get(sjii.getCt5Itempartid());                
+                String rt = respMap.get(sjii.getCt5Itempartid());
                 // LogService.logIt( "Ct5ItemType.respMap.get(" + sjii.getCt5Itempartid() + ") is " + rt );
                 if( rt==null )
                     rt="";
-                rt = StringUtils.replaceStr(rt, "+", "%20" );   
-                SimJ.Intn.Intnitem sjii2 = getFirstSimJIntnItem( sji, G2ChoiceFormatType.TEXT_BOX, Ct5ItemPartType.WIDGET );  
-                return (sjii2==null ? "0" : sjii2.getCt5Itempartid()) + DELIM + rt;    // aleady encoded.   
+                rt = StringUtils.replaceStr(rt, "+", "%20" );
+                SimJ.Intn.Intnitem sjii2 = getFirstSimJIntnItem( sji, G2ChoiceFormatType.TEXT_BOX, Ct5ItemPartType.WIDGET );
+                return (sjii2==null ? "0" : sjii2.getCt5Itempartid()) + DELIM + rt;    // aleady encoded.
             }
             return "";
         }
-        
+
         if( getIsAnyRating() )
         {
             sjii = getQuestionSimJIntnItem( sji );
@@ -323,9 +323,9 @@ public enum Ct5ItemType {
                 // LogService.logIt( "Ct5ItemType.respMap.get(" + sjii.getCt5Itempartid() + ") is " + rt );
                 if( rt==null )
                     rt="";
-                SimJ.Intn.Intnitem sjii2 = getFirstSimJIntnItem( sji, G2ChoiceFormatType.SLIDER_THUMB, Ct5ItemPartType.WIDGET );  
-                return (sjii2==null ? "0" : sjii2.getCt5Itempartid()) + DELIM + rt + (commentStr==null ? "" : DELIM + commentStr ); // float value   
-            }            
+                SimJ.Intn.Intnitem sjii2 = getFirstSimJIntnItem( sji, G2ChoiceFormatType.SLIDER_THUMB, Ct5ItemPartType.WIDGET );
+                return (sjii2==null ? "0" : sjii2.getCt5Itempartid()) + DELIM + rt + (commentStr==null ? "" : DELIM + commentStr ); // float value
+            }
             return commentStr==null ? "" : commentStr;
         }
 
@@ -335,14 +335,14 @@ public enum Ct5ItemType {
         if( getIsAnyMultipleChoice() && sji.getMultiplechoiceformat()==Ct5MultipleChoiceFormatType.COMBO.getCt5MultipleChoiceFormatTypeId() )
         {
             String val;
-            SimJ.Intn.Intnitem sjii2 = getFirstSimJIntnItem( sji, G2ChoiceFormatType.COMBO, Ct5ItemPartType.WIDGET );  
+            SimJ.Intn.Intnitem sjii2 = getFirstSimJIntnItem( sji, G2ChoiceFormatType.COMBO, Ct5ItemPartType.WIDGET );
             for( Integer ipid : respMap.keySet() )
-            {                
+            {
                 val = respMap.get(ipid);
                 if( val!=null && val.trim().equals("true") )
                 {
-                    sb.append( sjii2.getCt5Itempartid() + DELIM + ipid.toString() ); 
-                    
+                    sb.append( sjii2.getCt5Itempartid() + DELIM + ipid.toString() );
+
                     // Only one selected choice is currently supported.
                     break;
                 }
@@ -354,15 +354,15 @@ public enum Ct5ItemType {
                 sb.append(commentStr);
             }
             return sb.toString();
-            
-            
+
+
         }
-        
+
         if( getIsAnyMultipleCorrect() )
         {
             // Ct5MultipleChoiceFormatType mcft = Ct5MultipleChoiceFormatType.getValue( sji.getMultiplechoiceformat() );
-            
-            String val;            
+
+            String val;
             for( Integer ipid : respMap.keySet() )
             {
                 val = respMap.get(ipid);
@@ -371,13 +371,13 @@ public enum Ct5ItemType {
                 if( val==null )
                     val="";
                 val=val.trim();
-                
-                val = StringUtils.replaceStr(val, "+", "%20" );                   
+
+                val = StringUtils.replaceStr(val, "+", "%20" );
                 sb.append( ipid.toString() + DELIM + val );
             }
         }
-        
-        // tgt~draggable1,draggable2~tgt2~draggable~tgt~draggable,draggable,draggable ... 
+
+        // tgt~draggable1,draggable2~tgt2~draggable~tgt~draggable,draggable,draggable ...
         if( getIsMatching() )
         {
             // key-dragtarget.ct5itempartid, list=draggable ct5itempartids
@@ -385,10 +385,10 @@ public enum Ct5ItemType {
             String val;
             Integer tgt;
             List<Integer> dl;
-            
+
             // will only include the non-hidden targets if matching.
             // format is draggable.ct5ItemPartId:target.ct5itempartid
-            
+
             // for each draggable
             for( Integer dbl : respMap.keySet() )
             {
@@ -407,7 +407,7 @@ public enum Ct5ItemType {
                 }
                 dl.add(dbl);
             }
-            
+
             // for each target
             for( Integer tgt2 : mp.keySet() )
             {
@@ -417,7 +417,7 @@ public enum Ct5ItemType {
 
                 if( sb.length()>0 )
                     sb.append( DELIM );
-                
+
                 sb.append( tgt2 + DELIM );
                 for( int i=0;i<dl.size();i++ )
                 {
@@ -429,17 +429,17 @@ public enum Ct5ItemType {
         }
 
         // File upload.
-        // 6~medcap_81-6%3B909283%3Bvideo%2Fwebm~7~false    
+        // 6~medcap_81-6%3B909283%3Bvideo%2Fwebm~7~false
         // 6~medcap_81-6;909283;video/webm~7~false     DECODED
         // video   itempartid~ct5itemid-ct5itempartid;initialfilesize;initialmime
-        
+
         // LogService.logIt( "Ct5ItemType.getResultXmlIntnValue()=" + getIsVideoOrScoredMedia() + ", ir.getUploadedUserFile()=" + (ir.getUploadedUserFile()==null ? "null" : "not null") );
-        
+
         if( getIsVideoOrScoredMediaOrGenFileUpload() && ir.getUploadedUserFile()!=null )
         {
             sjii = getFirstSimJIntnItem( sji, G2ChoiceFormatType.MEDIA_CAPTURE, Ct5ItemPartType.WIDGET );
-            
-            if( sjii==null && this.getIsFileUpload() )
+
+            if( sjii==null && getIsFileUpload() )
                 sjii = getFirstSimJIntnItem( sji, G2ChoiceFormatType.FILEUPLOADBTN, Ct5ItemPartType.WIDGET );
 
             String encVals = "medcap_" + sji.getCt5Itemid() + "-" + (sjii==null ? "0" : sjii.getCt5Itempartid()) + ";" + ir.getUploadedUserFile().getInitialFileSize() + ";" + ir.getUploadedUserFile().getInitialMime();
@@ -450,37 +450,39 @@ public enum Ct5ItemType {
 
         if( getIsResume() )
         {
-            String res = "";
+            LogService.logIt( "Ct5ItemType.getResultXmlIntnValue() START for RESUME " + sji.getUniqueid() + ", " + ir.toString() + ", ir.getUploadedUserFileId=" + (ir.getUploadedUserFile()==null ? "null" : ir.getUploadedUserFile().getUploadedUserFileId()) );
             
+            String res = "";
+
             if( ir.getUploadedUserFile()!=null )
             {
                 sjii = getFirstSimJIntnItem( sji, G2ChoiceFormatType.FILEUPLOADBTN, Ct5ItemPartType.WIDGET );
 
                 String encVals = "medcap_" + sji.getCt5Itemid() + "-" + (sjii==null ? "0" : sjii.getCt5Itempartid()) + ";" + ir.getUploadedUserFile().getInitialFileSize() + ";" + ir.getUploadedUserFile().getInitialMime();
                 encVals = StringUtils.getUrlEncodedValue(encVals);
-
                 res = (sjii==null ? "0" : sjii.getCt5Itempartid()) + DELIM + encVals;
             }
-            
-            sjii = getFirstSimJIntnItem( sji, G2ChoiceFormatType.TEXT_BOX , Ct5ItemPartType.WIDGET );            
+
+            sjii = getFirstSimJIntnItem( sji, G2ChoiceFormatType.TEXT_BOX , Ct5ItemPartType.WIDGET );
             String rt = ir.getResponseText();
             if( rt!=null && !rt.isBlank() )
             {
                 rt = StringUtils.replaceStr(rt, DELIM, "@#@" );
                 rt = StringUtils.replaceStr(rt, "|", "&#&" );
-                rt = StringUtils.replaceStr(rt, "^", "&#&" ); 
-                
+                rt = StringUtils.replaceStr(rt, "^", "&#&" );
+
                 if( !res.isBlank() )
-                    res += DELIM;                
-                res += (sjii==null ? "" : sjii.getCt5Itempartid()) + DELIM + XmlUtils.encodeURIComponent(rt);            
-            } 
+                    res += DELIM;
+
+                res += (sjii==null ? "" : sjii.getCt5Itempartid()) + DELIM + XmlUtils.encodeURIComponent(rt);
+            }
             sb.append( res );
-        }        
-        
+        }
+
         return sb.toString() + (commentStr==null ? "" : DELIM + commentStr );
     }
 
-    
+
 
     /*
      For Format is a string of the raw responses. Always a pair of itempartid,value (string)
@@ -491,16 +493,16 @@ public enum Ct5ItemType {
         matching dragable:tgt,dragable:tgt,dragable:tgt
         drag drop: tgt:dragable1;dragable2;dragable3,tgt:dragable4, ...
         fill blank: question:URL-Encoded(text entered)
-        essay: blank 
-        resume: blank 
+        essay: blank
+        resume: blank
     */
     public Map<Integer,String> getResponseMap( Ct5ItemResponse ir, SimJ.Intn sji )
     {
         Map<Integer,String> respMap = new HashMap<>();
-        
+
         if( ir==null || ir.getResponseStr1()==null || ir.getResponseStr1().isBlank() || !ir.getIsComplete())
             return respMap;
-        
+
         int ct5ItemPartId;
         String[] vals;
         for( String pair : ir.getResponseStr1().split(",") )
@@ -516,7 +518,7 @@ public enum Ct5ItemType {
             {
                 // LogService.logIt( "Ct5ItemType.getSelectedSubnodeSeq() skipping pair there is no colon or no value after colon. " + pair + ", full String=" + ir.getResponseStr1() + ", ct5ItemId=" + ir.getCt5ItemId() + ", ct5ItemResponseId=" + ir.getCt5ItemResponseId() );
                 continue;
-            }                
+            }
             try
             {
                 ct5ItemPartId=Integer.parseInt(vals[0]);
@@ -528,15 +530,15 @@ public enum Ct5ItemType {
             }
             respMap.put(ct5ItemPartId, vals[1]);
         }
-        
+
         // dumpRespMap( ir.getCt5ItemId(), respMap );
-        
+
         return respMap;
     }
-    
+
     protected void dumpRespMap( int ct5ItemId, Map<Integer,String> respMap )
     {
-        StringBuilder sb = new StringBuilder();        
+        StringBuilder sb = new StringBuilder();
         for( Integer s : respMap.keySet() )
         {
             if( !sb.isEmpty() )
@@ -546,7 +548,7 @@ public enum Ct5ItemType {
         LogService.logIt( "RespMap ct5ItemId=" + ct5ItemId + ":\n" + sb.toString() );
     }
 
-    
+
     private SimJ.Intn.Intnitem  getQuestionSimJIntnItem( SimJ.Intn sji )
     {
         if( sji==null )
@@ -561,10 +563,10 @@ public enum Ct5ItemType {
             if( sjii.getCt5Itemparttypeid()==Ct5ItemPartType.QUESTION.getCt5ItemPartTypeId() )
                 return sjii;
         }
-               
+
         return null;
     }
-    
+
     private SimJ.Intn.Intnitem getSubmitButtonIntnItem( SimJ.Intn sji )
     {
         if( sji==null )
@@ -588,8 +590,8 @@ public enum Ct5ItemType {
         }
         return null;
     }
-    
-    
+
+
     private SimJ.Intn.Intnitem getFirstSimJIntnItem( SimJ.Intn sji, G2ChoiceFormatType fmt, Ct5ItemPartType ct5ItemPartType )
     {
         if( sji==null || fmt==null )
@@ -601,8 +603,8 @@ public enum Ct5ItemType {
         }
         return null;
     }
-    
-    
+
+
     public static Ct5ItemType getValue( int id )
     {
         Ct5ItemType[] vals = Ct5ItemType.values();
@@ -616,7 +618,7 @@ public enum Ct5ItemType {
         return MULT_CHOICE;
     }
 
-    
+
     public String getName()
     {
         return key;
@@ -625,6 +627,6 @@ public enum Ct5ItemType {
     public int getCt5ItemTypeId()
     {
         return ct5ItemTypeId;
-    }    
-    
+    }
+
 }

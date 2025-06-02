@@ -182,7 +182,7 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
         {
             try
             {
-                this.scJo = JsonUtils.convertJsonStringtoObject(simCompetencyObj.getCt5Configjson());
+                this.scJo = JsonUtils.convertJsonStringToObject(simCompetencyObj.getCt5Configjson());
             }
             catch( Exception e )
             {

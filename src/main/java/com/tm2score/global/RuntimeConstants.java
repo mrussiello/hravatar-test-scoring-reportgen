@@ -52,7 +52,9 @@ public class RuntimeConstants
         cache.put( "secretsFile", "/work/hraconfig/hraglobals-discern.conf" );
 
         cache.put( "filesroot", "/work/tm2score5/files" );
+        cache.put( "fileTreeRootDirectory" , "/work/sm1/web" );
 
+        
         cache.put( "adminappbasuri", "https://www.hravatar.com/ta" );
 
         cache.put( "baseadmindomain", "www.hravatar.com" );
@@ -537,6 +539,18 @@ public class RuntimeConstants
 
         cache.put( "useTestFoldersForAwsLvFiles" , false );
 
+        ///////////////////////////////////////////////////////////////////////////
+        // Resume Func
+        ///////////////////////////////////////////////////////////////////////////
+        
+        cache.put( "resumesimid", 18110l );
+        cache.put( "resumesimversionid", 1 );
+        
+        
+        cache.put( "tm2ai_rest_api_baseuri", "https://ts.hravatar.com/ai/webresources/");
+        cache.put( "tm2ai_rest_api_username", "" );
+        cache.put( "tm2ai_rest_api_password", "" );
+        
 
         // load properties from file. File overlays everything.
         String propertiesFile = (String) cache.get( "secretsFile" );
@@ -583,6 +597,8 @@ public class RuntimeConstants
             substituteStringWithSealedObject( "Findly-Demo-Account-Password", ecipher );
             substituteStringWithSealedObject( "hubspot_private_app_access_token", ecipher );
             substituteStringWithSealedObject( "hubspotApiKey", ecipher );
+            substituteStringWithSealedObject( "tm2ai_rest_api_password", ecipher );
+
         }
         catch( Exception e )
         {

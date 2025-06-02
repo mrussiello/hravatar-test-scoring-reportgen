@@ -192,7 +192,7 @@ public class IactnItemResp implements ScorableResponse
 
                 UploadedUserFile uuf = fuf.getUploadedUserFile(te.getTestEventId(), iactnResp.intnObj.getUniqueid(), iactnResp.intnObj.getSeq() , intnItemObj.getSeq(), false );
 
-                // LogService.logIt( "IactnItemResp.init() getting UploadedUserFile() " + (uuf==null ? "Null" : uuf.toString() ) );
+                // LogService.logIt( "IactnItemResp.init() getting UploadedUserFile() for testEventId=" + te.getTestEventId() + ", uniqueId=" + iactnResp.intnObj.getUniqueid() + ", seq=" + iactnResp.intnObj.getSeq() + " uploadedUserFile=" + (uuf==null ? "Null" : uuf.toString() ) );
 
                 if( uuf != null )
                     upldUsrFileId = uuf.getUploadedUserFileId();
@@ -250,7 +250,7 @@ public class IactnItemResp implements ScorableResponse
     @Override
     public String toString() {
         return "IactnItemResp{ iactn=" + (iactnResp==null || iactnResp.intnObj==null ? "iactnResp.intnObj is null" : iactnResp.intnObj.getName())  +
-                ", ct5ItemId=" + this.getCt5ItemId() + ", ct5ItemPartId=" + this.getCt5ItemPartId() +
+                ", ct5ItemId=" + this.getCt5ItemId() + ", ct5ItemPartId=" + this.getCt5ItemPartId() + ", upldUsrFileId=" + this.upldUsrFileId + 
                 " ("  +  (iactnResp.intnObj != null ? iactnResp.intnObj.getSeq() : "" ) + "-" + ( intnItemObj==null ? "intnItemObj is null" : intnItemObj.getSeq()) +  "), content=" + (intnItemObj==null ? "" : intnItemObj.getContent()) +
                 " simletCompetencyScore.name=" + (simletCompetencyScore==null ? "simletCompetencyScore is null" : simletCompetencyScore.competencyScoreObj.getName()) + ", maxPoints[0]=" + (getMaxPointsArray() == null ? "null" : Float.toString( getMaxPointsArray()[0])) + '}';
     }

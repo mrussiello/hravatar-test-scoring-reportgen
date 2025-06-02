@@ -335,10 +335,10 @@ public class ReportManager extends BaseReportManager
             }
         }
         
-        List<Long> partialCompleteBatteryTesteventIdsToScore = eventFacade.getIncompleteBatteryTestEventIdsToScore( 100, true, 0 );
+        List<Long> partialCompleteBatteryTestEventIdsToScore = eventFacade.getIncompleteBatteryTestEventIdsToScore( 100, true, 0 );
         // LogService.logIt( "ReportManager.generateReportBatch() partialCompleteBatteryTest.size=" + partialCompleteBatteryTesteventIdsToScore.size() );
         TestEvent te;
-        for( Long teid : partialCompleteBatteryTesteventIdsToScore )
+        for( Long teid : partialCompleteBatteryTestEventIdsToScore )
         {
             te = eventFacade.getTestEvent(teid, true);
             if( !te.getTestEventStatusType().getIsScored())

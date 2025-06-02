@@ -199,6 +199,9 @@ public class TestKey implements Serializable, ErrorTxtObject
     @Column(name="emailonettasklistok")
     private int enhancedAccessibilityTypeId;
 
+    @Column( name = "includeresume" )
+    private int includeResume;
+    
     @Column(name="emailactivitylistok")
     private int emailActivityListOk;
 
@@ -406,6 +409,7 @@ public class TestKey implements Serializable, ErrorTxtObject
         tka.setEmailLogoMessageOk(emailLogoMessageOk);
         tka.setEmailActivityListOk(emailActivityListOk);
         tka.setEnhancedAccessibilityTypeId(enhancedAccessibilityTypeId);
+        tka.setIncludeResume(includeResume);
         tka.setEmailOverallScoresOk(emailOverallScoresOk);
         tka.setEmailCompetencyScoresOk(emailCompetencyScoresOk);
         tka.setEmailTaskScoresOk(emailTaskScoresOk);
@@ -1570,6 +1574,14 @@ public class TestKey implements Serializable, ErrorTxtObject
 
     public void setProctorSuspensionList(List<ProctorSuspension> proctorSuspensionList) {
         this.proctorSuspensionList = proctorSuspensionList;
+    }
+
+    public int getIncludeResume() {
+        return includeResume;
+    }
+
+    public void setIncludeResume(int includeResume) {
+        this.includeResume = includeResume;
     }
 
 }

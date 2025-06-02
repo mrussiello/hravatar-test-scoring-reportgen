@@ -40,8 +40,7 @@ public class AmazonRekognitionImageInfo {
         if( useAwsForS3!=null )
             return;
         
-        useAwsForS3 = RuntimeConstants.getBooleanValue( "useAwsMediaServer" );
-        
+        useAwsForS3 = RuntimeConstants.getBooleanValue( "useAwsMediaServer" );        
         dirBase = RuntimeConstants.getStringValue( "userFileUploadBaseDir" );   // /hra or /ful/hra or locals        
     }
     

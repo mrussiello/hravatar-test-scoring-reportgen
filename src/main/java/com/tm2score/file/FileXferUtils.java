@@ -42,6 +42,7 @@ public class FileXferUtils
 
     public static Boolean useAwsForMedia=null;
     public static Boolean useAwsForProctoring=null;
+    public static String fileTreeRootDirectory;
 
     public static char PATH_SEPARATOR = '\\';
 
@@ -317,32 +318,63 @@ public class FileXferUtils
         if( filename == null || filename.length() == 0 )
                 throw new Exception( "No filename" );
 
-            if( directory == null )
-                directory = "";
+        if( directory == null )
+            directory = "";
 
-            if( directory.length() == 0 || directory.charAt( 0 ) != '/' )
-                directory = "/" + directory;
+        BucketType bucketType = BucketType.getValue(bucketTypeId);        
+        String baseKey = bucketType.getBaseKey();
+        
+        if( bucketType.equals(BucketType.USERUPLOAD ) )
+            baseKey = "ful/" + baseKey;
+        
+        if( baseKey!=null && !baseKey.isBlank() && !directory.startsWith(baseKey) )
+        {
+            if( directory.startsWith("/") && baseKey.endsWith("/") )
+                directory = directory.substring(1,directory.length());
+            
+            directory = baseKey + directory;
+        }
+        
+        if( directory.length() == 0 || directory.charAt( 0 ) != '/' )
+            directory = "/" + directory;
 
-            //if( !path.startsWith( getFileTreeRootDirectory() ) )
-            //    path = getFileTreeRootDirectory() + path;
+        if( !directory.endsWith( "/" ) )
+            directory += "/";
 
-            if( !directory.endsWith( "/" ) )
-                directory += "/";
+        if( !localFileExists( directory + filename, false ) )
+            throw new Exception( "File does not exist: " + directory + filename );
 
-            if( !localFileExists( directory + filename, false ) )
-                throw new Exception( "File does not exist: " + directory + filename );
+        String pathAndFilename = directory + filename;
+        
+        if( pathAndFilename.charAt( 0 )!='/' )
+            pathAndFilename = "/" + pathAndFilename;
 
-            return new FileInputStream(directory + filename);
+        if( !pathAndFilename.startsWith( getFileTreeRootDirectory() ) )
+            pathAndFilename = getFileTreeRootDirectory() + pathAndFilename;
+        
+        return new FileInputStream(pathAndFilename);
+    }
+
+    public static String getFileTreeRootDirectory()
+    {
+        if( fileTreeRootDirectory == null )
+            fileTreeRootDirectory = RuntimeConstants.getStringValue( "fileTreeRootDirectory" );
+
+        return fileTreeRootDirectory;
     }
 
 
+    
+    
     public static boolean localFileExists( String pathAndFilename, boolean requireNonZeroBytes ) throws Exception
     {
-        if( pathAndFilename.charAt( 0 ) != '/' )
+        if( pathAndFilename.charAt( 0 )!='/' )
             pathAndFilename = "/" + pathAndFilename;
 
+        if( !pathAndFilename.startsWith( getFileTreeRootDirectory() ) )
+            pathAndFilename = getFileTreeRootDirectory() + pathAndFilename;
+        
         File file = new File(  pathAndFilename );
-
         if( !file.exists() )
             LogService.logIt( "FileXferUtils.fileExists() File missing. " + pathAndFilename + ", file.exists() " + file.exists() );
 

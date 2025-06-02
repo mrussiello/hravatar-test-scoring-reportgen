@@ -223,7 +223,7 @@ public class AmazonTranscribeUtils
                 throw new IvrScoreException( 0, "AmazonTranscribeUtils.getTranscriptionText() JsonStr is empty. transcriptUri=" + transcriptUri );
             }
             
-            JsonObject jo = JsonUtils.convertJsonStringtoObject(jsonStr); //  getTranscriptionJsonObject(  transcriptUri );
+            JsonObject jo = JsonUtils.convertJsonStringToObject(jsonStr); //  getTranscriptionJsonObject(  transcriptUri );
             
             if( jo==null )
                 throw new Exception( "Json Object is null." );

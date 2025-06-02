@@ -997,7 +997,7 @@ public class BaseHubspotUtils {
             if( joStr==null )
                 return null;
 
-            return JsonUtils.convertJsonStringtoObject(joStr);
+            return JsonUtils.convertJsonStringToObject(joStr);
         }
         catch(STException e)
         {
