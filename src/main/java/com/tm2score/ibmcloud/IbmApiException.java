@@ -118,7 +118,7 @@ public class IbmApiException extends Exception {
         
         catch( Exception e )
         {
-            LogService.logIt(e, "IbmException.parseJsonErrorObject() " + JsonUtils.convertJsonObjecttoString(errJo) );
+            LogService.logIt(e, "IbmException.parseJsonErrorObject() " + JsonUtils.convertJsonObjectToString(errJo) );
         }
         
     }

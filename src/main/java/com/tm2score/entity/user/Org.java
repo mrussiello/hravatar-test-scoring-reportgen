@@ -243,6 +243,13 @@ public class Org implements Serializable
         //return StringUtils.getBracketedArtifactFromString( customStringVals,  tagName );
     }
     
+    public String getPostTestContactStr()
+    {
+        return getCustomStringValue(Constants.CSVPOSTTESTCONTACTSTR );
+    }
+
+    
+    
     
     public String getOrgIdEncrypted()
     {

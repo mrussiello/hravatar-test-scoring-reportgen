@@ -123,7 +123,7 @@ public class JsonUtils {
     }
 
 
-    public static String convertJsonObjecttoString( JsonObject jo ) throws Exception
+    public static String convertJsonObjectToString( JsonObject jo ) throws Exception
     {
         try
         {
@@ -136,7 +136,7 @@ public class JsonUtils {
         }
         catch( Exception e )
         {
-            LogService.logIt(e, "JsonUtils.convertJsonObjecttoString() " );
+            LogService.logIt(e, "JsonUtils.convertJsonObjectToString() " );
             
             return null;
         }

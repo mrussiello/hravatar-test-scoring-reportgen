@@ -145,7 +145,7 @@ public class DistributionResource extends BaseApiResource {
                 throw new ApiException( "tran is invalid=" + tran, 160, Response.Status.BAD_REQUEST.getStatusCode() );
                             
             JsonObject jo2 = outJob.build();            
-            String out = JsonUtils.convertJsonObjecttoString(jo2);            
+            String out = JsonUtils.convertJsonObjectToString(jo2);            
             // LogService.logIt( "DistributionResource.ScoreResource() COMPLETE. output=" + out );
             return Response.ok( out, MediaType.APPLICATION_JSON).status( Response.Status.OK.getStatusCode() ).build();            
         }        
@@ -183,12 +183,12 @@ public class DistributionResource extends BaseApiResource {
             }
             catch( NumberFormatException ee )
             {
-                LogService.logIt(  "DistributionResource.doEmailTestKey() NumberFormatException parsing " + tkid + ", jsonContent=" + JsonUtils.convertJsonObjecttoString(joIn) );
+                LogService.logIt(  "DistributionResource.doEmailTestKey() NumberFormatException parsing " + tkid + ", jsonContent=" + JsonUtils.convertJsonObjectToString(joIn) );
                 throw new ApiException( "Error parsing tkid", 181, Response.Status.BAD_REQUEST.getStatusCode() );
             }
             catch( Exception ee )
             {
-                LogService.logIt(  ee, "DistributionResource.doEmailTestKey() Exception parsing " + tkid + ", jsonContent=" + JsonUtils.convertJsonObjecttoString(joIn) );
+                LogService.logIt(  ee, "DistributionResource.doEmailTestKey() Exception parsing " + tkid + ", jsonContent=" + JsonUtils.convertJsonObjectToString(joIn) );
                 throw new ApiException( "Error parsing tkid", 182, Response.Status.BAD_REQUEST.getStatusCode() );                
             }
             
@@ -247,7 +247,7 @@ public class DistributionResource extends BaseApiResource {
         }
         catch( Exception e )
         {
-            LogService.logIt( e, "DistributionResource.doEmailTestKey() testKeyId=" + testKeyId + ", jsonContent=" + JsonUtils.convertJsonObjecttoString(joIn) );
+            LogService.logIt( e, "DistributionResource.doEmailTestKey() testKeyId=" + testKeyId + ", jsonContent=" + JsonUtils.convertJsonObjectToString(joIn) );
             throw new ApiException( "Error DistributionResource.doEmailTestKey() testKeyId=" + testKeyId, 181, Response.Status.BAD_REQUEST.getStatusCode() );
         }
     }
@@ -269,12 +269,12 @@ public class DistributionResource extends BaseApiResource {
             }
             catch( NumberFormatException ee )
             {
-                LogService.logIt(  "DistributionResource.doDistTestKey() AAA.2 NumberFormatException parsing " + tkid + ", jsonContent=" + JsonUtils.convertJsonObjecttoString(joIn) );
+                LogService.logIt(  "DistributionResource.doDistTestKey() AAA.2 NumberFormatException parsing " + tkid + ", jsonContent=" + JsonUtils.convertJsonObjectToString(joIn) );
                 throw new ApiException( "Error parsing tkid", 181, Response.Status.BAD_REQUEST.getStatusCode() );
             }
             catch( Exception ee )
             {
-                LogService.logIt(  ee, "DistributionResource.doDistTestKey() AAA.3 Exception parsing " + tkid + ", jsonContent=" + JsonUtils.convertJsonObjecttoString(joIn) );
+                LogService.logIt(  ee, "DistributionResource.doDistTestKey() AAA.3 Exception parsing " + tkid + ", jsonContent=" + JsonUtils.convertJsonObjectToString(joIn) );
                 throw new ApiException( "Error parsing tkid", 182, Response.Status.BAD_REQUEST.getStatusCode() );                
             }
             
@@ -419,12 +419,12 @@ public class DistributionResource extends BaseApiResource {
             }
             catch( NumberFormatException ee )
             {
-                LogService.logIt(  "DistributionResource.doScoreTestKey() NumberFormatException parsing " + tkid + ", jsonContent=" + JsonUtils.convertJsonObjecttoString(joIn) );
+                LogService.logIt(  "DistributionResource.doScoreTestKey() NumberFormatException parsing " + tkid + ", jsonContent=" + JsonUtils.convertJsonObjectToString(joIn) );
                 throw new ApiException( "Error parsing tkid", 181, Response.Status.BAD_REQUEST.getStatusCode() );
             }
             catch( Exception ee )
             {
-                LogService.logIt(  ee, "DistributionResource.doScoreTestKey() Exception parsing " + tkid + ", jsonContent=" + JsonUtils.convertJsonObjecttoString(joIn) );
+                LogService.logIt(  ee, "DistributionResource.doScoreTestKey() Exception parsing " + tkid + ", jsonContent=" + JsonUtils.convertJsonObjectToString(joIn) );
                 throw new ApiException( "Error parsing tkid", 182, Response.Status.BAD_REQUEST.getStatusCode() );                
             }
             
@@ -500,11 +500,11 @@ public class DistributionResource extends BaseApiResource {
                 }
                 catch( NumberFormatException ee )
                 {
-                    LogService.logIt(  "DistributionResource.doTestEventReport() NONFATAL NumberFormatException parsing " + tkid + ", jsonContent=" + JsonUtils.convertJsonObjecttoString(joIn) );
+                    LogService.logIt(  "DistributionResource.doTestEventReport() NONFATAL NumberFormatException parsing " + tkid + ", jsonContent=" + JsonUtils.convertJsonObjectToString(joIn) );
                 }
                 catch( Exception ee )
                 {
-                    LogService.logIt(  ee, "DistributionResource.doTestEventReport() NONFATAL Exception parsing " + tkid + ", jsonContent=" + JsonUtils.convertJsonObjecttoString(joIn) );
+                    LogService.logIt(  ee, "DistributionResource.doTestEventReport() NONFATAL Exception parsing " + tkid + ", jsonContent=" + JsonUtils.convertJsonObjectToString(joIn) );
                 }
             }
             

@@ -4,15 +4,10 @@
  */
 package com.tm2score.format;
 
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.pdf.PdfPCell;
 import com.tm2score.battery.BatteryScoreType;
 import com.tm2score.battery.BatteryScoringUtils;
 import com.tm2score.battery.BatteryType;
 import com.tm2score.bot.ChatMessageType;
-import static com.tm2score.custom.coretest2.CT2ReportSettings.CT2_BOXHEADER_LEFTPAD;
 import com.tm2score.entity.battery.Battery;
 import com.tm2score.entity.battery.BatteryScore;
 import com.tm2score.entity.proctor.ProctorEntry;
@@ -271,7 +266,7 @@ public class BaseScoreFormatter
 
             batt = tk.getBatteryId()> 0; //  && tk.getBatteryScore()!= null;
 
-            params = new String[15];
+            params = new String[16];
 
             //if( batt )
             //{
@@ -296,6 +291,8 @@ public class BaseScoreFormatter
 
             params[13] = RuntimeConstants.getStringValue("baseadmindomain");
             params[14] = RuntimeConstants.getStringValue("default-site-name");
+            params[15] = getPostCandidateContactStr();
+
             //else
             params[0] = testNameToUse; // te==null ? tk.getTestEventList().get(0).getProduct().getName() : te.getProduct().getName();
 
@@ -1172,7 +1169,7 @@ public class BaseScoreFormatter
         return null;
     }
 
-
+    
     public Object[] getStandardHeaderSection( boolean tog, boolean includeTop, String topNoteHtml, String introLangKey, String customMsg )
     {
         Object[] out = new Object[2];
@@ -3757,6 +3754,21 @@ NONE(0,"None"),    // When an ONET Soc is selected
         return out;
     }
 
+
+    public String getPostCandidateContactStr()
+    {
+        if( org==null ) 
+            org = tk.getOrg();        
+        if( org==null )
+            return "";
+        String cs = org.getPostTestContactStr();
+        if( cs==null || cs.isBlank() )
+            return "";
+        String ss = cs.toLowerCase();
+        if( !ss.startsWith("<div") && !ss.startsWith("<p") )
+            cs = "<p>" + cs + "</p>";
+        return cs;
+    }
 
 
 

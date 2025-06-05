@@ -1,13 +1,15 @@
 package com.tm2score.entity.user;
 
 
-import com.tm2score.global.I18nUtils;
 import com.tm2score.service.LogService;
 import com.tm2score.user.ResumeEducation;
 import com.tm2score.user.ResumeExperience;
 import com.tm2score.util.JsonUtils;
+import jakarta.json.Json;
 import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import java.io.Serializable;
 
 import jakarta.persistence.Column;
@@ -24,14 +26,13 @@ import jakarta.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 
 @Entity
 @Table( name = "xresume" )
 @NamedQueries( {
-        @NamedQuery( name = "Resume.findByResumeId", query = "SELECT o FROM Resume AS o WHERE o.resumeId=:resumeId"),        
-        @NamedQuery( name = "Resume.findByUserId", query = "SELECT o FROM Resume AS o WHERE o.userId=:userId")        
+        @NamedQuery( name = "Resume.findByResumeId", query = "SELECT o FROM Resume AS o WHERE o.resumeId=:resumeId"),
+        @NamedQuery( name = "Resume.findByUserId", query = "SELECT o FROM Resume AS o WHERE o.userId=:userId")
 } )
 public class Resume implements Serializable
 {
@@ -46,10 +47,10 @@ public class Resume implements Serializable
 
     @Column( name = "userid" )
     private long userId;
-    
+
     @Column( name = "orgid" )
     private int orgId;
-        
+
     /*
      0 = active
      99 = archived
@@ -59,44 +60,32 @@ public class Resume implements Serializable
 
     @Column( name = "localestr" )
     private String localeStr;
-    
 
     /*
     {
-      "summary": "",
-      "experience": [
-        {
-          "title": "",
-          "company": "",
-          "period": "",
-          "accomplishments": [ "", "", "" ]
-        }
-      ],
-      "education": [
-        {
-          "degree": "",
-          "institution": "",
-          "year": ""
-        }
-      ],
-    "otherquals":["", "", ""]
-    }    
-    */    
+      "summary":"",
+      "objective":"",
+      "education":[ {} ],
+      "experience":[ {} ],
+      "otherquals":[ "" ]
+    }
+    */
     @Column( name = "jsonstr" )
-    private String jsonStr;    
-    
+    private String jsonStr;
+
     @Column( name = "uploadedtext" )
     private String uploadedText;
 
     @Column( name = "uploadfilename" )
     private String uploadFilename;
-        
+
     @Column( name = "plaintext" )
     private String plainText;
-    
+
     @Column( name = "lastaicallhistoryid" )
     private long lastAiCallHistoryId;
-    
+
+
     @Temporal( TemporalType.TIMESTAMP )
     @Column( name = "createdate" )
     private Date createDate;
@@ -104,6 +93,7 @@ public class Resume implements Serializable
     @Temporal( TemporalType.TIMESTAMP )
     @Column( name = "lastupdate" )
     private Date lastUpdate;
+
 
     @Temporal( TemporalType.TIMESTAMP )
     @Column( name = "lastparsedate" )
@@ -115,21 +105,21 @@ public class Resume implements Serializable
 
     @Transient
     String summary;
-    
+
     @Transient
     String objective;
-    
+
     @Transient
     List<ResumeEducation> education;
-    
+
     @Transient
     List<ResumeExperience> experience;
-        
+
     @Transient
     List<String> otherQuals;
-        
 
-    
+
+
     public void clearForNewParseResults()
     {
         summary=null;
@@ -137,46 +127,130 @@ public class Resume implements Serializable
         education=null;
         experience=null;
         otherQuals=null;
-    }    
-    
-    
+    }
+
+    public boolean getHasAnyDataForAiParseCall()
+    {
+        return (getUploadedText()!=null && !getUploadedText().isBlank()); // || (this.getPlainText()!=null && !getPlainText().isBlank());
+    }
+
     public boolean getHasAnyFormData()
     {
-        return (summary!=null && !summary.isBlank()) || 
-               (objective!=null && !objective.isBlank()) || 
-               (education!=null && !education.isEmpty()) || 
+        return (summary!=null && !summary.isBlank()) ||
+               (objective!=null && !objective.isBlank()) ||
+               (education!=null && !education.isEmpty()) ||
                (experience!=null && !experience.isEmpty()) ||
                (otherQuals!=null && !otherQuals.isEmpty());
     }
-    
-    public Locale getLocale()
+
+
+    public void sanitizeUserInput()
     {
-        if( localeStr==null || localeStr.isBlank() )
-            return Locale.US;
-        
-        return I18nUtils.getLocaleFromCompositeStr(localeStr);
+
     }
-    
-    
+
+    public void packJsonStr() throws Exception
+    {
+        if( !getHasAnyFormData() )
+        {
+            jsonStr = null;
+            return;
+        }
+
+        boolean found = false;
+        try
+        {
+            JsonObjectBuilder topJob = Json.createObjectBuilder();
+
+            if( summary!=null && !summary.isBlank() )
+            {
+                topJob.add( "summary", summary );
+                found=true;
+            }
+
+            if( objective!=null && !objective.isBlank() )
+            {
+                topJob.add( "objective", objective );
+                found=true;
+            }
+
+            if( education!=null && !education.isEmpty())
+            {
+                JsonArrayBuilder jab = Json.createArrayBuilder();
+                for( ResumeEducation ed : education )
+                {
+                    jab.add( ed.getJsonObjectBuilder() );
+                }
+                topJob.add( "education", jab );
+                found=true;
+            }
+
+            if( experience!=null && !experience.isEmpty() )
+            {
+                JsonArrayBuilder jab = Json.createArrayBuilder();
+                for( ResumeExperience ed : experience )
+                {
+                    jab.add( ed.getJsonObjectBuilder() );
+                }
+                topJob.add( "experience", jab );
+                found=true;
+            }
+
+            if( otherQuals!=null && !otherQuals.isEmpty() )
+            {
+                JsonArrayBuilder jab = Json.createArrayBuilder();
+                for( String s : otherQuals )
+                {
+                    if( s!=null && !s.isBlank() )
+                        jab.add(s);
+                }
+                topJob.add("otherquals", jab );
+                found=true;
+            }
+
+            if( found )
+                jsonStr = JsonUtils.convertJsonObjectToString(topJob.build() );
+            else
+                jsonStr = null;
+        }
+        catch( Exception e )
+        {
+            LogService.logIt( e, "Resume.packJsonStr() " + toString() );
+            throw e;
+        }
+    }
+
     public synchronized void parseJsonStr() throws Exception
     {
-        clearForNewParseResults();
-                
+        // do not overwrite.
+        if( summary!=null && !summary.isBlank() )
+            return;
+        if( objective!=null && !objective.isBlank() )
+            return;
+        if( education!=null && !education.isEmpty() )
+            return;
+        if( experience!=null && !experience.isEmpty() )
+            return;
+        if( otherQuals!=null && !otherQuals.isEmpty() )
+            return;
+
         if( jsonStr==null || jsonStr.isBlank() )
         {
             this.summary="";
             this.objective="";
-
+            this.education=null;
+            this.experience=null;
+            this.otherQuals=null;
             return;
         }
 
         try
         {
             JsonObject  jo = JsonUtils.convertJsonStringToObject(jsonStr );
-            
+
             if( jo==null )
                 return;
-            
+
             if( jo.containsKey("summary") && !jo.isNull("summary"))
                 summary = JsonUtils.getStringFmJson(jo, "summary");
 
@@ -189,7 +263,7 @@ public class Resume implements Serializable
                 JsonArray ja = jo.getJsonArray("education");
                 for( JsonObject eo : ja.getValuesAs(JsonObject.class))
                 {
-                    education.add( new ResumeEducation(eo ) );                            
+                    education.add( new ResumeEducation(eo ) );
                 }
             }
             if( jo.containsKey("experience") && !jo.isNull("experience"))
@@ -198,14 +272,14 @@ public class Resume implements Serializable
                 JsonArray ja = jo.getJsonArray("experience");
                 for( JsonObject eo : ja.getValuesAs(JsonObject.class))
                 {
-                    experience.add( new ResumeExperience(eo ) );                            
+                    experience.add( new ResumeExperience(eo ) );
                 }
             }
             if( jo.containsKey("otherquals") && !jo.isNull("otherquals"))
             {
                 otherQuals = new ArrayList<>();
                 JsonArray ja = jo.getJsonArray("otherquals");
-                for( String s : ja.getValuesAs(String::toString))
+                for( String s : ja.getValuesAs(Object::toString))
                 {
                     if( s!=null && !s.isBlank() )
                         otherQuals.add(s);
@@ -218,7 +292,31 @@ public class Resume implements Serializable
             throw e;
         }
     }
-    
+
+
+    public synchronized JsonObject getJsonObject() throws Exception
+    {
+        if( jsonStr==null || jsonStr.isBlank() )
+            return null;
+        return JsonUtils.convertJsonStringToObject(jsonStr );
+    }
+
+
+
+    public synchronized void parseJsonStrNoErrors()
+    {
+        try
+        {
+            parseJsonStr();
+        }
+        catch( Exception e )
+        {
+            LogService.logIt(e, "Resume.parseJsonStrNoErrors() " + toString() );
+        }
+    }
+
+
+
     public int getResumeId() {
         return resumeId;
     }
@@ -301,11 +399,65 @@ public class Resume implements Serializable
     }
 
     public String getObjective() {
+
+        if( objective==null && this.jsonStr!=null && !this.jsonStr.isBlank() )
+            parseJsonStrNoErrors();
+
         return objective;
     }
 
     public void setObjective(String objective) {
         this.objective = objective;
+    }
+
+    public List<ResumeEducation> getEducation() {
+        if( education==null && this.jsonStr!=null && !this.jsonStr.isBlank() )
+            parseJsonStrNoErrors();
+
+        //if( education==null )
+        //    education = new ArrayList<>();
+
+        return education;
+    }
+
+    public void setEducation(List<ResumeEducation> edl) {
+        this.education = edl;
+    }
+
+    public List<ResumeExperience> getExperience() {
+        if( experience==null && this.jsonStr!=null && !this.jsonStr.isBlank() )
+            parseJsonStrNoErrors();
+
+        //if( experience==null )
+        //     experience = new ArrayList<>();
+
+        return experience;
+    }
+
+    public void setExperience(List<ResumeExperience> experience) {
+        this.experience = experience;
+    }
+
+    public List<String> getOtherQuals() {
+        if( otherQuals==null && this.jsonStr!=null && !this.jsonStr.isBlank() )
+            parseJsonStrNoErrors();
+
+        //if( otherQuals==null )
+        //    otherQuals = new ArrayList<>();
+
+        return otherQuals;
+    }
+
+    public void setOtherQuals(List<String> otherQuals) {
+        this.otherQuals = otherQuals;
+    }
+
+    public String getJsonStr() {
+        return jsonStr;
+    }
+
+    public void setJsonStr(String jsonStr) {
+        this.jsonStr = jsonStr;
     }
 
     public Date getLastParseDate() {
@@ -339,14 +491,4 @@ public class Resume implements Serializable
     public void setUploadFilename(String uploadFilename) {
         this.uploadFilename = uploadFilename;
     }
-
-    public String getJsonStr() {
-        return jsonStr;
-    }
-
-    public void setJsonStr(String jsonStr) {
-        this.jsonStr = jsonStr;
-    }
-
-    
 }

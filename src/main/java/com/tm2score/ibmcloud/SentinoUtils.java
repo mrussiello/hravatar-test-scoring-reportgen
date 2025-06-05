@@ -364,7 +364,7 @@ public class SentinoUtils
             
             JsonObject jo = jobTop.build();
             
-            String payload = JsonUtils.convertJsonObjecttoString(jo);
+            String payload = JsonUtils.convertJsonObjectToString(jo);
             
             // LogService.logIt( "SentinoUtils.getJsonPayloadForProfile() Payload=" + payload );
             

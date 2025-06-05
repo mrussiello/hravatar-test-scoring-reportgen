@@ -677,7 +677,7 @@ public class VoiceVibesUtils {
             
             JsonObject jo = jobTop.build();
             
-            String payload = JsonUtils.convertJsonObjecttoString(jo);
+            String payload = JsonUtils.convertJsonObjectToString(jo);
             
             String url = getVoiceVibesUrl( "/recordings" );
             
@@ -845,7 +845,7 @@ public class VoiceVibesUtils {
             
             JsonObject jo = jobTop.build();
             
-            String payload = JsonUtils.convertJsonObjecttoString(jo);
+            String payload = JsonUtils.convertJsonObjectToString(jo);
             
             String url = getVoiceVibesUrl( "/recordings" );
             

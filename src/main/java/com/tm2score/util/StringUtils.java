@@ -686,35 +686,6 @@ public class StringUtils
     public static String getBracketedArtifactFromString( String inStr, String name )
     {
         return getBracketedArtifact( inStr, name, "[", "]" );
-        /*
-        String t = inStr;
-
-        if( name == null || t == null || t.isEmpty() || !t.contains(name) )
-            return null;
-
-        name = name.trim();
-
-        if( name.startsWith("[" ) )
-            name = name.substring(1, name.length() );
-
-        if( name.endsWith( "]") )
-            name = name.substring(0,name.length()-1);
-
-        if(name.isEmpty() )
-            return null;
-
-        int idx = t.indexOf( "[" + name + "]" );
-
-        if( idx <0 )
-            return null;
-
-        int idx2 = t.indexOf(  "[" , idx+2 + name.length() );
-
-        if( idx2 < 0 )
-            idx2 = t.length();
-
-        return t.substring( idx + 2 + name.length() , idx2 ).trim();
-        */
     }
 
     private static String getBracketedArtifact( String inStr, String name, String openStr, String closeStr )

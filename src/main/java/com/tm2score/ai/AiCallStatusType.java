@@ -6,6 +6,7 @@ public enum AiCallStatusType
     RECEIVED(0,"Recevied", "inprogress"),
     STARTED(1,"Started", "inprogress"),
     COMPLETED(100,"Completed", "complete"),
+    SKIPPED(201,"Skipped", "skipped"),
     ERROR(200,"Error","error");
 
     private final int aiCallStatusTypeId;

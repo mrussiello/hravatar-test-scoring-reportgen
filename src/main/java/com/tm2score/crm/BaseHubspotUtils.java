@@ -518,7 +518,7 @@ public class BaseHubspotUtils {
         if( jo==null )
             return null;
 
-        //LogService.logIt( "HubspotUtils.getHubspotCompanyId() EEE jo=" + JsonUtils.convertJsonObjecttoString(jo) );
+        //LogService.logIt( "HubspotUtils.getHubspotCompanyId() EEE jo=" + JsonUtils.convertJsonObjectToString(jo) );
         
         return getIdValueFromSearchResults( jo );
     }
@@ -543,10 +543,10 @@ public class BaseHubspotUtils {
         //LogService.logIt( "HubspotUtils.getHubspotContactId() BBB jo=" + (jo!=null) );
         if( jo==null )
             return null;
-        //LogService.logIt( "HubspotUtils.getHubspotContactId() CCC jo=" + JsonUtils.convertJsonObjecttoString(jo) );
+        //LogService.logIt( "HubspotUtils.getHubspotContactId() CCC jo=" + JsonUtils.convertJsonObjectToString(jo) );
         String v = getIdValueFromSearchResults( jo );
 
-        // LogService.logIt( "HubspotUtils.getHubspotContactId() returning: " + v + ", DDD jo=" + JsonUtils.convertJsonObjecttoString(jo) );
+        // LogService.logIt( "HubspotUtils.getHubspotContactId() returning: " + v + ", DDD jo=" + JsonUtils.convertJsonObjectToString(jo) );
         
         return v;
     }
@@ -577,7 +577,7 @@ public class BaseHubspotUtils {
         {
             try
             {
-                LogService.logIt( e, "BaseHubspotUtils.getIdValueFromCreateUpdateResults() " + JsonUtils.convertJsonObjecttoString(jo) ); 
+                LogService.logIt( e, "BaseHubspotUtils.getIdValueFromCreateUpdateResults() " + JsonUtils.convertJsonObjectToString(jo) ); 
             }
             catch( Exception ee )
             {
@@ -626,7 +626,7 @@ public class BaseHubspotUtils {
         {
             try
             {
-                LogService.logIt( e, "BaseHubspotUtils.getIdValueFromSearchResults() " + JsonUtils.convertJsonObjecttoString(jo) ); 
+                LogService.logIt( e, "BaseHubspotUtils.getIdValueFromSearchResults() " + JsonUtils.convertJsonObjectToString(jo) ); 
             }
             catch( Exception ee )
             {
@@ -701,11 +701,11 @@ public class BaseHubspotUtils {
             vals.put("operator", "EQ" );                        
             JsonObject jo = getSearchJsonObject( vals, returnProps );
             
-            //LogService.logIt( "BaseHubspotUtils.getJsonObjectByValue() search payload=" + JsonUtils.convertJsonObjecttoString(jo));
+            //LogService.logIt( "BaseHubspotUtils.getJsonObjectByValue() search payload=" + JsonUtils.convertJsonObjectToString(jo));
             
             JsonObject j2 = doApiPostOrPatch( url, jo, false );   
 
-            //LogService.logIt( "BaseHubspotUtils.getJsonObjectByValue() search response=" + JsonUtils.convertJsonObjecttoString(j2));
+            //LogService.logIt( "BaseHubspotUtils.getJsonObjectByValue() search response=" + JsonUtils.convertJsonObjectToString(j2));
             
             return j2;
         }
@@ -834,7 +834,7 @@ public class BaseHubspotUtils {
         String payload = null;
         try
         {
-            payload = JsonUtils.convertJsonObjecttoString(jo);
+            payload = JsonUtils.convertJsonObjectToString(jo);
             //LogService.logIt( "BaseHubspotUtils.doApiPostOrPatch() AAA url=" + url + ", payload=" + payload ); 
             String resJo = sendApiPostOrPatch( url, null, payload, patch );
             if( resJo==null || resJo.isBlank() )

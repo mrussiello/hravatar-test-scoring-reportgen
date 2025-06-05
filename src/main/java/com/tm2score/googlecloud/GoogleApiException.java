@@ -113,7 +113,7 @@ public class GoogleApiException extends Exception {
         
         catch( Exception e )
         {
-            LogService.logIt(e, "GoogleException.parseJsonErrorObject() " + JsonUtils.convertJsonObjecttoString(errJo) );
+            LogService.logIt(e, "GoogleException.parseJsonErrorObject() " + JsonUtils.convertJsonObjectToString(errJo) );
         }
         
     }

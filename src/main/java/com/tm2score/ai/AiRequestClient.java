@@ -14,7 +14,7 @@ public class AiRequestClient extends BaseAiClient
 {
     public JsonObject getJsonObjectFromAiCallRequest( JsonObject joReq ) throws Exception
     {
-        String payload = JsonUtils.convertJsonObjecttoString(joReq);
+        String payload = JsonUtils.convertJsonObjectToString(joReq);
         
         return getJsonObjectFromAiCallRequest( payload );        
     }

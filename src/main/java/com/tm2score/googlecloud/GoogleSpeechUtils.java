@@ -563,7 +563,7 @@ public class GoogleSpeechUtils {
             
             JsonObject jo = jobTop.build();
             
-            String payload = JsonUtils.convertJsonObjecttoString(jo);
+            String payload = JsonUtils.convertJsonObjectToString(jo);
             
             return payload;
         }

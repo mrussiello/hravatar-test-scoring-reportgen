@@ -464,6 +464,8 @@ public class BaseDistManager {
                 {}
             }
 
+            // LogService.logIt( "BaseDistManager.distributeTestKeyResults() END " + out[0] + "," + out[1] + "," + out[2] );
+            
             return out;
         }
 

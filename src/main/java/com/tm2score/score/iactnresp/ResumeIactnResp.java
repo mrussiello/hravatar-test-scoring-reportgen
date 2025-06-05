@@ -47,6 +47,8 @@ import java.util.Scanner;
  */
 public class ResumeIactnResp extends IactnResp implements ScorableResponse
 {
+    static int MIN_CHARS_FOR_AI_PARSE = 500;
+    
     /**
      * ScoreParam3 is the maximum number of points assigned by this item. If set to zero, this value is 100.
      * TextScoreParam1 is the title of the field in the writing-sample section of the report.
@@ -202,12 +204,12 @@ public class ResumeIactnResp extends IactnResp implements ScorableResponse
             if( newlySubmittedResumeText!=null && !newlySubmittedResumeText.isBlank() )
             {
                 newlySubmittedResumeText = newlySubmittedResumeText.trim();
-                isChange = resume.getPlainText()==null || !resume.getPlainText().equalsIgnoreCase(newlySubmittedResumeText);
-                resume.setPlainText(newlySubmittedResumeText ); 
+                isChange = resume.getUploadedText()==null || !resume.getUploadedText().equalsIgnoreCase(newlySubmittedResumeText);
+                resume.setUploadedText(newlySubmittedResumeText ); 
                 
                 // clear upload
                 resume.setUploadFilename(null);
-                resume.setUploadedText(null);                
+                // resume.setUploadedText(null);                
                 resume.setLastInputDate( new Date() );
             }
             
@@ -235,7 +237,7 @@ public class ResumeIactnResp extends IactnResp implements ScorableResponse
                     resume.setUploadedText(newlySubmittedUploadedText);
                     
                     // clear Plain Text
-                    resume.setPlainText(null);
+                    // resume.setPlainText(null);
                     resume.setLastInputDate( new Date() );
                 }
             }
@@ -246,7 +248,7 @@ public class ResumeIactnResp extends IactnResp implements ScorableResponse
                 userFacade=UserFacade.getInstance();
             userFacade.saveResume(resume);
             
-            boolean needsParse = isChange || (resume.getLastInputDate()!=null && (resume.getLastParseDate()==null || resume.getLastParseDate().before( resume.getLastInputDate())) );
+            boolean needsParse = isChange; // || (resume.getLastInputDate()!=null && (resume.getLastParseDate()==null || resume.getLastParseDate().before( resume.getLastInputDate())) );
             if( needsParse )
             {
                 parseAndStoreResumeInfo();
@@ -287,7 +289,28 @@ public class ResumeIactnResp extends IactnResp implements ScorableResponse
         try
         {
             LogService.logIt("ResumeIactnResp.parseAndStoreResumeInfo() START userId=" + (user==null ? "null" : user.getUserId() ) + ", testEventId=" + (testEvent==null ? "null" : testEvent.getTestEventId()) + ", resumeId=" + (resume==null ? "null" : resume.getResumeId()) );
-            JsonObject resJo = AiRequestUtils.parseResume( resume, user );
+
+            if( resume.getUploadedText()==null || resume.getUploadedText().trim().length()<MIN_CHARS_FOR_AI_PARSE )
+            {
+                LogService.logIt("ResumeIactnResp.parseAndStoreResumeInfo() Resume Uploaded Text is less than the min chars. Saving the uploaded text to Summary and returning. userId=" + (user==null ? "null" : user.getUserId() ) + ", testEventId=" + (testEvent==null ? "null" : testEvent.getTestEventId()) + ", resumeId=" + (resume==null ? "null" : resume.getResumeId()) );
+                resume.parseJsonStrNoErrors();
+
+                if( resume.getSummary()!=null && !resume.getSummary().isBlank() )
+                    return;
+                
+                resume.setSummary( resume.getUploadedText().trim() );
+                if( userFacade==null )
+                    userFacade=UserFacade.getInstance();
+                resume.setLastParseDate(new Date());
+                resume.setLastUpdate(new Date() );
+                resume.setPlainText( resume.getSummary() );
+                resume.packJsonStr();
+                userFacade.saveResume(resume);
+
+                return;
+            }
+            
+            JsonObject resJo = AiRequestUtils.parseResume(resume, user, true );
 
             if( resJo==null )
             {
@@ -296,7 +319,7 @@ public class ResumeIactnResp extends IactnResp implements ScorableResponse
             }
 
             int aiCallHistoryId = resJo.containsKey("aicallhistoryid") ? resJo.getInt("aicallhistoryid") : 0;
-            int aiCallTypeId = resJo.containsKey("aicalltypeid") ? resJo.getInt("aicalltypeid") : 0;
+            // int aiCallTypeId = resJo.containsKey("aicalltypeid") ? resJo.getInt("aicalltypeid") : 0;
 
             String status = JsonUtils.getStringFmJson(resJo, "status");
 
@@ -305,58 +328,23 @@ public class ResumeIactnResp extends IactnResp implements ScorableResponse
             if( status.equals( AiCallStatusType.ERROR.getStatusStr() ) )
             {
                 String msg = "Call to AI experienced an error. Error code=" + (resJo.containsKey("errorcode") ? resJo.getInt("errorcode") : "none") + ", Error message=" + (resJo.containsKey("errormessage") ? JsonUtils.getStringFmJson( resJo, "errormessage") : "none") + ", aiCallHistoryId=" + aiCallHistoryId;
-                LogService.logIt("AdminResumeUtils.parseAndStoreResumeInfo() ERROR: " + msg + ", json returned=" + JsonUtils.convertJsonObjecttoString(resJo) );
+                LogService.logIt("AdminResumeUtils.parseAndStoreResumeInfo() ERROR: " + msg + ", json returned=" + JsonUtils.convertJsonObjectToString(resJo) );
                 return;
             }
 
             if( !status.equals( AiCallStatusType.COMPLETED.getStatusStr() ) )
             {
                 String msg = "Call to AI is in unexpected status=" + status;
-                LogService.logIt("AdminResumeUtils.parseAndStoreResumeInfo() " + msg + ", aiCallHistoryId=" + aiCallHistoryId + ", json returned=" + JsonUtils.convertJsonObjecttoString(resJo) );
+                LogService.logIt("AdminResumeUtils.parseAndStoreResumeInfo() " + msg + ", aiCallHistoryId=" + aiCallHistoryId + ", json returned=" + JsonUtils.convertJsonObjectToString(resJo) );
                 return;
             }            
             
-            LogService.logIt("ResumeIactnResp.handleAiCallResult() status=success, aiCallHistoryId=" + aiCallHistoryId );
-            if( !resJo.containsKey("resultjo") || resJo.isNull("resultjo") )
-            {
-                LogService.logIt("ResumeIactnResp.parseAndStoreResumeInfo() Returned Json is completed but there is no resultjo field. aiCallHistoryId=" + aiCallHistoryId + ", aiCallTypeId=" + aiCallTypeId + ", json returned=" + JsonUtils.convertJsonObjecttoString(resJo) );
-                return;
-            }
-
-            JsonObject resJo2 = resJo.getJsonObject("resultjo");
-            
-            if( resJo2==null || !resJo2.containsKey("resultstr") || resJo2.isNull("resultstr") )
-            {
-                LogService.logIt("ResumeIactnResp.parseAndStoreResumeInfo() Returned Json is completed but there is no viable resultstr field in resjo2. aiCallHistoryId=" + aiCallHistoryId + ", aiCallTypeId=" + aiCallTypeId + ", json returned=" + JsonUtils.convertJsonObjecttoString(resJo) );
-                return;
-            }
-            
-            String resultJoStr = JsonUtils.getStringFmJson(resJo2, "resultstr");
-            if( resultJoStr==null || resultJoStr.isBlank() )
-            {
-                LogService.logIt("ResumeIactnResp.parseAndStoreResumeInfo() Returned Json is completed but there is no valid 'resultstr' element in the resultjo field. aiCallHistoryId=" + aiCallHistoryId + ", aiCallTypeId=" + aiCallTypeId + ", json returned=" + JsonUtils.convertJsonObjecttoString(resJo) );
-                return;
-            }
-            
-            
-            JsonObject resultJo = JsonUtils.convertJsonStringToObject(resultJoStr);
-            
-            if( resultJo==null )
-            {
-                LogService.logIt("ResumeIactnResp.parseAndStoreResumeInfo() Returned Json is completed but there is no JsonObject in the resultjo field. aiCallHistoryId=" + aiCallHistoryId + ", aiCallTypeId=" + aiCallTypeId + ", json returned=" + JsonUtils.convertJsonObjecttoString(resJo) );
-                return;
-            }
-            
-            resume.setLastAiCallHistoryId( aiCallHistoryId );
-            resume.setLastParseDate(new Date() );
-            resume.setLastUpdate( new Date() );
-            resume.setJsonStr( JsonUtils.convertJsonObjecttoString(resultJo));
-
-            resume.parseJsonStr();
-            
+            LogService.logIt("ResumeIactnResp.handleAiCallResult() status=complete, aiCallHistoryId=" + aiCallHistoryId );
+            // Update is automatic and performed by the AI Call.
+            Thread.sleep(100);
             if( userFacade==null )
                 userFacade=UserFacade.getInstance();
-            userFacade.saveResume(resume);                        
+            resume = userFacade.getResumeForUser( user.getUserId() );
         }
         catch( Exception e )
         {

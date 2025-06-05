@@ -111,7 +111,7 @@ public class ScoreResource extends BaseApiResource {
                 
             
             JsonObject jo2 = outJob.build();            
-            String out = JsonUtils.convertJsonObjecttoString(jo2);            
+            String out = JsonUtils.convertJsonObjectToString(jo2);            
             // LogService.logIt( "ScoreResource.ScoreResource() COMPLETE. output=" + out );
             return Response.ok( out, MediaType.APPLICATION_JSON).status( Response.Status.OK.getStatusCode() ).build();            
         }        
@@ -188,7 +188,7 @@ public class ScoreResource extends BaseApiResource {
             job.add("error", e==null || e.getMessage()==null ? "" : e.getMessage() );                        
             job.add("exception", userMessage==null ? "" : userMessage );                        
             JsonObject jo = job.build();                        
-            String out = JsonUtils.convertJsonObjecttoString(jo); //.convertJsonObjectToString(jo);
+            String out = JsonUtils.convertJsonObjectToString(jo); //.convertJsonObjectToString(jo);
             LogService.logIt( "ScoreResource.getGeneralErrorJson() out=" + out );
             return out;                        
         }
