@@ -118,6 +118,8 @@ public class CT2GenericReport extends BaseCT2ReportTemplate implements ReportTem
 
             addUploadedFilesSection();
 
+            addResumeSection();
+            
             addPreparationNotesSection();
 
             addCalculationSection(true);

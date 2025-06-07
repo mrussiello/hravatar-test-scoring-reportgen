@@ -21,6 +21,7 @@ import com.tm2score.entity.proctor.SuspiciousActivity;
 import com.tm2score.entity.report.Report;
 import com.tm2score.entity.sim.SimDescriptor;
 import com.tm2score.entity.user.Org;
+import com.tm2score.entity.user.Resume;
 import com.tm2score.entity.user.Suborg;
 import com.tm2score.entity.user.User;
 import com.tm2score.event.EventFacade;
@@ -65,6 +66,8 @@ import com.tm2score.sim.SimCompetencyGroupType;
 import com.tm2score.sim.SimCompetencyVisibilityType;
 import com.tm2score.sim.SimJUtils;
 import com.tm2score.user.AssistiveTechnologyType;
+import com.tm2score.user.ResumeEducation;
+import com.tm2score.user.ResumeExperience;
 import com.tm2score.user.UserFacade;
 import com.tm2score.user.UserType;
 import com.tm2score.util.MessageFactory;
@@ -100,7 +103,7 @@ public class BaseScoreFormatter
     public static String WORD_ICON_URL = "https://cdn.hravatar.com/web/orgimage/zrWvh1uNWrg-/img_8x1517691502892.png";
     public static String PDF_ICON_URL = "https://cdn.hravatar.com/web/orgimage/zrWvh1uNWrg-/img_6x1517691501742.png";
     public static String IMAGE_ICON_URL = "https://cdn.hravatar.com/web/orgimage/zrWvh1uNWrg-/img_9x1517693458213.png";
-    
+
 
 
     // DO NOT MAKE STATIC - changed by
@@ -737,10 +740,10 @@ public class BaseScoreFormatter
     {
         if( maxWid<=0 )
             maxWid=800;
-        
+
         return "<tr><td colspan=\"7\" style=\"text-align:center\"><img src=\"" + imgUrl + "\" style=\"display-inline-block;width:100%;max-width:" + maxWid + "px\"/></td></tr>\n";
     }
-    
+
     protected String getRow( String style, String label, String value, String value2, String value3, boolean bold  )
     {
          return "<tr " + style + "><td style=\"width:20px\"></td><td " + ( bold ? "style=\"font-weight:bold;vertical-align:top\"" : "style=\"font-weight:normal;vertical-align:top\"" ) + ">" + label + "</td><td " + ( bold ? "style=\"font-weight:bold\"" : "" ) + ">" + value + "</td><td " + ( bold ? "style=\"font-weight:bold\"" : "" ) + ">" + value2 + "</td><td colspan=\"3\"" + ( bold ? "font-weight:bold" : "" ) +  "\">" + value3 + "</td></tr>\n";
@@ -932,7 +935,7 @@ public class BaseScoreFormatter
 
             if( te.hasProfile() && te.getProfile()!=null && te.getProfile().getStrParam3()!=null && !te.getProfile().getStrParam3().isEmpty() )
                 custClrs = "&cs=" + te.getProfile().getStrParam3().trim();
-            
+
             sb.append("<img style=\"width:" + (Constants.CT2_COLORGRAPHWID_EML + 8) + "px;height:20px\" alt=\"" + MessageFactory.getStringMessage(locale, "g.CT2GraphicAlt" ) + "\" src=\"" + RuntimeConstants.getStringValue("baseprotocol") +  "://" + RuntimeConstants.getStringValue( "baseadmindomain" ) + "/ta/" + (getTestEvent().getUseBellGraphs() ? "bellscorechart" : "ct2scorechart") + "/" + tes.getTestEventScoreIdEncrypted()  + ".png?ss=" + imgUrl.toString() + "&tw=" + Constants.CT2_COLORGRAPHWID_EML + "&p=" + ptrPos + pflPrms + custClrs + "\"/>" );
         }
 
@@ -1169,7 +1172,7 @@ public class BaseScoreFormatter
         return null;
     }
 
-    
+
     public Object[] getStandardHeaderSection( boolean tog, boolean includeTop, String topNoteHtml, String introLangKey, String customMsg )
     {
         Object[] out = new Object[2];
@@ -1353,7 +1356,7 @@ public class BaseScoreFormatter
             if( value != null && value.length() > 0 )
                 sb.append( getRow( style, label, value, false ) );
 
-            
+
             if( getTestKey()!=null && getTestKey().getAssistiveTechnologyTypeIds()!=null && !getTestKey().getAssistiveTechnologyTypeIds().isBlank() )
             {
                 StringBuilder sbx = new StringBuilder();
@@ -1361,15 +1364,15 @@ public class BaseScoreFormatter
                 {
                     if( sid<=0 )
                         continue;
-                    
+
                     if( sbx.length()>0 )
                         sbx.append( "<br />" );
                     sbx.append( lmsg(AssistiveTechnologyType.getValue( sid ).getKey()) );
                 }
-                
+
                 if( tk.getAssistiveTechnologyTypeOtherValue()!=null && !tk.getAssistiveTechnologyTypeOtherValue().isBlank() )
                     sbx.append( "<br />" + tk.getAssistiveTechnologyTypeOtherValue() );
-                
+
                 if( sbx.length()>0 )
                 {
                     tog = !tog;
@@ -1377,11 +1380,11 @@ public class BaseScoreFormatter
                     value =sbx.toString();
                     label = lmsg(  "g.AssistiveTech" , null ) + ":";
                     if( value != null && value.length() > 0 )
-                         sb.append( getRow( style, label, value, false ) );                    
+                         sb.append( getRow( style, label, value, false ) );
                 }
             }
-            
-            
+
+
             tog = !tog;
             style = tog ? rowStyle1 : rowStyle2;
             value =I18nUtils.getFormattedDateTime(locale, getTestEvent().getStartDate(), getTestKey().getUser().getTimeZone() );
@@ -1439,7 +1442,7 @@ public class BaseScoreFormatter
                     {
                         // need to calc score digits
                         int scrDigits = ScoreFormatType.NUMERIC_0_TO_100.getScorePrecisionDigits();
-                        
+
                         for( TestEvent tev : tk.getTestEventList() )
                         {
                             if( tev!=null )
@@ -1448,8 +1451,8 @@ public class BaseScoreFormatter
                                 break;
                             }
                         }
-                        
-                        
+
+
                         tog = !tog;
                         style = tog ? rowStyle1 : rowStyle2;
                         value = I18nUtils.getFormattedNumber(locale, getBatteryScore().getScore(), scrDigits);
@@ -1890,7 +1893,7 @@ NONE(0,"None"),    // When an ONET Soc is selected
             for( TestEventScore tes : tesList )
             {
                 LogService.logIt( "BaseScoreFormatter.getCompetencyTaskSection() AAA.1 START tes.name=" + tes.getName() + ", typeId=" + typeId + ", score=" + tes.getScore() + ", visibility=" + SimCompetencyVisibilityType.getValue( tes.getHide() ).getName() );
-                
+
                 // Skip competencies or task-competencies that were not automatically scored.
                 if( tes.getScore()<0 )
                     continue;
@@ -1932,7 +1935,7 @@ NONE(0,"None"),    // When an ONET Soc is selected
 
                 else if( typeId == 10 && scc.isAIDerived())
                     tesList2.add( tes );
-                
+
                 else if( typeId == 11 && scc.getIsInterest())
                     tesList2.add( tes );
                 else if( typeId == 21 && scc.isAnyCustom() && (scc.equals( SimCompetencyClass.CUSTOM) || scc.equals( SimCompetencyClass.CUSTOM_COMBO)))
@@ -2016,11 +2019,11 @@ NONE(0,"None"),    // When an ONET Soc is selected
 
                 if( typeId>=21 && typeId<=25 )
                 {
-                    key = "g.CustomTitle" + (typeId-20);                    
+                    key = "g.CustomTitle" + (typeId-20);
                     ttext = getReportRuleAsString( "competencygrouptitle" + (typeId+80) );
                 }
 
-                
+
                 String title = ttext==null ? lmsg( key , null ) : ttext;
 
                 sb.append( getRowTitle( rowStyleHdr, title, isIncludeSubcategoryNumeric() ? lmsg( "g.Score" ) : null, isIncludeSubcategoryNorms() ? lmsg( "g.Percentile" ) : null , this.isIncludeSubcategoryCategory() ? lmsg(this.useRatingAndColors() ? "g.Rating" : "g.MatchJob" ) : null ) );
@@ -2482,7 +2485,7 @@ NONE(0,"None"),    // When an ONET Soc is selected
         sb.append( getRowTitleSubtitle( rowStyleHdr, lmsg(  "g.AvgResponseRatings", null ), null ) );
 
         // sb.append( getRow( rowStyleSubHdr, StringUtils.replaceStandardEntities( lmsg(  "g.RatingCategory", null ) ), lmsg("g.AverageRating", null), true ) );
-        
+
         String value;
         for( String name : avgRatingMap.keySet() )
         {
@@ -3098,6 +3101,104 @@ NONE(0,"None"),    // When an ONET Soc is selected
         }
     }
 
+
+    public Object[] getStandardResumeSection(boolean tog, String rowStyleHeader ) throws Exception
+    {
+        Object[] out = new Object[2];
+
+        StringBuilder sb = new StringBuilder();
+        tog = true;
+        out[0] = "";
+        out[1] = tog;
+
+        if( getReport().getIncludeResume()<=0 || getReportRuleAsBoolean( "resumereportsoff") || getUser()==null || getUser().getResume()==null )
+            return out;
+
+        LogService.logIt(  "BaseScoreFormatter.getStandardResumeSection() BBB.1 " );
+
+        Resume resume = getUser().getResume();
+        resume.parseJsonStr();
+
+        if( !resume.getHasAnyFormData() )
+        {
+            LogService.logIt(  "BaseScoreFormatter.getStandardResumeSection() BBB.2 Existing Resume has no form data." );
+            return out;
+        }
+
+        if( getReport().getIncludeResume()==1 && (resume.getSummary()==null || resume.getSummary().isBlank()) )
+        {
+            LogService.logIt(  "BaseCT2ReportTemplate.addResumeSection() BBB.2 Existing Resume has no form data." );
+            return out;
+        }
+
+        String style = rowStyle1;
+
+        String tt = lmsg( "g.UpdatedOnX", new String[]{I18nUtils.getFormattedDateTime(getLocale(), resume.getLastInputDate(), getUser().getTimeZone())});
+        String subtitle = "<span style=\"font-weight:normal\">" + tt + "</span>";
+        sb.append( getRowTitleSubtitle( rowStyleHdr, lmsg(  "g.Resume", null ), subtitle ) );
+
+        if( resume.getSummary()!=null && !resume.getSummary().isBlank() )
+        {
+            sb.append( this.getRow(style, lmsg(  "g.Summary", null ), true ) );
+            sb.append( this.getRow(style, resume.getSummaryXhtml(), false ) );
+        }
+
+        if( getReport().getIncludeResume()==2 )
+        {
+            if( resume.getObjective()!=null && !resume.getObjective().isBlank() )
+            {
+                sb.append( this.getRow(style, lmsg(  "g.Objective", null ), true ) );
+                sb.append( this.getRow(style, resume.getObjectiveXhtml(), false ) );
+            }
+
+            if( resume.getEducation()!=null && !resume.getEducation().isEmpty() )
+            {
+                StringBuilder sb2 = new StringBuilder();
+                sb2.append( "<ul style=\"margin-top:-7px\">\n" );
+
+                for( ResumeEducation re : resume.getEducation() )
+                {
+                    sb2.append( "<li>" + StringUtils.replaceStandardEntities(re.toAiString()) + "</li>\n");
+                }
+                sb2.append( "</ul>\n" );
+                
+                sb.append( this.getRow( style, lmsg("g.Education"), sb2.toString(), false ));
+            }
+
+            
+            if( resume.getExperience()!=null && !resume.getExperience().isEmpty() )
+            {
+                StringBuilder sb2 = new StringBuilder();
+                sb2.append( "<ul style=\"margin-top:-7px\">\n" );
+
+                for( ResumeExperience re : resume.getExperience() )
+                {
+                    sb2.append( "<li>" + StringUtils.replaceStandardEntities(re.toAiString()) + "</li>\n");
+                }
+                sb2.append( "</ul>\n" );
+                
+                sb.append( this.getRow( style, lmsg("g.Experience"), sb2.toString(), false ));
+            }
+
+            if( resume.getOtherQuals()!=null && !resume.getOtherQuals().isEmpty() )
+            {
+                StringBuilder sb2 = new StringBuilder();
+                sb2.append( "<ul style=\"margin-top:-7px\">\n" );
+
+                for( String re : resume.getOtherQuals())
+                {
+                    sb2.append( "<li>" + StringUtils.replaceStandardEntities(re) + "</li>\n");
+                }
+                sb2.append( "</ul>\n" );
+                
+                sb.append( this.getRow( style, lmsg("g.OtherQualifications"), sb2.toString(), false ));
+            }
+        }
+
+        out[0] = sb.toString();
+        out[1] = tog;
+        return out;
+    }
 
     public Object[] getStandardProctorCertificationsSection(boolean tog, String rowStyleHeader ) throws Exception
     {
@@ -3757,8 +3858,8 @@ NONE(0,"None"),    // When an ONET Soc is selected
 
     public String getPostCandidateContactStr()
     {
-        if( org==null ) 
-            org = tk.getOrg();        
+        if( org==null )
+            org = tk.getOrg();
         if( org==null )
             return "";
         String cs = org.getPostTestContactStr();

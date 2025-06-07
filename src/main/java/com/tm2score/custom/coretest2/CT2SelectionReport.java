@@ -111,6 +111,9 @@ public class CT2SelectionReport extends BaseCT2ReportTemplate implements ReportT
 
             addUploadedFilesSection();
 
+            addResumeSection();
+
+            
             addPreparationNotesSection();
 
             addCalculationSection(true);

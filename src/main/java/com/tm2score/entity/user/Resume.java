@@ -5,6 +5,7 @@ import com.tm2score.service.LogService;
 import com.tm2score.user.ResumeEducation;
 import com.tm2score.user.ResumeExperience;
 import com.tm2score.util.JsonUtils;
+import com.tm2score.util.StringUtils;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
@@ -342,6 +343,12 @@ public class Resume implements Serializable
     }
 
 
+    public String getSummaryXhtml()
+    {
+        return StringUtils.replaceStandardEntities(getSummary());
+    }
+
+    
     public String getSummary() {
         return summary;
     }
@@ -405,6 +412,13 @@ public class Resume implements Serializable
 
         return objective;
     }
+    
+    public String getObjectiveXhtml()
+    {
+        return StringUtils.replaceStandardEntities(getObjective());
+    }
+    
+    
 
     public void setObjective(String objective) {
         this.objective = objective;

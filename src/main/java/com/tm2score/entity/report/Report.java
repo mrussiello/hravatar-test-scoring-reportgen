@@ -172,6 +172,21 @@ public class Report implements Serializable, Cloneable
     @Column(name="includeredflags")
     private int includeRedFlags = 1;
 
+    /*
+     0=No
+     1=Summary Only
+     2=Full
+    */
+    @Column(name="includeresume")
+    private int includeResume = 0;
+    
+    /*
+     0=No
+     1=Summary Only
+     2=Full
+    */
+    @Column(name="includejobdescrip")
+    private int includeJobDescrip = 0;
 
     @Column(name="includenorms")
     private int includeNorms = 1;
@@ -883,6 +898,22 @@ public class Report implements Serializable, Cloneable
 
     public void setTextParam4(String textParam4) {
         this.textParam4 = textParam4;
+    }
+
+    public int getIncludeResume() {
+        return includeResume;
+    }
+
+    public void setIncludeResume(int includeResume) {
+        this.includeResume = includeResume;
+    }
+
+    public int getIncludeJobDescrip() {
+        return includeJobDescrip;
+    }
+
+    public void setIncludeJobDescrip(int includeJobDescrip) {
+        this.includeJobDescrip = includeJobDescrip;
     }
 
 

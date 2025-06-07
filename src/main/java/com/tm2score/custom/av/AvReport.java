@@ -114,6 +114,8 @@ public class AvReport extends AvReportTemplate implements ReportTemplate
 
             addItemScoresSection();
             
+            addResumeSection();
+            
             addPreparationNotesSection();
 
             addCalculationSection(true);

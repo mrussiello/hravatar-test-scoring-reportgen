@@ -51,6 +51,7 @@ import com.tm2score.entity.profile.Profile;
 import com.tm2score.entity.purchase.Product;
 import com.tm2score.entity.sim.SimDescriptor;
 import com.tm2score.entity.user.Org;
+import com.tm2score.entity.user.Resume;
 import com.tm2score.entity.user.User;
 import com.tm2score.event.EventFacade;
 import com.tm2score.event.ScoreCategoryType;
@@ -105,6 +106,8 @@ import com.tm2score.sim.SimCompetencyVisibilityType;
 import com.tm2score.sim.TrainingType;
 import com.tm2score.simlet.CompetencyScoreType;
 import com.tm2score.user.AssistiveTechnologyType;
+import com.tm2score.user.ResumeEducation;
+import com.tm2score.user.ResumeExperience;
 import com.tm2score.user.UserFacade;
 import com.tm2score.util.LanguageUtils;
 import com.tm2score.util.MessageFactory;
@@ -754,7 +757,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                     String stub = (String) CefrUtils.getCefrScoreInfoForOverall(reportData.getTestEvent(), reportData.getTestEvent().getTestEventScoreList())[1];
 
                     CefrScoreType cefrScoreType = CefrScoreType.getFromText(cefrLevel);
-                    
+
                     if( cefrScoreType!=null )
                     {
                         if( reportData.equivSimJUtils!=null )
@@ -768,16 +771,16 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                             }
 
                             ScoreCategoryType cefrScoreCategoryType = CefrUtils.getCefrScoreCategoryType(reportData.te.getSimXmlObj(), cefrScoreType, reportData.getTestEvent().getScoreColorSchemeType() );
-                        
+
                             String s = reportData.equivSimJUtils.getOverallScoreText( cefrScoreCategoryType.getScoreCategoryTypeId(), cefrScoreType.getNumericEquivalentScore( reportData.getTestEvent().getScoreColorSchemeType() ) );
 
                             if( s!=null && !s.isBlank() )
                             {
                                 LogService.logIt( "Found CEFR-Language-Equivalent Score Text=" + s );
                                 scrTxt = s;
-                            }       
+                            }
                         }
-                        
+
                         String cefrScoreText = CefrUtils.getCefrScoreDescription(reportData.getLocale(), cefrScoreType, stub); // StringUtils.getBracketedArtifactFromString( tes.getTextParam1(), Constants.CEFRLEVELTEXT);
                         if( cefrScoreText!=null && !cefrScoreText.isBlank() )
                             scrTxt = lmsg("g.CefrEquivScoreText") + " " + cefrScoreText + (scrTxt.isBlank() ? "" : "\n\n" + lmsg("g.GeneralScoreText") + " " ) +  scrTxt;
@@ -1094,7 +1097,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
             if( reportData.getUser()==null )
                 reportData.u = new User();
 
-            
+
             // Next Row - CEFR score IF present.
             if( cefrLevel!=null )
             {
@@ -1452,7 +1455,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
             {
                 // if( 1==1 )
                 //     scrTxt += " dfsg sdfg sfdg sfdg sfd gsfd gsfdgkj sfdgkjsfhd gkjsfhd gkjsfhd gkjsfhd gksfjdh gksfjdgh sfkdjg sfkdjgh sfkdjgh sfdkjgh sfdkjgh sfdkjgh sfdkjgh sfdkjgh sfdkgjh sfdkjgh sfdkjgh sfdkjgh sfdkgjh fdskjgh sfdkjgh sfdkgjh sfdkgjh sfdkgjh fdkgjh sfdkjgh sfdkgjh sfdkgjh fdkjgh fdkjgh sdfkgj hsfdkgjh sfdkjgh sfdkjgh sfdkjgh sfdkgjh sfdkgjh sfdkgjh sfdkgjh sfdkjg hsfdkjgh sfkdjg hsfkdjgh sfkdjgh sfkdjgh sfkdjgh sjkdfgh skdfgh skdfjgh skdfjgh fdkjgh djkg dfkjgh dfkjgh dkfj ghkdfjgh fkdjgh dfkj ghfdkjgh fkdjgh fkdjg hfkdjg hfkdjgh fkdjgh fdkgjh fdkjgh fdjgh fjdgh fjdgh fjdgh fjdgh fjdgh fdjgh fdjghfjdghfdjgh fdjgh dfjgh dfjgh dfjgh djgh dfjgh djgh";
-                
+
                 if( earlyExitStr!=null )
                 {
                     c = new PdfPCell( new Phrase( "\n" + earlyExitStr + "\n ", getFontRed() ));
@@ -1517,7 +1520,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
                         c.addElement( cHdr );
                         c.addElement( cl );
-                        
+
                         // skipping cFtr
                         // c.addElement( cFtr );
                         t3.addCell( c );
@@ -1577,7 +1580,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                 c.setPaddingLeft( CT2_BOXHEADER_LEFTPAD );
                 c.setPaddingBottom( 10 );
                 setRunDirection( c );
-                
+
                 // Add the score text / risk factors table to touter.
                 c.addElement( t3 );
                 touter.addCell( c );
@@ -4308,7 +4311,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                     t.addCell( new Phrase( reportData.u.getIpCity(), fntLft ) );
                 }
             }
-            
+
             if( tk!=null && tk.getAssistiveTechnologyTypeIds()!=null && !tk.getAssistiveTechnologyTypeIds().isBlank() )
             {
                 StringBuilder sbx = new StringBuilder();
@@ -4316,26 +4319,26 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                 {
                     if( sid<=0 )
                         continue;
-                    
+
                     if( sbx.length()>0 )
                         sbx.append( ", " );
                     sbx.append( lmsg(AssistiveTechnologyType.getValue( sid ).getKey()) );
                 }
-                
+
                 if( tk.getAssistiveTechnologyTypeOtherValue()!=null && !tk.getAssistiveTechnologyTypeOtherValue().isBlank() )
                 {
                     sbx.append( "\n" + tk.getAssistiveTechnologyTypeOtherValue() );
                 }
-                
+
                 if( sbx.length()>0 )
                 {
                     t.addCell( new Phrase( lmsg("g.AssistiveTech") + ":", fntLft ) );
-                    t.addCell( new Phrase( sbx.toString(), fntLft ) );                    
+                    t.addCell( new Phrase( sbx.toString(), fntLft ) );
                 }
             }
 
-            
-            
+
+
             if( includeDates )
             {
                 t.addCell( new Phrase( lmsg( "g.StartedC"), fntLft ) );
@@ -7272,18 +7275,18 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
                     ScoreCategoryType cefrScoreCategoryType = CefrUtils.getCefrScoreCategoryType(reportData.te.getSimXmlObj(), cefrScoreType, reportData.getTestEvent().getScoreColorSchemeType() );
 
-                    String s = reportData.equivSimJUtils.getCompetencyScoreText( tes.getName(), tes.getNameEnglish(), cefrScoreCategoryType.getScoreCategoryTypeId(), cefrScoreType.getNumericEquivalentScore(reportData.getTestEvent().getScoreColorSchemeType()) );                            
+                    String s = reportData.equivSimJUtils.getCompetencyScoreText( tes.getName(), tes.getNameEnglish(), cefrScoreCategoryType.getScoreCategoryTypeId(), cefrScoreType.getNumericEquivalentScore(reportData.getTestEvent().getScoreColorSchemeType()) );
                     if( s!=null && !s.isBlank() )
                     {
                         LogService.logIt( "Found CEFR-Language-Equivalent COMPETENCY Score Text=" + s );
                         scoreText = s;
-                    }       
-                }                                        
-                
-                String cefrScoreText = CefrUtils.getCefrScoreTextForTes( reportData.getLocale(), tes );                
+                    }
+                }
+
+                String cefrScoreText = CefrUtils.getCefrScoreTextForTes( reportData.getLocale(), tes );
                 if( cefrScoreText!=null && !cefrScoreText.isBlank() )
                 {
-                    // cefrScoreText = tctrans( cefrScoreText, false);                    
+                    // cefrScoreText = tctrans( cefrScoreText, false);
                     scoreText = lmsg( "g.CefrEquivScoreText") + " " + cefrScoreText + (scoreText.isBlank() ? "" : "\n\n" + lmsg("g.GeneralScoreText") + " ") + scoreText;
                 }
             }
@@ -8388,6 +8391,216 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
     }
 
 
+    public void addResumeSection() throws Exception
+    {
+        if( ReportManager.DEBUG_REPORTS )
+            LogService.logIt(  "BaseCT2ReportTemplate.addResumeSection() AAA " );
+
+        if( reportData.getR2Use().getIncludeResume()<=0 || reportData.getReportRuleAsBoolean( "resumereportsoff") || reportData.getUser()==null || reportData.getUser().getResume()==null )
+            return;
+
+        try
+        {
+            if( ReportManager.DEBUG_REPORTS )
+                LogService.logIt(  "BaseCT2ReportTemplate.addResumeSection() BBB.1 " );
+
+            Resume resume = reportData.getUser().getResume();
+            resume.parseJsonStr();
+
+            if( !resume.getHasAnyFormData() )
+            {
+                LogService.logIt(  "BaseCT2ReportTemplate.addResumeSection() BBB.2 Existing Resume has no form data." );
+                return;
+            }
+            
+            if( reportData.getR2Use().getIncludeResume()==1 && (resume.getSummary()==null || resume.getSummary().isBlank()) )
+            {
+                LogService.logIt(  "BaseCT2ReportTemplate.addResumeSection() BBB.2 Existing Resume has no form data." );
+                return;
+            }
+            
+            if( currentYLevel < pageHeight - PAD -  headerHgt - 10 )
+            {
+                addNewPage();
+            }
+
+            previousYLevel =  currentYLevel;
+            
+            float y = addTitle(previousYLevel, lmsg( "g.Resume" ), null, null, null );
+
+            PdfPCell c;
+            PdfPTable t;
+            float outerWid = pageWidth - 2*CT2_MARGIN - 2*CT2_BOX_EXTRAMARGIN;
+
+            Font subtitleFont = fontLargeBold;
+            Font textFont = font;
+            // Font italicFont = fontItalic;
+
+            // First, add a table
+            t = new PdfPTable( new float[] { 1f  } );
+            // t.setHorizontalAlignment( Element.ALIGN_CENTER );
+            t.setTotalWidth( outerWid );
+            t.setLockedWidth( true );
+            t.setHeaderRows( 1 );
+
+            String tt = lmsg( "g.UpdatedOnX", new String[]{I18nUtils.getFormattedDateTime(reportData.getLocale(), resume.getLastInputDate(), reportData.getUser().getTimeZone())});
+            Paragraph par = new Paragraph();
+            par.add( new Chunk(lmsg("g.ResumeHdrSum") + "          ", fontLargeWhite ) );
+            par.add( new Chunk(tt, fontWhite ) );
+            c = new PdfPCell( par );
+            c.setCellEvent(new CellBackgroundCellEvent(reportData.getIsLTR(), ct2Colors.hraBlue,true, true, true, true ) );
+            c.setBorder( Rectangle.NO_BORDER );
+            c.setBorderWidth( scoreBoxBorderWidth );
+            c.setHorizontalAlignment( Element.ALIGN_LEFT );
+            c.setPadding( 1 );
+            c.setPaddingBottom( 5 );
+            c.setPaddingLeft( 25 );
+            c.setBackgroundColor( ct2Colors.hraBlue );
+            setRunDirection( c );
+            t.addCell(c);
+
+            //if( resume.getLastInputDate()!=null  )
+            //{
+            //    c = new PdfPCell(new Phrase( lmsg( "g.UpdatedOnX", new String[]{I18nUtils.getFormattedDateTime(reportData.getLocale(), resume.getLastInputDate(), reportData.getUser().getTimeZone())}) , italicFont));
+            //    c.setBorder( Rectangle.NO_BORDER );
+            //    c.setBorderWidth( 0 );
+            //    c.setPadding( 2 );
+            //    c.setPaddingBottom( 4 );
+            //    setRunDirection( c );
+            //    t.addCell(c);
+            //}
+
+            if( resume.getSummary()!=null && !resume.getSummary().isBlank() )
+            {
+                c = new PdfPCell(new Phrase( resume.getSummary() , textFont));
+                c.setBorder( Rectangle.NO_BORDER );
+                c.setBorderWidth( 0 );
+                c.setPadding( 2 );
+                c.setPaddingBottom( 4 );
+                setRunDirection( c );
+                t.addCell(c);
+            }
+            
+            if( reportData.getR2Use().getIncludeResume()==2 )
+            {
+
+                if( resume.getObjective()!=null && !resume.getObjective().isBlank() )
+                {
+                    c = new PdfPCell(new Phrase( lmsg("g.Objective") , subtitleFont));
+                    c.setBorder( Rectangle.NO_BORDER );
+                    c.setBorderWidth( 0 );
+                    c.setPadding( 2 );
+                    setRunDirection( c );
+                    t.addCell(c);
+
+                    c = new PdfPCell(new Phrase( resume.getObjective() , textFont));
+                    c.setBorder( Rectangle.NO_BORDER );
+                    c.setBorderWidth( 0 );
+                    c.setPadding( 2 );
+                    c.setPaddingBottom( 4 );
+                    setRunDirection( c );
+                    t.addCell(c);
+                }
+
+                com.itextpdf.text.List cl;
+
+                if( resume.getEducation()!=null && !resume.getEducation().isEmpty() )
+                {
+                    c = new PdfPCell(new Phrase( lmsg("g.Education") , subtitleFont));
+                    c.setBorder( Rectangle.NO_BORDER );
+                    c.setBorderWidth( 0 );
+                    c.setPadding( 2 );
+                    setRunDirection( c );
+                    t.addCell(c);
+
+                    cl = new com.itextpdf.text.List( com.itextpdf.text.List.UNORDERED, 12 );
+                    cl.setListSymbol( "\u2022");
+                    cl.setIndentationLeft( 10 );
+                    cl.setSymbolIndent( 10 );
+
+                    for( ResumeEducation re : resume.getEducation() )
+                    {
+                        cl.add( new ListItem( 9,  re.toAiString(), textFont ) );                    
+                    }
+
+                    c = new PdfPCell();
+                    c.addElement(cl);
+                    c.setBorder( Rectangle.NO_BORDER );
+                    c.setBorderWidth( 0 );
+                    c.setPadding( 2 );
+                    setRunDirection( c );
+                    t.addCell(c);                
+                }
+
+                if( resume.getExperience()!=null && !resume.getExperience().isEmpty() )
+                {
+                    c = new PdfPCell(new Phrase( lmsg("g.Experience") , subtitleFont));
+                    c.setBorder( Rectangle.NO_BORDER );
+                    c.setBorderWidth( 0 );
+                    c.setPadding( 2 );
+                    setRunDirection( c );
+                    t.addCell(c);
+
+                    cl = new com.itextpdf.text.List( com.itextpdf.text.List.UNORDERED, 12 );
+                    cl.setListSymbol( "\u2022");
+                    cl.setIndentationLeft( 10 );
+                    cl.setSymbolIndent( 10 );
+
+                    for( ResumeExperience re : resume.getExperience() )
+                    {
+                        cl.add( new ListItem( 9,  re.toAiString(), textFont ) );                    
+                    }
+
+                    c = new PdfPCell();
+                    c.addElement(cl);
+                    c.setBorder( Rectangle.NO_BORDER );
+                    c.setBorderWidth( 0 );
+                    c.setPadding( 2 );
+                    setRunDirection( c );
+                    t.addCell(c);                
+                }
+
+                if( resume.getOtherQuals()!=null && !resume.getOtherQuals().isEmpty() )
+                {
+                    c = new PdfPCell(new Phrase( lmsg("g.OtherQualifications") , subtitleFont));
+                    c.setBorder( Rectangle.NO_BORDER );
+                    c.setBorderWidth( 0 );
+                    c.setPadding( 2 );
+                    setRunDirection( c );
+                    t.addCell(c);
+
+                    cl = new com.itextpdf.text.List( com.itextpdf.text.List.UNORDERED, 12 );
+                    cl.setListSymbol( "\u2022");
+                    cl.setIndentationLeft( 10 );
+                    cl.setSymbolIndent( 10 );
+
+                    for( String re : resume.getOtherQuals())
+                    {
+                        cl.add( new ListItem( 9,  re, textFont ) );                    
+                    }
+
+                    c = new PdfPCell();
+                    c.addElement(cl);
+                    c.setBorder( Rectangle.NO_BORDER );
+                    c.setBorderWidth( 0 );
+                    c.setPadding( 2 );
+                    setRunDirection( c );
+                    t.addCell(c);                
+                }
+            }
+            
+            currentYLevel = addTableToDocument(y, t, false, true );
+
+        }
+        catch( Exception e )
+        {
+            LogService.logIt( e, "BaseCT2ReportTemplate.addResumeSection()" );
+            throw new STException( e );
+        }
+
+
+    }
+
     public void addIbmInsightSection() throws Exception
     {
         if( ReportManager.DEBUG_REPORTS )
@@ -8730,10 +8943,17 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             currentYLevel = addTableToDocument(y, t, true, true );
 
+            LogService.logIt( "BaseCT2ReportTemplate.addIbmInsightSection() SSS.1 currentYLevel=" +  currentYLevel );            
             if( hasUnavailable )
             {
-                addSimpleText( currentYLevel, lmsg("g.IbmInsightLowConfidenceNote") );
+                currentYLevel = addSimpleText( currentYLevel, lmsg("g.IbmInsightLowConfidenceNote") );
             }
+            
+            LogService.logIt( "BaseCT2ReportTemplate.addIbmInsightSection() SSS.2 currentYLevel=" +  currentYLevel );            
+
+
+            
+            // addNewPage();
         }
         catch( Exception e )
         {
@@ -10726,7 +10946,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             if( reportData.getCustomReportValues()!=null && reportData.getCustomReportValues().get("whatsincludedlist")!=null )
                 whatsContained = (List<String>) reportData.getCustomReportValues().get("whatsincludedlist");
-                        
+
             if( whatsContained.size()>3 )
                 lowerTableAdj += (whatsContained.size()-3)*lineHeight;
 
@@ -11892,7 +12112,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
                 // linesWritten += ct.getLinesWritten();
 
-                // LogService.logIt( "BaseCT2ReportTemplate.addTableToDocument() status=" + status + ", ColumnText.hasMoreText( status )=" + ColumnText.hasMoreText( status ) );
+                // LogService.logIt( "BaseCT2ReportTemplate.addTableToDocument() status=" + status + ", ColumnText.hasMoreText( status )=" + ColumnText.hasMoreText( status ) + ", pages=" + pages );
 
                 pages++;
             }

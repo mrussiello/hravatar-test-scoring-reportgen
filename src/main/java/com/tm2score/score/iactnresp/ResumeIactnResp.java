@@ -290,15 +290,24 @@ public class ResumeIactnResp extends IactnResp implements ScorableResponse
         {
             LogService.logIt("ResumeIactnResp.parseAndStoreResumeInfo() START userId=" + (user==null ? "null" : user.getUserId() ) + ", testEventId=" + (testEvent==null ? "null" : testEvent.getTestEventId()) + ", resumeId=" + (resume==null ? "null" : resume.getResumeId()) );
 
-            if( resume.getUploadedText()==null || resume.getUploadedText().trim().length()<MIN_CHARS_FOR_AI_PARSE )
+            if( resume.getUploadedText()==null || resume.getUploadedText().isBlank() )
+                return;
+            
+            if( resume.getUploadedText().trim().length()<MIN_CHARS_FOR_AI_PARSE )
             {
                 LogService.logIt("ResumeIactnResp.parseAndStoreResumeInfo() Resume Uploaded Text is less than the min chars. Saving the uploaded text to Summary and returning. userId=" + (user==null ? "null" : user.getUserId() ) + ", testEventId=" + (testEvent==null ? "null" : testEvent.getTestEventId()) + ", resumeId=" + (resume==null ? "null" : resume.getResumeId()) );
+                
+                // See if we have a summary/ If we do and there's very little in the upload, ignore it.
                 resume.parseJsonStrNoErrors();
-
-                if( resume.getSummary()!=null && !resume.getSummary().isBlank() )
+                if( resume.getSummary()!=null && !resume.getSummary().isBlank() && resume.getUploadedText().trim().length()<10 )
                     return;
                 
                 resume.setSummary( resume.getUploadedText().trim() );
+                resume.setObjective(null);
+                resume.setExperience(null);
+                resume.setEducation(null);
+                resume.setOtherQuals(null);
+
                 if( userFacade==null )
                     userFacade=UserFacade.getInstance();
                 resume.setLastParseDate(new Date());
@@ -461,10 +470,12 @@ public class ResumeIactnResp extends IactnResp implements ScorableResponse
         return "ResumeIactnResp{ " + ( intnObj == null ? " intn is null" :  intnObj.getName() + ", id=" + intnObj.getId() + ", nodeSeq=" + intnObj.getSeq() ) + ", ct5ItemId=" + getCt5ItemId() + ", ct5ItemPartId=" + this.getCt5ItemPartId() + "}";
     }
     
+    
     public long getSimCompetencyId()
     {
         return 0;
     }
+    
 
     public String getEssayText()
     {
@@ -554,6 +565,10 @@ public class ResumeIactnResp extends IactnResp implements ScorableResponse
     {
         List<TextAndTitle> out = new ArrayList<>();
 
+        // 6-6-2025 - Resume is not stored here. Stored in a Resume record. 
+        if( 1==1 )
+            return out;
+        
         // LogService.logIt( "ResumeIactnResp.getTextAndTitleList() starting. " + intnObj.getName() + " getSimletItemType().supportsManualScoringViaReport()=" + getSimletItemType().supportsManualScoringViaReport() + ", isNonComp=" + isNonComp );
 
         String title = getQuestionText();
@@ -656,6 +671,7 @@ public class ResumeIactnResp extends IactnResp implements ScorableResponse
     @Override
     public boolean saveAsItemResponse()
     {
+        // Not stored here.
         return false;
     }
 

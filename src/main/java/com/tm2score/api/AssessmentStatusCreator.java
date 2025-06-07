@@ -198,6 +198,8 @@ public class AssessmentStatusCreator {
                 if( user == null )
                     throw new Exception( "User not found. " + testKey.toString() );
 
+                // user.setResume( userFacade.getResumeForUser( testKey.getUserId() ));
+                
                 aoauSid.getIdValue().add( this.createIdValue( "userid" , EncryptUtils.urlSafeEncrypt( user.getUserId() ) ) );
 
                 if( user.getExtRef()!=null && !user.getExtRef().isEmpty() )

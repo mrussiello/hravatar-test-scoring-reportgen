@@ -1,4 +1,4 @@
-package com.tm2score.entity.event.jobdesc;
+package com.tm2score.entity.jobdesc;
 
 import java.io.Serializable;
 

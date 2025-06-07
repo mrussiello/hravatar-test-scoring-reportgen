@@ -260,7 +260,7 @@ public abstract class AvReportTemplate extends BaseCT2ReportTemplate  implements
 
             Collections.sort( teslst, new DisplayOrderComparator() );  // new TESNameComparator() );
             
-            // LogService.logIt( "AvReportTemplate.addVoiceVibesInfo() Start tesl.size=" + teslst.size() );
+            LogService.logIt( "AvReportTemplate.addVoiceVibesInfo() AAA.1 Start tesl.size=" + teslst.size() + ", currentYLevel=" + currentYLevel );
 
             java.util.List<TestEventScore> tesl = new ArrayList<>();
 
@@ -293,11 +293,9 @@ public abstract class AvReportTemplate extends BaseCT2ReportTemplate  implements
             if( tesl.size()<=0 )
                 return;
             
-            // LogService.logIt( "AvReportTemplate.addVoiceVibesInfo() titleKey=" + titleKey + ", subtitleKey=" + subtitleKey + ", )subtitle=" + (subtitleKey==null ? "" : lmsg( subtitleKey ) )  );
-
             this.addNewPage();
             
-            float y = addTitle(previousYLevel, lmsg( "g.VoiceVibesTitle" ), lmsg( "g.VoiceVibesSubtitle" ), null, null  );
+            float y = addTitle(currentYLevel, lmsg( "g.VoiceVibesTitle" ), lmsg( "g.VoiceVibesSubtitle" ), null, null  );
 
             // First create the table
             PdfPCell c;

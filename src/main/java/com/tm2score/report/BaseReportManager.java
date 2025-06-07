@@ -150,13 +150,12 @@ public class BaseReportManager {
             if( tk != null && tk.getBatteryId() > 0 && tk.getBatteryProduct()== null )
                 tk.setBatteryProduct( eventFacade.getProduct( tk.getProductId() ));
 
-            if( tk != null && tk.getUser() == null )
+            if( tk!=null && tk.getUser()==null )
             {
                 if( userFacade == null )
                     userFacade = UserFacade.getInstance();
                 tk.setUser( userFacade.getUser( tk.getUserId() ) );
             }
-
 
             if( tk != null && tk.getOrg() == null )
             {
@@ -668,6 +667,13 @@ public class BaseReportManager {
 
             te.setReport( r );
 
+            if( r.getIncludeResume()>0 && tk.getUser()!=null && tk.getUser().getResume()==null )
+            {
+                if( userFacade==null )
+                    userFacade=UserFacade.getInstance();
+                tk.getUser().setResume( userFacade.getResumeForUser( tk.getUserId()));
+            }
+            
             if( te.getLocaleStrReport()!=null && !te.getLocaleStrReport().isEmpty() )
                 r.setLocaleForReportGen( I18nUtils.getLocaleFromCompositeStr( te.getLocaleStrReport() ) );
             else if( r.getLocaleStr()!= null && !r.getLocaleStr().isEmpty() )
@@ -1076,7 +1082,13 @@ public class BaseReportManager {
                 }
             }
 
-
+            if( r.getIncludeResume()>0 && tk.getUser()!=null && tk.getUser().getResume()==null )
+            {
+                if( userFacade==null )
+                    userFacade=UserFacade.getInstance();
+                tk.getUser().setResume( userFacade.getResumeForUser( tk.getUserId()));
+            }
+            
             SimDescriptor langEquivSimDescriptor = eventFacade.getSimDescriptor( langEquivSimId, -1, true );
 
             if( langEquivSimDescriptor == null )

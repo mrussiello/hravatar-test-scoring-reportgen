@@ -49,6 +49,28 @@ public class ResumeEducation implements Serializable {
         return job;
     }
 
+    public String toAiString()
+    {
+        StringBuilder sb = new StringBuilder();
+        if( degree!=null && !degree.isBlank() )
+            sb.append( degree );
+        
+        if( institution!=null && !institution.isBlank() )
+        {
+            if( sb.length()>0 )
+                sb.append( ", ");
+            sb.append(institution);
+        }
+        if( year!=null && !year.isBlank() )
+        {
+            if( sb.length()>0 )
+                sb.append( ", ");
+            sb.append(year);
+        }
+        return sb.toString();
+    }
+    
+    
     public String getDegree() {
         return degree;
     }

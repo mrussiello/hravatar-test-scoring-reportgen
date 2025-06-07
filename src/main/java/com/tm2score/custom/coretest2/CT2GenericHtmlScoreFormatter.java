@@ -337,6 +337,18 @@ public class CT2GenericHtmlScoreFormatter extends BaseScoreFormatter implements 
                             sb.append( getRowSpacer( rowStyle0 ) );
                     }
                 }
+                
+                // Resume
+                out = getStandardResumeSection(tog, null );
+                temp = (String) out[0];
+                if( !temp.isEmpty() )
+                {
+                    sb.append( temp );
+                    tog = ( (Boolean) out[1]);
+                    // if( !isBatt )
+                    sb.append( getRowSpacer( rowStyle0 ) );
+                }
+                
 
                 // Min Quals Section
                 out = getStandardTextAndTitleSection(tog, NonCompetencyItemType.MIN_QUALS, null );

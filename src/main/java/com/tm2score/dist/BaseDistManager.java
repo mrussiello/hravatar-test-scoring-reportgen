@@ -340,7 +340,7 @@ public class BaseDistManager {
                                 if( userFacade==null )
                                     userFacade = UserFacade.getInstance();
 
-                                tk.setUser( userFacade.getUser( tk.getUserId() ));
+                                tk.setUser( userFacade.getUser( tk.getUserId() ));                                
                             }
 
                             if( tk.getUser()!=null )
@@ -848,6 +848,13 @@ public class BaseDistManager {
                 if( te.getProductId()>0 )
                     te.setProfile( ProfileUtils.getLiveProfileForProductIdAndOrgId( te.getTestEventId(), te.getProductId(), te.getOrgId(), ProfileUsageType.REPORT_RANGES.getProfileUsageTypeId() ) );
 
+                if( te.getReport()!=null && te.getReport().getIncludeResume()>0 && tk.getUser()!=null && tk.getUser().getResume()==null )
+                {
+                    if( userFacade==null )
+                        userFacade = UserFacade.getInstance();
+                    tk.getUser().setResume( userFacade.getResumeForUser(tk.getUserId()));
+                }
+                
                 // LogService.logIt( "BaseDistManager.emailTestResultsToAdministrator() TestEventId=" + (te==null ? "null" : te.getTestEventId() + ", TestEventScoreList=" + (te.getTestEventScoreList()==null ? "null" : te.getTestEventScoreList().size() + ", otes=" + (te.getOverallTestEventScore()==null ? "null" : "not null"))) );
                 
                 // Always init!

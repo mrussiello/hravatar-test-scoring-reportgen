@@ -1,6 +1,7 @@
 package com.tm2score.jobdesc;
 
-import com.tm2score.entity.event.jobdesc.JobDescrip;
+import com.tm2score.entity.jobdesc.JobDescrip;
+import com.tm2score.entity.jobdesc.UserJobDescripMap;
 import com.tm2score.global.STException;
 import com.tm2score.service.LogService;
 
@@ -11,6 +12,9 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+import java.util.ArrayList;
+import java.util.List;
 
 
 
@@ -18,6 +22,9 @@ import jakarta.persistence.PersistenceContext;
 // @PersistenceContext( name = "persistence/tm2", unitName = "tm2" )
 public class JobDescripFacade
 {
+    @PersistenceContext( name = "persistence/tm2", unitName = "tm2" )
+    EntityManager em;
+    
     @PersistenceContext( name = "persistence/tm2mirror", unitName = "tm2mirror" )
     EntityManager emmirror;
     
@@ -36,6 +43,27 @@ public class JobDescripFacade
         }
     }
     
+    
+    public List<UserJobDescripMap> getUserJobDescripMapListForUser( long userId ) throws Exception
+    {
+        try
+        {
+            if( userId<=0 )
+                return new ArrayList<>();
+
+            Query q = em.createNamedQuery( "UserJobDescripMap.findForUserId" );
+            q.setParameter( "userId", userId );
+            return (List<UserJobDescripMap>) q.getResultList();
+        }
+
+        catch( Exception e )
+        {
+            LogService.logIt( e, "JobDescripFacade.getUserJobDescripMapListForUser( userId=" + userId + " ) " );
+
+            throw new STException( e );
+        }
+        
+    }
         
     public JobDescrip getJobDescrip( int jobDescripId ) throws Exception
     {
@@ -52,6 +80,38 @@ public class JobDescripFacade
             LogService.logIt(e, "JobDescripFacade.getJobDescrip( " + jobDescripId + " ) " );
             throw new STException( e );
         }
-    }       
+    }      
+    
+    
+    public UserJobDescripMap saveUserJobDescripMap( UserJobDescripMap ujdm ) throws Exception
+    {
+        try
+        {
+            if( ujdm.getUserJobDescripMapId() > 0 )
+            {
+                em.merge(ujdm );
+            }
+
+            else
+            {
+                em.detach(ujdm );
+                em.persist(ujdm );
+            }
+
+            // This causes any exceptions to be thrown here instead of in the EJB transaction.
+            // Makes it easier to figure out what went wrong.
+            em.flush();
+
+            return ujdm;
+        }
+
+        catch( Exception e )
+        {
+            LogService.logIt(e, "JobDescripFacade.saveUserJobDescripMap() " + ( ujdm == null ? "UserJobDescripMap is null" : ujdm.toString() ) );
+
+            throw new STException( e );
+        }
+    }
+    
 
 }

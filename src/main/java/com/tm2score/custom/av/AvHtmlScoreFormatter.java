@@ -304,6 +304,19 @@ public class AvHtmlScoreFormatter extends CT2HtmlScoreFormatter implements Score
                     tog = ( (Boolean) out[1]);
                     sb.append( getRowSpacer( rowStyle0 ) );
                 }
+                
+                // Resume
+                out = getStandardResumeSection(tog, null );
+                temp = (String) out[0];
+                if( !temp.isEmpty() )
+                {
+                    sb.append( temp );
+                    tog = ( (Boolean) out[1]);
+                    // if( !isBatt )
+                    sb.append( getRowSpacer( rowStyle0 ) );
+                }
+
+                
 
 
                 // Notes section

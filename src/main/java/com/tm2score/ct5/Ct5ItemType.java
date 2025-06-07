@@ -249,7 +249,7 @@ public enum Ct5ItemType {
     public String getResultXmlIntnValue(Ct5ItemResponse ir, SimJ.Intn sji )
     {
 
-        LogService.logIt( "Ct5ItemType.getResultXmlIntnValue() START " + sji.getUniqueid() + ", " + ir.toString() + ", isResume=" + getIsResume());
+        // LogService.logIt( "Ct5ItemType.getResultXmlIntnValue() START " + sji.getUniqueid() + ", " + ir.toString() + ", isResume=" + getIsResume());
 
         // no response?
         if( ir==null || !ir.getIsComplete() )
@@ -450,7 +450,7 @@ public enum Ct5ItemType {
 
         if( getIsResume() )
         {
-            LogService.logIt( "Ct5ItemType.getResultXmlIntnValue() START for RESUME " + sji.getUniqueid() + ", " + ir.toString() + ", ir.getUploadedUserFileId=" + (ir.getUploadedUserFile()==null ? "null" : ir.getUploadedUserFile().getUploadedUserFileId()) );
+            // LogService.logIt( "Ct5ItemType.getResultXmlIntnValue() START for RESUME " + sji.getUniqueid() + ", " + ir.toString() + ", ir.getUploadedUserFileId=" + (ir.getUploadedUserFile()==null ? "null" : ir.getUploadedUserFile().getUploadedUserFileId()) );
             
             String res = "";
 
