@@ -41,7 +41,7 @@ public class CoreTestTestTakerHtmlScoreFormatter extends BaseScoreFormatter impl
             if( getReport() == null || getTestEvent() == null )
                 return null;
 
-            LogService.logIt( "CoreTestTestTakerHtmlScoreFormatter.getEmailContent() " );
+            // LogService.logIt( "CoreTestTestTakerHtmlScoreFormatter.getEmailContent() " );
 
             StringBuilder sb = new StringBuilder();
 

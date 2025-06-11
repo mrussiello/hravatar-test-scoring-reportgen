@@ -1256,7 +1256,7 @@ public class ReportManager extends BaseReportManager
             if( locale == null )
                 locale = Locale.US;
             
-            LogService.logIt("ReportManager.generateSampleReport() creating sample report.  productId=" + productId + ", reportId=" + reportId + ", locale=" + locale.toString()   );
+            // LogService.logIt("ReportManager.generateSampleReport() creating sample report.  productId=" + productId + ", reportId=" + reportId + ", locale=" + locale.toString()   );
 
             if( eventFacade == null )
                 eventFacade = EventFacade.getInstance();
@@ -1336,6 +1336,9 @@ public class ReportManager extends BaseReportManager
             // tk.User
             User user = userFacade.getUser( tk.getUserId() );
 
+            if( user!=null )
+                user.setResume( userFacade.getResumeForUser( user.getUserId()));
+            
             // tk.authUser
             User authUser = userFacade.getUser( tk.getAuthorizingUserId() );
 

@@ -131,7 +131,7 @@ public class BestJobsReportUtils {
      */
     public List<Profile> getTopCT3ProfileMatches( int maxMatches, TestEvent riasecTe, TestEvent jobSpecTe, OnetJobZoneType baseJobZoneToUse, int maxJobZoneGap, int includeEducTrngExpCode, int socDataCode, boolean useMatchLimits, List<EeoMatch> eeoMatchList) throws Exception
     {
-        LogService.logIt("BestJobReportUtils.getTopCT3ProfileMatches() START baseJobZoneToUse=" + (baseJobZoneToUse==null ? "null" : baseJobZoneToUse.getJobZoneId()) );
+        // LogService.logIt("BestJobReportUtils.getTopCT3ProfileMatches() START baseJobZoneToUse=" + (baseJobZoneToUse==null ? "null" : baseJobZoneToUse.getJobZoneId()) );
         
         List<Profile> pl;        
         List<Profile> lastPl=new ArrayList<>();        
@@ -190,7 +190,7 @@ public class BestJobsReportUtils {
         // maxSearchGap is 25, so 4 rounds of limitReduc=0, 5, 10, 15, 20, 25
         for( int limitReduc=0; limitReduc<=RuntimeConstants.getIntValue( "BestJobsReport_MaxSearchGap" ); limitReduc+=5 )   // maxSearchGap=15  0,5,10,15
         { 
-            LogService.logIt("BestJobReportUtils.getTopCT3ProfileMatches() AAA.11 maxMatches=" + maxMatches + ", limitReduc=" + limitReduc + ", lastCount=" + lastCount );
+            // LogService.logIt("BestJobReportUtils.getTopCT3ProfileMatches() AAA.11 maxMatches=" + maxMatches + ", limitReduc=" + limitReduc + ", lastCount=" + lastCount );
             
             if( lastCount>=10 )
                 break;
@@ -201,7 +201,7 @@ public class BestJobsReportUtils {
             {
                 pl = getHighProfileMatches(lastPl, maxMatches, riasecTe, jobSpecTe, zoneGapLimit, useMatchLimits ? limitReduc : 100, baseJobZoneToUse, includeEducTrngExpCode, eeoMatchList );
 
-                LogService.logIt( "BestJobReportUtils.getTopCT3ProfileMatches() AAA.12 zoneGapLimit=" + zoneGapLimit + ", pl.size=" + pl.size() + ", limitReduc=" + limitReduc + ", lastCount=" + lastCount );
+                // LogService.logIt( "BestJobReportUtils.getTopCT3ProfileMatches() AAA.12 zoneGapLimit=" + zoneGapLimit + ", pl.size=" + pl.size() + ", limitReduc=" + limitReduc + ", lastCount=" + lastCount );
                 
                 for( Profile p : pl )
                 {
@@ -239,7 +239,7 @@ public class BestJobsReportUtils {
              //   break;            
         }
         
-        LogService.logIt("BestJobReportUtils.getTopCT3ProfileMatches() BBB.1 lastPl=" + lastPl.size() );
+        // LogService.logIt("BestJobReportUtils.getTopCT3ProfileMatches() BBB.1 lastPl=" + lastPl.size() );
 
         populateSocDataIfNeeded( lastPl, abilities,  knowledge, skills,  workAct,  workSty,  workCont, tasks,  altTitles,  related,  bls );
           
@@ -1167,7 +1167,7 @@ public class BestJobsReportUtils {
                 currentProfileUsageType=profileUsageType;
                 currentMinOnetJobZoneType=minOnetJobZoneType;
                 currentMaxOnetJobZoneType=maxOnetJobZoneType;                
-                LogService.logIt( "BestJobsReportUtils.getHighProfileMatches() BBB.1 Loaded new Profiles. localeStr=" + localeStr + ", found " + pl.size() + " total eligible profiles. profileUsageType.getProfileUsageTypeId()=" + profileUsageType.getProfileUsageTypeId() + ", minOnetJobZoneType=" + minOnetJobZoneType.getName() + ", maxOnetJobZoneType=" + maxOnetJobZoneType.getName() );
+                // LogService.logIt( "BestJobsReportUtils.getHighProfileMatches() BBB.1 Loaded new Profiles. localeStr=" + localeStr + ", found " + pl.size() + " total eligible profiles. profileUsageType.getProfileUsageTypeId()=" + profileUsageType.getProfileUsageTypeId() + ", minOnetJobZoneType=" + minOnetJobZoneType.getName() + ", maxOnetJobZoneType=" + maxOnetJobZoneType.getName() );
             }
             
             float altScore=0;
@@ -1345,7 +1345,7 @@ public class BestJobsReportUtils {
                 
                 if( p.getSoc()==null )
                 {
-                    LogService.logIt("BestJobsReportUtils.getHighProfileMatches() DDD.10 testEventId=" + riasecTe.getTestEventId() + ", skipping profile " + p.getStrParam1() + " because no SOC found for onetsoc=" + p.getStrParam4() );
+                    // LogService.logIt("BestJobsReportUtils.getHighProfileMatches() DDD.10 testEventId=" + riasecTe.getTestEventId() + ", skipping profile " + p.getStrParam1() + " because no SOC found for onetsoc=" + p.getStrParam4() );
                     continue;
                 }
                 

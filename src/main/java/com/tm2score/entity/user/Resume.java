@@ -11,6 +11,7 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonString;
 import java.io.Serializable;
 
 import jakarta.persistence.Column;
@@ -68,7 +69,7 @@ public class Resume implements Serializable
       "objective":"",
       "education":[ {} ],
       "experience":[ {} ],
-      "otherquals":[ "" ]
+      "other_qualifications":[ "" ]
     }
     */
     @Column( name = "jsonstr" )
@@ -205,7 +206,7 @@ public class Resume implements Serializable
                     if( s!=null && !s.isBlank() )
                         jab.add(s);
                 }
-                topJob.add("otherquals", jab );
+                topJob.add("other_qualifications", jab );
                 found=true;
             }
 
@@ -276,11 +277,11 @@ public class Resume implements Serializable
                     experience.add( new ResumeExperience(eo ) );
                 }
             }
-            if( jo.containsKey("otherquals") && !jo.isNull("otherquals"))
+            if( jo.containsKey("other_qualifications") && !jo.isNull("other_qualifications"))
             {
                 otherQuals = new ArrayList<>();
-                JsonArray ja = jo.getJsonArray("otherquals");
-                for( String s : ja.getValuesAs(Object::toString))
+                JsonArray ja = jo.getJsonArray("other_qualifications");
+                for( String s : ja.getValuesAs(JsonString::getString))
                 {
                     if( s!=null && !s.isBlank() )
                         otherQuals.add(s);

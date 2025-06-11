@@ -12,7 +12,9 @@ public enum AiCallType
     RESUME_EXPERIENCE(22,"Resume Experience", "resumeexperience", false),
     RESUME_PARSE(23,"Resume Parse", "resumeparse", false),
     ORGTRAITS_SUMMARY(30,"OrgTraits Summary", "orgtraitssummary", false),
-    ORGTRAITS_PARSE(31,"OrgTraits Parse", "orgtraitsparse", false);
+    ORGTRAITS_PARSE_FULL(31,"OrgTraits Parse Full", "orgtraitsparse", false),
+    ORGTRAITS_PARSE_NOCOMPS(32,"OrgTraits Parse No Competencies", "orgtraitsparsenocomps", false),
+    ORGTRAITS_PARSE_COMPSONLY(33,"OrgTraits Parse Competencies Only", "orgtraitsparsecompsonly", false);
 
     private final int aiCallTypeId;
     private final String name;

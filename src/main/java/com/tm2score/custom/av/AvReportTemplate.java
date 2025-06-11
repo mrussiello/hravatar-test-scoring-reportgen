@@ -260,7 +260,7 @@ public abstract class AvReportTemplate extends BaseCT2ReportTemplate  implements
 
             Collections.sort( teslst, new DisplayOrderComparator() );  // new TESNameComparator() );
             
-            LogService.logIt( "AvReportTemplate.addVoiceVibesInfo() AAA.1 Start tesl.size=" + teslst.size() + ", currentYLevel=" + currentYLevel );
+            //LogService.logIt( "AvReportTemplate.addVoiceVibesInfo() AAA.1 Start tesl.size=" + teslst.size() + ", currentYLevel=" + currentYLevel );
 
             java.util.List<TestEventScore> tesl = new ArrayList<>();
 

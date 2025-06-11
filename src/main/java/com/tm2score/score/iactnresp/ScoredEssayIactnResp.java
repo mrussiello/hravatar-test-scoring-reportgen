@@ -547,7 +547,7 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse
 
         else if( iist.isResponseOrResponseCorrect() )
         {
-            LogService.logIt( "ScoredEssayIactnResp.getItemScoreTextTitle() DDD.1 unique=" + this.intnObj.getUniqueid() + ", simletCompetencyScore=" + (simletCompetencyScore==null ? "null" : "present, class=" + simletCompetencyScore.getSimletCompetencyClass().getName()) );
+            // LogService.logIt( "ScoredEssayIactnResp.getItemScoreTextTitle() DDD.1 unique=" + this.intnObj.getUniqueid() + ", simletCompetencyScore=" + (simletCompetencyScore==null ? "null" : "present, class=" + simletCompetencyScore.getSimletCompetencyClass().getName()) );
             
             if( simletCompetencyScore!=null && simletCompetencyScore.getSimletCompetencyClass().isUnscored() )
                 return null;

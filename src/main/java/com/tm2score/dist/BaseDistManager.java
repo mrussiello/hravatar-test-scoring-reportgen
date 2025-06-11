@@ -100,7 +100,7 @@ public class BaseDistManager {
 
             int[] out = new int[3];
 
-            LogService.logIt( "BaseDistManager.distributeTestKeyResults() START " + ( tk==null ? "TestKey is null" : "testKeyId=" + tk.getTestKeyId() +", tk.authUserId=" + tk.getAuthorizingUserId()) + ", candFbkOnly="  + candFbkOnly + ", fbkReportId=" + fbkReportId + ", testEventIdOnly=" + testEventIdOnly ) ;
+            // LogService.logIt( "BaseDistManager.distributeTestKeyResults() START " + ( tk==null ? "TestKey is null" : "testKeyId=" + tk.getTestKeyId() +", tk.authUserId=" + tk.getAuthorizingUserId()) + ", candFbkOnly="  + candFbkOnly + ", fbkReportId=" + fbkReportId + ", testEventIdOnly=" + testEventIdOnly ) ;
             
             if( tk==null  )
             {
@@ -400,9 +400,9 @@ public class BaseDistManager {
                 // Email test reports to Test Takers.
                 if( !suppressTestTakerEmails && tk.getHasReportsToEmailTestTaker() )
                 {
-                    LogService.logIt( "BaseDistManager.distributeTestKeyResults() CCC.2A Attempting to email test taker. testKeyId=" + tk.getTestKeyId() + ", fbkReportId=" + fbkReportId + ", candFbkOnly=" + candFbkOnly + ", out[2]=" + out[2] );
+                    // LogService.logIt( "BaseDistManager.distributeTestKeyResults() CCC.2A Attempting to email test taker. testKeyId=" + tk.getTestKeyId() + ", fbkReportId=" + fbkReportId + ", candFbkOnly=" + candFbkOnly + ", out[2]=" + out[2] );
                     out[2] += emailReportsToTestTaker(tk, null, candFbkOnly, fbkReportId, testEventIdOnly, null );
-                    LogService.logIt( "BaseDistManager.distributeTestKeyResults() CCC.2B BACK from email test taker. testKeyId=" + tk.getTestKeyId() + ", out[2]=" + out[2] );
+                    // LogService.logIt( "BaseDistManager.distributeTestKeyResults() CCC.2B BACK from email test taker. testKeyId=" + tk.getTestKeyId() + ", out[2]=" + out[2] );
                     //if( emailReportsToTestTaker( tk ) )
                     //    out[2]++;
                 }
@@ -1470,7 +1470,7 @@ public class BaseDistManager {
 
                     if( rptToUse.getTesttakerEmailFormatterClass()!= null && !rptToUse.getTesttakerEmailFormatterClass().isEmpty() )
                     {
-                        LogService.logIt( "BaseDistManager.emailReportsToTestTaker() CCC.1  using class: " + rptToUse.getTesttakerEmailFormatterClass() );
+                        // LogService.logIt( "BaseDistManager.emailReportsToTestTaker() CCC.1  using class: " + rptToUse.getTesttakerEmailFormatterClass() );
 
                         Class<ScoreFormatter> cls = (Class<ScoreFormatter>) Class.forName( rptToUse.getTesttakerEmailFormatterClass() );
 

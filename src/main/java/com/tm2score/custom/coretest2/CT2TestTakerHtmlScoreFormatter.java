@@ -41,7 +41,7 @@ public class CT2TestTakerHtmlScoreFormatter extends BaseScoreFormatter implement
             if( getReport() == null || getTestEvent() == null )
                 return null;
 
-            LogService.logIt( "CoreTestTestTakerHtmlScoreFormatter.getEmailContent() " );
+            // LogService.logIt( "CoreTestTestTakerHtmlScoreFormatter.getEmailContent() " );
 
             StringBuilder sb = new StringBuilder();
 

@@ -549,8 +549,16 @@ public class ReminderUtils {
                     org = userFacade.getOrg( orgId );
                 
                     // Skip all of these./
-                    if( org==null || org.getAdminUserId()<=0 || org.getOrgStatusTypeId()!=0 ||  org.getAffiliateAccountTypeId()>1 )
+                    if( org==null || org.getAdminUserId()<=0 || org.getOrgStatusTypeId()!=0  )
+                    {
                         continue;
+                    }
+                    
+                    if( org.getAffiliateId()!=null && org.getAffiliateAccountTypeId()>1 )
+                    {
+                        if( !org.getAffiliateId().equals("icims") && !org.getAffiliateId().equals("jazzhr"))                        
+                            continue;
+                    }
                     
                     adminUser = userFacade.getUser( org.getAdminUserId() );
                     
