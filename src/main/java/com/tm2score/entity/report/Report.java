@@ -99,6 +99,9 @@ public class Report implements Serializable, Cloneable
     @Column(name="includenumericscores")
     private int includeNumericScores = 1;
 
+    @Column(name="includeaiscores")
+    private int includeAiScores = 1;
+    
     @Column(name="includecolorscores")
     private int includeColorScores = 1;
 
@@ -914,6 +917,14 @@ public class Report implements Serializable, Cloneable
 
     public void setIncludeJobDescrip(int includeJobDescrip) {
         this.includeJobDescrip = includeJobDescrip;
+    }
+
+    public int getIncludeAiScores() {
+        return includeAiScores;
+    }
+
+    public void setIncludeAiScores(int includeAiScores) {
+        this.includeAiScores = includeAiScores;
     }
 
 

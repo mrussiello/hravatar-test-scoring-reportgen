@@ -5,6 +5,7 @@ public enum AiCallType
     NONE(0,"None", "none", false),
     TEST_ASYNC(1,"Test Async Call", "testasync", true),
     TEST_SYNC(2,"Test Synchronous Call", "testsync", false),
+    TEST_CONNECT(3,"Test System Availability", "sysavailability", false ),
     JOBDESCRIP_SUMMARY(10,"Job Descrip Summary", "jobdescripsummary", false),
     JOBDESCRIP_PARSE(11,"Job Descrip Parse", "jobdescripparse", false),
     RESUME_SUMMARY(20,"Resume Summary", "resumesummary", false),
@@ -14,7 +15,8 @@ public enum AiCallType
     ORGTRAITS_SUMMARY(30,"OrgTraits Summary", "orgtraitssummary", false),
     ORGTRAITS_PARSE_FULL(31,"OrgTraits Parse Full", "orgtraitsparse", false),
     ORGTRAITS_PARSE_NOCOMPS(32,"OrgTraits Parse No Competencies", "orgtraitsparsenocomps", false),
-    ORGTRAITS_PARSE_COMPSONLY(33,"OrgTraits Parse Competencies Only", "orgtraitsparsecompsonly", false);
+    ORGTRAITS_PARSE_COMPSONLY(33,"OrgTraits Parse Competencies Only", "orgtraitsparsecompsonly", false),
+    EVALPLAN_SCORE(100,"EvalPlan Score", "evalplanscore", false );
 
     private final int aiCallTypeId;
     private final String name;

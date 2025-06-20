@@ -65,7 +65,7 @@ public class UserFacade
 
         catch( Exception e )
         {
-            LogService.logIt( e, "getInstance() " );
+            LogService.logIt( e, "UserFacade.getInstance() " );
 
             return null;
         }

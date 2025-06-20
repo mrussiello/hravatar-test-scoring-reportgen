@@ -127,7 +127,37 @@
                   <!-- The percentage of completion for this Test Event. 0-100 -->
                   <xs:element name="PercentComplete" type="xs:float" minOccurs="0" maxOccurs="1"/>
                   
-                  
+                  <!-- MetaScores are AI-generated scoring values, such as match vs a job description, or alignment with organizational traits and values. -->
+                  <xs:element name="MetaScores" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                      <xs:sequence>
+
+                              <!-- A fraction between 0 and 1 -->
+                              <xs:element name="Confidence" type="xs:float" minOccurs="0" maxOccurs="1"/>
+
+                              <!-- Comma-delimited list of the inputs used to calculate this metascore. Inputs are:
+                                   1=Resume, 2=Assessment Competency Score, 3=Reference Check Competency Score, 4=Video Interview and Text-Based Responses
+                              -->
+                              <xs:element name="MetaScoreInputTypeIds" type="xs:string" minOccurs="0" maxOccurs="1"/>
+
+                              <!-- A numeric value between 0 and 100 -->
+                              <xs:element name="ScoreNumeric" type="xs:float" minOccurs="0" maxOccurs="1"/>
+                                                                                                                        
+                              <xs:element name="ScoreText" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                              
+                              <!-- Values:
+                                    1 = Organizational Traits and Culture Alignment Score
+                                    2 = Employee Core Competencies Match Score
+                                    3 = Job Description Match Score
+                              -->
+                              <xs:element name="Type" type="xs:int" minOccurs="0" maxOccurs="1"/>
+
+                              
+                                                        
+                     </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                                            
               </xs:sequence>
             </xs:complexType>
           </xs:element>
@@ -178,7 +208,7 @@
                                   IPCountry - Recorded country based on IP Address lookup 
                                   
                                   CEFRLevel - PreA1, A1, A2, B1, B2, C2, C2
-                                  CEFTText - Score Text for the CEFR Level - differs by level and whether the test has Listening, Reading, or both inside.
+                                  CEFRLevelText - Score Text for the CEFR Level - differs by level and whether the test has Listening, Reading, or both inside.
                               -->
                               <xs:element name="IdValue" type="IdValue" minOccurs="0" maxOccurs="unbounded"/>
                               
@@ -190,7 +220,11 @@
                                            <!-- Question - the question that was asked, if any -->
                                            <xs:element name="Question" type="xs:string" minOccurs="0" maxOccurs="1"/>
 
-                                           <!-- Url - Full direct download url of the media -->
+                                           <!-- Url - Full direct download url of the media 
+                                                    Note, this URL points to an endpoint for the HR Avatar MediaView API. This is a JSON-based REST Web Service that
+                                                    accepts the parameters in the URL provided here and returns a temporary URL to access the media for properly authenticated
+                                                    users. Please see the integration guide (https://www.hravatar.com/api) regarding the MediaView API. 
+                                           -->
                                            <xs:element name="Url" type="xs:string" minOccurs="0" maxOccurs="1"/>
 
                                            <!-- Thumb Url - Full direct download url of a thumbnail of this video (if present) -->
@@ -324,7 +358,7 @@
                                 
                                 CEFRType - 1=Listening or 2=Reading
                                 CEFRLevel - PreA1, A1, A2, B1, B2, C2, C2
-                                CEFTText - Score Text for the CEFR Level - differs by level and whether the test has Listening, Reading, or both inside.
+                                CEFRLevelText - Score Text for the CEFR Level - differs by level and whether the test has Listening, Reading
                                
                             -->
                            <xs:element name="IdValue" type="IdValue" minOccurs="0" maxOccurs="unbounded"/>
@@ -394,7 +428,11 @@
                                       <!-- Question - the question that was asked, if any -->
                                       <xs:element name="Question" type="xs:string" minOccurs="0" maxOccurs="1"/>
                                       
-                                      <!-- Url - Full direct download url of the media -->
+                                      <!-- Url - Full direct download url of the media. 
+                                                 Note, this URL points to an endpoint for the HR Avatar MediaView API. This is a JSON-based REST Web Service that
+                                                 accepts the parameters in the URL provided here and returns a temporary URL to access the media for properly authenticated
+                                                 users. Please see the integration guide  (https://www.hravatar.com/api) regarding the MediaView API. 
+                                      -->
                                       <xs:element name="Url" type="xs:string" minOccurs="0" maxOccurs="1"/>
 
                                       <!-- Thumb Url - Full direct download url of a thumbnail of this video (if present) -->

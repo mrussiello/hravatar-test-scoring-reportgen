@@ -14,8 +14,6 @@ import com.tm2score.sim.SimCompetencyClass;
 import com.tm2score.simlet.SimletItemType;
 import com.tm2builder.sim.xml.SimJ;
 import com.tm2score.act.G2ChoiceFormatType;
-import com.tm2score.ct5.Ct5ItemType;
-import com.tm2score.ct5.Ct5MultipleChoiceFormatType;
 import com.tm2score.entity.event.TestEvent;
 import com.tm2score.global.Constants;
 import com.tm2score.global.I18nUtils;

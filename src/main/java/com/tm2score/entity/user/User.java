@@ -1,6 +1,6 @@
 package com.tm2score.entity.user;
 
-import com.tm2score.entity.jobdesc.UserJobDescripMap;
+import com.tm2score.entity.jobdesc.UserJobMap;
 import com.tm2score.global.I18nUtils;
 import com.tm2score.service.EncryptUtils;
 import com.tm2score.service.LogService;
@@ -194,7 +194,7 @@ public class User implements Serializable
     private Resume resume;
     
     @Transient
-    private List<UserJobDescripMap> userJobDescripMapList;
+    private List<UserJobMap> userJobMapList;
     
     @Transient
     private String password;
@@ -887,12 +887,12 @@ public class User implements Serializable
         this.resume = resume;
     }
 
-    public List<UserJobDescripMap> getUserJobDescripMapList() {
-        return userJobDescripMapList;
+    public List<UserJobMap> getUserJobMapList() {
+        return userJobMapList;
     }
 
-    public void setUserJobDescripMapList(List<UserJobDescripMap> userJobDescripMapList) {
-        this.userJobDescripMapList = userJobDescripMapList;
+    public void setUserJobMapList(List<UserJobMap> l) {
+        this.userJobMapList = l;
     }
 
 

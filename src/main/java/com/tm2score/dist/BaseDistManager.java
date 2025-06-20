@@ -50,6 +50,7 @@ import com.tm2score.service.Tracker;
 import com.tm2score.twilio.TwilioSmsUtils;
 import com.tm2score.user.CandidateAudioVideoViewType;
 import com.tm2score.user.LimitedAccessLinkFacade;
+import com.tm2score.user.ResumeHelpUtils;
 import com.tm2score.user.UserActionFacade;
 import com.tm2score.user.UserActionType;
 import com.tm2score.user.UserFacade;
@@ -659,6 +660,9 @@ public class BaseDistManager {
             }
         }
         
+        if( tk.getMetaScoreList()==null )
+            tk.setMetaScoreList( eventFacade.getReportableMetaScoreListForTestKey( tk.getTestKeyId()));
+        
         for( TestEvent te : tk.getTestEventList() )
         {
             //if( !te.getTestEventStatusType().getIsReportsCompleteOrHigher() )
@@ -853,6 +857,16 @@ public class BaseDistManager {
                     if( userFacade==null )
                         userFacade = UserFacade.getInstance();
                     tk.getUser().setResume( userFacade.getResumeForUser(tk.getUserId()));
+                    
+                    if( tk.getUser().getResume()!=null && tk.getUser().getResume().getNeedsParse()==1 )
+                    {
+                        boolean success = ResumeHelpUtils.parseResumeByAiNoErrors( tk.getUser(), tk.getUser().getResume());
+                        if( success )
+                        {
+                            Thread.sleep(500);
+                            tk.getUser().setResume( userFacade.getResumeForUser(tk.getUserId()));
+                        }
+                    }                    
                 }
                 
                 // LogService.logIt( "BaseDistManager.emailTestResultsToAdministrator() TestEventId=" + (te==null ? "null" : te.getTestEventId() + ", TestEventScoreList=" + (te.getTestEventScoreList()==null ? "null" : te.getTestEventScoreList().size() + ", otes=" + (te.getOverallTestEventScore()==null ? "null" : "not null"))) );

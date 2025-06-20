@@ -4,10 +4,14 @@
  */
 package com.tm2score.format;
 
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.tm2score.ai.MetaScoreType;
 import com.tm2score.battery.BatteryScoreType;
 import com.tm2score.battery.BatteryScoringUtils;
 import com.tm2score.battery.BatteryType;
 import com.tm2score.bot.ChatMessageType;
+import com.tm2score.entity.ai.MetaScore;
 import com.tm2score.entity.battery.Battery;
 import com.tm2score.entity.battery.BatteryScore;
 import com.tm2score.entity.proctor.ProctorEntry;
@@ -1778,7 +1782,7 @@ public class BaseScoreFormatter
         return getCompetencyTaskSection( tog, 6 );
     }
 
-    public Object[] getStandardAiSection( boolean tog )
+    public Object[] getStandardAiCompetenciesSection( boolean tog )
     {
         return getCompetencyTaskSection( tog, 10 );
     }
@@ -3101,6 +3105,75 @@ NONE(0,"None"),    // When an ONET Soc is selected
         }
     }
 
+    
+    public Object[] getStandardGenAISection(boolean tog, String rowStyleHeader) throws Exception
+    {
+        Object[] out = new Object[2];
+
+        StringBuilder sb = new StringBuilder();
+        tog = true;
+        out[0] = "";
+        out[1] = tog;
+
+        if( getReport().getIncludeAiScores()<=0 || getReportRuleAsBoolean( "skipaiscoressection") || getTestKey().getMetaScoreList()==null || getTestKey().getMetaScoreList().isEmpty() )
+            return out;
+
+        LogService.logIt(  "BaseScoreFormatter.getStandardGenAISection() BBB.1 " );
+
+        int valCount = 0;
+        for( MetaScore ms : getTestKey().getMetaScoreList() )
+        {
+            if( ms.getMetaScoreTypeId()>0 && ms.getScore()>0 && ms.getConfidence()>= Constants.MIN_METASCORE_CONFIDENCE )
+                valCount++;
+        }
+        
+        if( valCount<=0 )
+            return out;
+
+        String style = rowStyle1;
+        int scrDigits = getReport().getIntParam2() >= 0 ? getReport().getIntParam2() : getTestEvent().getScorePrecisionDigits();
+        String scr;
+        String confScr;
+        String scoreText;
+        int count = 0;
+        MetaScoreType metaScoreType;
+        String lastUpdate;
+
+        String tt = lmsg( "g.AiGenScoresSubtitle" );
+        //String subtitle = "<span style=\"font-weight:normal\">" + tt + "</span>";
+        // sb.append( getRowTitleSubtitle( rowStyleHdr, lmsg(  "g.AiGenScoresSht", null ), subtitle ) );
+        sb.append( getRowTitle( rowStyleHdr, lmsg("g.AiGenScoresSht", null ), lmsg( "g.Score" ), lmsg( "g.Interpretation" ) + " " + lmsg("g.AiGenScoresSubtitleSht"), null ) );
+
+        for( MetaScore metaScore : getTestKey().getMetaScoreList() )
+        {
+            if( metaScore.getMetaScoreTypeId()<=0 || metaScore.getScore()<=0 || metaScore.getConfidence()<Constants.MIN_METASCORE_CONFIDENCE )
+                continue;
+            count++;
+
+            metaScoreType = MetaScoreType.getValue(metaScore.getMetaScoreTypeId() );
+
+            scr = I18nUtils.getFormattedNumber( getLocale(), metaScore.getScore(), scrDigits );
+            
+            confScr = "(" + lmsg("g.Confidence") + " " + 
+                  I18nUtils.getFormattedNumber( getLocale(), metaScore.getConfidence(), 1) + ") ";                
+
+            metaScore.setLocale(getLocale());
+            
+            scoreText = confScr + metaScoreType.getDescription(getLocale()) + " " + lmsg("g.AiMetaScrInputTypesUsed", new String[]{metaScore.getMetaScoreInputTypesStr()});
+            
+            if( metaScore.getScoreText()!=null && !metaScore.getScoreText().isBlank() )                
+                scoreText += "\n\n" + metaScore.getScoreTextXhtml();
+
+            lastUpdate = I18nUtils.getFormattedDateTime(getLocale(), metaScore.getLastUpdate(), getTestKey().getUser().getTimeZone());
+            scoreText += "\n\n" + lmsg("g.AiMetaScrCalcDateX", new String[]{lastUpdate}); 
+            
+            sb.append( this.getRow(style, metaScoreType.getName(getLocale()), scr, scoreText , false) );            
+        }        
+
+        out[0] = sb.toString();
+        out[1] = tog;
+        return out;
+    }
 
     public Object[] getStandardResumeSection(boolean tog, String rowStyleHeader ) throws Exception
     {
@@ -3132,7 +3205,7 @@ NONE(0,"None"),    // When an ONET Soc is selected
         }
 
         String style = rowStyle1;
-
+        
         String tt = lmsg( "g.UpdatedOnX", new String[]{I18nUtils.getFormattedDateTime(getLocale(), resume.getLastInputDate(), getUser().getTimeZone())});
         String subtitle = "<span style=\"font-weight:normal\">" + tt + "</span>";
         sb.append( getRowTitleSubtitle( rowStyleHdr, lmsg(  "g.Resume", null ), subtitle ) );

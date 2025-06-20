@@ -60,6 +60,9 @@ public class Resume implements Serializable
     @Column( name = "resumestatustypeid" )
     private int resumeStatusTypeId;
 
+    @Column( name = "needsparse" )
+    private int needsParse;
+    
     @Column( name = "localestr" )
     private String localeStr;
 
@@ -506,4 +509,16 @@ public class Resume implements Serializable
     public void setUploadFilename(String uploadFilename) {
         this.uploadFilename = uploadFilename;
     }
+
+    public int getNeedsParse()
+    {
+        return needsParse;
+    }
+
+    public void setNeedsParse(int needsParse)
+    {
+        this.needsParse = needsParse;
+    }
+    
+    
 }

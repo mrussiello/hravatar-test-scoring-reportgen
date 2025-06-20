@@ -547,6 +547,7 @@ public class RuntimeConstants
         cache.put( "resumesimversionid", 1 );
         
         
+        cache.put( "tm2ai_rest_api_ok", true );
         cache.put( "tm2ai_rest_api_baseuri", "https://ts.hravatar.com/ai/webresources/");
         cache.put( "tm2ai_rest_api_username", "" );
         cache.put( "tm2ai_rest_api_password", "" );

@@ -1,5 +1,6 @@
 package com.tm2score.event;
 
+import com.tm2score.entity.ai.MetaScore;
 import com.tm2score.entity.battery.Battery;
 import com.tm2score.entity.battery.BatteryScore;
 import com.tm2score.entity.event.*;
@@ -1041,6 +1042,23 @@ public class EventFacade
             throw new STException( e );
         }
 
+    }
+    
+    
+    public List<MetaScore> getReportableMetaScoreListForTestKey( long testKeyId ) throws Exception
+    {
+        try
+        {
+            Query q = em.createNamedQuery("MetaScore.findReportableByTestKeyId", MetaScore.class );
+            q.setParameter( "testKeyId", testKeyId );
+            q.setHint( "jakarta.persistence.cache.retrieveMode", "BYPASS" );
+            return q.getResultList();
+        }
+        catch( Exception e )
+        {
+            LogService.logIt( e, "EventFacade.getReportableMetaScoreListForTestKey( " + testKeyId + " ) " );
+            throw new STException( e );
+        }
     }
     
     
@@ -2453,5 +2471,6 @@ public class EventFacade
             throw new STException( e );
         }
     }
+    
 
 }

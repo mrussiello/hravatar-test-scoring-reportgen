@@ -708,7 +708,7 @@ public class TestEvent implements Serializable, Comparable<TestEvent>, ErrorTxtO
             }
 
             if( ScoreManager.DEBUG_SCORING )
-                LogService.logIt( "TestEvent.initScoreAndResponseLists() STARTING For Interaction unique=" + intnObj.getUniqueid() + " (" + intRespObj.getNdseq() +") validItemsCanHaveZeroMaxPoints=" + validItemsCanHaveZeroMaxPoints );
+                LogService.logIt( "TestEvent.initScoreAndResponseLists() STARTING For Interaction unique=" + intnObj.getUniqueid() + ", intnObj.scoreType=" + intnObj.getScoretype() + ", ndSeq=" + intRespObj.getNdseq() +", validItemsCanHaveZeroMaxPoints=" + validItemsCanHaveZeroMaxPoints );
             
             // create object
             iactnResp = IactnRespFactory.getIactnResp(intRespObjO, intnObj, simXmlObj, this ); //   new IactnResp( intRespObj );
@@ -721,7 +721,7 @@ public class TestEvent implements Serializable, Comparable<TestEvent>, ErrorTxtO
             // if this item is not found in SimXMLObj, it must not be important so ignore it.
             if( iactnResp.getIntnObj()==null )
             {
-                LogService.logIt( "TestEvent.initScoreAndResponseLists() iactnResp.intnObj is null! testEventId=" + testEventId + ", " + iactnResp.toString() );
+                LogService.logIt( "TestEvent.initScoreAndResponseLists() iactnResp.intnObj is null! testEventId=" + testEventId + ", intRespObj.getUnqid()=" + (intRespObj.getUnqid()==null ? "null" : intRespObj.getUnqid()) + ", " + iactnResp.toString() );
                 continue;
             }
 

@@ -159,7 +159,7 @@ public class ResumeIactnResp extends IactnResp implements ScorableResponse
         
         initLocal();
         
-        LogService.logIt( "ResumeIactnResp.init() uniqueId=" + intnResultObj.getUnqid() + ", userId=" + te.getUserId() + ", iactnItemRespLst.size=" + iactnItemRespLst.size() + ", testEventId=" + te.getTestEventId() + ", useAwsForS3=" + useAwsForS3 );
+        // LogService.logIt( "ResumeIactnResp.init() uniqueId=" + intnResultObj.getUnqid() + ", userId=" + te.getUserId() + ", iactnItemRespLst.size=" + iactnItemRespLst.size() + ", testEventId=" + te.getTestEventId() + ", useAwsForS3=" + useAwsForS3 );
 
         if( te.getUserId()<=0 )
             throw new Exception( "ResumeIactnResp.init() TestEvent.userId is invalid " + te.getUserId() );
@@ -179,7 +179,7 @@ public class ResumeIactnResp extends IactnResp implements ScorableResponse
             if( resume==null )
                 loadResume( user.getUserId() );
         
-            LogService.logIt( "ResumeIactnResp.createOrUpdateResume() Existing resume is " + (resume==null ? "null" : "not null. resumeId=" + resume.getResumeId()) + ", userId=" + (user==null ? "null" : user.getUserId() ) + ", testEventId=" + (testEvent==null ? "null" : testEvent.getTestEventId() ) );
+            // LogService.logIt( "ResumeIactnResp.createOrUpdateResume() Existing resume is " + (resume==null ? "null" : "not null. resumeId=" + resume.getResumeId()) + ", userId=" + (user==null ? "null" : user.getUserId() ) + ", testEventId=" + (testEvent==null ? "null" : testEvent.getTestEventId() ) );
 
             if( resume==null )
             {
@@ -200,11 +200,38 @@ public class ResumeIactnResp extends IactnResp implements ScorableResponse
             
             boolean isChange = false;
             
-            // Text overrides upload.
-            if( newlySubmittedResumeText!=null && !newlySubmittedResumeText.isBlank() )
+            String newlySubmittedUploadedText = null;
+            
+            // check for an uploaded file first.
+            if( getUploadedUserFileId()>0 )
+            {
+                String[] vals = getTextFromUploadedUserFile(getUploadedUserFileId()); 
+                String uploadedFilename = vals[1];
+                newlySubmittedUploadedText = vals[0];
+                 
+                if( newlySubmittedUploadedText!=null && !newlySubmittedUploadedText.isBlank() )
+                {
+                    newlySubmittedUploadedText=newlySubmittedUploadedText.trim();
+                    isChange = resume.getUploadedText()==null || !resume.getUploadedText().equals( newlySubmittedUploadedText);
+                    
+                    if( isChange && resume.getPlainText()!=null && resume.getPlainText().equalsIgnoreCase( newlySubmittedUploadedText ) )
+                        isChange=false;
+                    
+                    resume.setUploadFilename(uploadedFilename);
+                    resume.setUploadedText(newlySubmittedUploadedText);                    
+                    resume.setLastInputDate( new Date() );
+                }            
+            }
+            
+            // Check text only if no uploaded text found.
+            if( (newlySubmittedUploadedText==null || newlySubmittedUploadedText.isBlank()) && newlySubmittedResumeText!=null && !newlySubmittedResumeText.isBlank() )
             {
                 newlySubmittedResumeText = newlySubmittedResumeText.trim();
                 isChange = resume.getUploadedText()==null || !resume.getUploadedText().equalsIgnoreCase(newlySubmittedResumeText);
+
+                if( isChange && resume.getPlainText()!=null && resume.getPlainText().equalsIgnoreCase( newlySubmittedResumeText ) )
+                    isChange=false;
+
                 resume.setUploadedText(newlySubmittedResumeText ); 
                 
                 // clear upload
@@ -213,6 +240,13 @@ public class ResumeIactnResp extends IactnResp implements ScorableResponse
                 resume.setLastInputDate( new Date() );
             }
             
+            if( (newlySubmittedUploadedText==null || newlySubmittedUploadedText.isBlank()) && (newlySubmittedResumeText==null || newlySubmittedResumeText.isBlank()) )
+            {
+                LogService.logIt( "ResumeIactnResp.createOrUpdateResume() Resume Iactn Response has no written text and no upload text. Returning without changing or saving anything. resume=" + (resume==null ? "null" : "not null. resumeId=" + resume.getResumeId()) + ", userId=" + (user==null ? "null" : user.getUserId() ) + ", testEventId=" + (testEvent==null ? "null" : testEvent.getTestEventId() ) );
+                return;
+            }
+            
+            /*
             else if( getUploadedUserFileId()>0 )
             {
                 String[] vals = getTextFromUploadedUserFile(getUploadedUserFileId()); 
@@ -241,6 +275,7 @@ public class ResumeIactnResp extends IactnResp implements ScorableResponse
                     resume.setLastInputDate( new Date() );
                 }
             }
+            */
             
             if( isChange )
                 resume.setLastInputDate(new Date());
@@ -248,7 +283,7 @@ public class ResumeIactnResp extends IactnResp implements ScorableResponse
                 userFacade=UserFacade.getInstance();
             userFacade.saveResume(resume);
             
-            boolean needsParse = isChange; // || (resume.getLastInputDate()!=null && (resume.getLastParseDate()==null || resume.getLastParseDate().before( resume.getLastInputDate())) );
+            boolean needsParse = isChange || resume.getNeedsParse()==1; // || (resume.getLastInputDate()!=null && (resume.getLastParseDate()==null || resume.getLastParseDate().before( resume.getLastInputDate())) );
             if( needsParse )
             {
                 parseAndStoreResumeInfo();
@@ -316,6 +351,25 @@ public class ResumeIactnResp extends IactnResp implements ScorableResponse
                 resume.packJsonStr();
                 userFacade.saveResume(resume);
 
+                return;
+            }
+            
+            if( !AiRequestUtils.getIsAiSystemAvailable() )
+            {
+                resume.setPlainText( resume.getUploadedText().trim());
+                resume.setSummary( resume.getUploadedText().trim() );
+                resume.setObjective(null);
+                resume.setExperience(null);
+                resume.setEducation(null);
+                resume.setOtherQuals(null);
+                resume.parseJsonStrNoErrors();                
+                resume.setNeedsParse(1);
+                resume.packJsonStr();
+                if( userFacade==null )
+                    userFacade=UserFacade.getInstance();
+                userFacade.saveResume(resume);
+                
+                LogService.logIt("ResumeIactnResp.parseAndStoreResumeInfo() AI System is unavailable. userId=" + (user==null ? "null" : user.getUserId() ) + ", testEventId=" + (testEvent==null ? "null" : testEvent.getTestEventId()) + ", resumeId=" + (resume==null ? "null" : resume.getResumeId()) );
                 return;
             }
             
@@ -407,7 +461,7 @@ public class ResumeIactnResp extends IactnResp implements ScorableResponse
             {
                 text = MsWordUtils.convertWordToText(fis, uploadedFilename);
                 if( (text==null || text.isBlank()) && fct.getBaseExtension().equalsIgnoreCase("docx") )
-                    LogService.logIt( "ResumeIactnResp.processUploadResumeFile() unable to parse Word document. It may be an old .doc version. uploadedFilename=" + uploadedFilename );
+                    LogService.logIt( "ResumeIactnResp.getTextFromUploadedUserFile() unable to parse Word document. It may be an old .doc version. uploadedFilename=" + uploadedFilename );
             }
             else
             {
@@ -417,13 +471,13 @@ public class ResumeIactnResp extends IactnResp implements ScorableResponse
                 }
             }
 
-            LogService.logIt( "ResumeIactnResp.processUploadResumeFile() text.length=" + (text==null ? "null" : text.length() ) );
+            LogService.logIt( "ResumeIactnResp.getTextFromUploadedUserFile() text.length=" + (text==null ? "null" : text.length() ) );
 
             return new String[] {text,initFilename};
         }
         catch( Exception e )
         {
-            LogService.logIt(e, "ResumeIactnResp.createOrUpdateResume() uploadedUserFileId=" + uploadedUserFileId );
+            LogService.logIt(e, "ResumeIactnResp.getTextFromUploadedUserFile() uploadedUserFileId=" + uploadedUserFileId );
             throw e;
         }
         finally

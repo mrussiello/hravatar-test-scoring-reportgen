@@ -44,7 +44,7 @@ public class ResumeExperience implements Serializable
 
     private void parseJo( JsonObject jo )
     {
-        LogService.logIt( "ResumeExperience.parseJo() AAA.1 " );
+        // LogService.logIt( "ResumeExperience.parseJo() AAA.1 " );
         try
         {
             title = JsonUtils.getStringFmJson(jo, "title");

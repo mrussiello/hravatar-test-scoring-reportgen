@@ -37,6 +37,8 @@ public class Tracker
     private static int webServiceErrors = 0;
     private static int totalSampleReports = 0;
     
+    private static int aiCalls = 0;
+    private static int aiCallErrors = 0;
     
 
     private static int startedScores = 0;
@@ -103,6 +105,16 @@ public class Tracker
         rtt.addValue(amountMs);
     }    
 
+    public static void addAiCall()
+    {
+        aiCalls++;
+    }
+    
+    public static void addAiCallError()
+    {
+        aiCallErrors++;
+    }
+    
     
     
     public static void addAvItemResponseStart()
@@ -399,7 +411,7 @@ public class Tracker
         ot.add( new String[] {"Distribution Errors: ", Integer.toString( distributionErrors ) } );
         ot.add( new String[] {"Report Gen Errors: ", Integer.toString( reportErrors ) } );
         ot.add( new String[] {"Scoring Errors: ", Integer.toString( scoreErrors ) } );
-
+        ot.add( new String[] {"Ai Call Errors: ", Integer.toString( aiCallErrors ) } );
         ot.add( new String[] {"Web Service Errors: ", Integer.toString( webServiceErrors ) } );
         ot.add( new String[] {"Sample Report Errors: ", Integer.toString( sampleReportErrors ) } );
         ot.add( new String[] {"Total Sample Reports: ", Integer.toString( totalSampleReports ) } );
@@ -410,6 +422,8 @@ public class Tracker
         ot.add( new String[] {"Reminders: Emails", Integer.toString( reminderEmails ) } );
         ot.add( new String[] {"Reminders: Texts", Integer.toString( reminderTexts ) } );
 
+        ot.add( new String[] {"Scores: AI Calls", Integer.toString( aiCalls ) } );
+        
         ot.add( new String[] {"Scores: Batches", Integer.toString( scoreBatches ) } );
         ot.add( new String[] {"Scores: Test Events Started", Integer.toString( startedScores ) } );
         ot.add( new String[] {"Scores: Test Events Completed", Integer.toString( finishedScores ) } );
@@ -459,7 +473,7 @@ public class Tracker
     {
         Map<String, Float> outMap = new TreeMap<>();
 
-        if( responseTimeMap != null && responseTimeMap.size()>0 )
+        if( responseTimeMap != null && !responseTimeMap.isEmpty() )
         {
             for( ResponseTimeTracker rtt : responseTimeMap.values() )
             {

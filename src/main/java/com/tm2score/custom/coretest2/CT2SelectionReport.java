@@ -40,6 +40,8 @@ public class CT2SelectionReport extends BaseCT2ReportTemplate implements ReportT
 
             addComparisonSection();
 
+            addAiScoresSection();
+            
             if( reportData.getReportRuleAsBoolean("cmptysumoff") ||
                 reportData.getReport().getIncludeCompetencyScores()!=1 ||
                 ( reportData.getReport().getIncludeSubcategoryCategory()!=1 &&

@@ -304,8 +304,6 @@ public class FileXferUtils
     {
         init(false);
 
-        // LogService.logIt( "FileXferUtils.getFileInputStream() bucketTypeId=" + bucketTypeId + ", " + directory + ", " + filename + " useAws=" + useAws.booleanValue() );
-
         //String key = null;
 
         if( useAwsForMedia )
@@ -315,19 +313,22 @@ public class FileXferUtils
             //return new Object[] { s3o.getObjectContent() , s3o };
         }
 
-        if( filename == null || filename.length() == 0 )
+        if( filename==null || filename.length()==0 )
                 throw new Exception( "No filename" );
 
         if( directory == null )
             directory = "";
 
+        LogService.logIt( "FileXferUtils.getFileInputStream() File is LOCAL. bucketTypeId=" + bucketTypeId + ", " + directory + ", " + filename );
+        
+        String localFilesRoot = getFileTreeRootDirectory();
         BucketType bucketType = BucketType.getValue(bucketTypeId);        
         String baseKey = bucketType.getBaseKey();
         
         if( bucketType.equals(BucketType.USERUPLOAD ) )
             baseKey = "ful/" + baseKey;
         
-        if( baseKey!=null && !baseKey.isBlank() && !directory.startsWith(baseKey) )
+        if( !directory.contains(localFilesRoot) && baseKey!=null && !baseKey.isBlank() && !directory.startsWith(baseKey) )
         {
             if( directory.startsWith("/") && baseKey.endsWith("/") )
                 directory = directory.substring(1,directory.length());
@@ -368,6 +369,7 @@ public class FileXferUtils
     
     public static boolean localFileExists( String pathAndFilename, boolean requireNonZeroBytes ) throws Exception
     {
+        LogService.logIt( "FileXferUtils.localFileExists() START " + pathAndFilename );
         if( pathAndFilename.charAt( 0 )!='/' )
             pathAndFilename = "/" + pathAndFilename;
 
@@ -376,7 +378,7 @@ public class FileXferUtils
         
         File file = new File(  pathAndFilename );
         if( !file.exists() )
-            LogService.logIt( "FileXferUtils.fileExists() File missing. " + pathAndFilename + ", file.exists() " + file.exists() );
+            LogService.logIt( "FileXferUtils.localFileExists() File missing. " + pathAndFilename + ", file.exists() " + file.exists() );
 
         if( requireNonZeroBytes )
             return file.exists() && file.length() > 0;
@@ -447,7 +449,7 @@ public class FileXferUtils
         }
         catch( Exception e )
         {
-            LogService.logIt( e , "getFileLocal( " + directory + ", " + filename + ", bucketTypeId=" + bucketTypeId + " ) " );
+            LogService.logIt( e , "FileXferUtils.getFileLocal( " + directory + ", " + filename + ", bucketTypeId=" + bucketTypeId + " ) " );
             throw new STException( e );
         }
 

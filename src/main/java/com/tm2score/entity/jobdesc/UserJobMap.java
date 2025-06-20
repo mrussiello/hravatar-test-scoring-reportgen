@@ -19,23 +19,23 @@ import java.util.Date;
 
 @Cacheable
 @Entity
-@Table( name = "userjobdescripmap" )
+@Table( name = "userjobmap" )
 @NamedQueries({
-        @NamedQuery( name = "UserJobDescripMap.findForJobDescripId", query = "SELECT o FROM UserJobDescripMap AS o WHERE o.jobDescripId=:jobDescripId" ),
-        @NamedQuery( name = "UserJobDescripMap.findForUserId", query = "SELECT o FROM UserJobDescripMap AS o WHERE o.userId=:userId" )
+        @NamedQuery( name = "UserJobMap.findForJobId", query = "SELECT o FROM UserJobMap AS o WHERE o.jobId=:jobId" ),
+        @NamedQuery( name = "UserJobMap.findForUserId", query = "SELECT o FROM UserJobMap AS o WHERE o.userId=:userId" )
 })
-public class UserJobDescripMap implements Serializable, Comparable<UserJobDescripMap>
+public class UserJobMap implements Serializable, Comparable<UserJobMap>
 {
     @Transient
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY )
-    @Column( name = "userjobdescripmapid" )
-    private long userJobDescripMapId;
+    @Column( name = "userjobmapid" )
+    private long userJobMapId;
 
-    @Column( name = "jobdescripid" )
-    private int jobDescripId;
+    @Column( name = "jobid" )
+    private int jobId;
 
     @Column( name = "userid" )
     private long userId;
@@ -55,15 +55,15 @@ public class UserJobDescripMap implements Serializable, Comparable<UserJobDescri
     private Date scoreDate;
 
     @Override
-    public int compareTo(UserJobDescripMap o) {
+    public int compareTo(UserJobMap o) {
         
-        if( o.jobDescripId!=jobDescripId)
-            return Integer.valueOf(jobDescripId).compareTo(o.jobDescripId );
+        if( o.jobId!=jobId)
+            return Integer.valueOf(jobId).compareTo(o.jobId );
         
         if( scoreDate!=null && o.scoreDate!=null )
             return Float.valueOf(score).compareTo(o.score);
         
-        return Long.valueOf(userJobDescripMapId).compareTo(o.userJobDescripMapId);
+        return Long.valueOf(userJobMapId).compareTo(o.userJobMapId);
     }
     
 
@@ -75,8 +75,8 @@ public class UserJobDescripMap implements Serializable, Comparable<UserJobDescri
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final UserJobDescripMap other = (UserJobDescripMap) obj;
-        if (this.userJobDescripMapId != other.userJobDescripMapId) {
+        final UserJobMap other = (UserJobMap) obj;
+        if (this.userJobMapId != other.userJobMapId) {
             return false;
         }
         return true;
@@ -85,29 +85,29 @@ public class UserJobDescripMap implements Serializable, Comparable<UserJobDescri
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 29 * hash + (int) (this.userJobDescripMapId ^ (this.userJobDescripMapId >>> 32));
+        hash = 29 * hash + (int) (this.userJobMapId ^ (this.userJobMapId >>> 32));
         return hash;
     }
 
     @Override
     public String toString() {
-        return "UserJobDescripMap{" + "userJobDescripMapId=" + userJobDescripMapId + ", jobDescripId=" + jobDescripId + ", userId=" + userId + ", score=" + score + '}';
+        return "UserJobMap{" + "userJobMapId=" + userJobMapId + ", jobId=" + jobId + ", userId=" + userId + ", score=" + score + '}';
     }
 
-    public long getUserJobDescripMapId() {
-        return userJobDescripMapId;
+    public long getUserJobMapId() {
+        return userJobMapId;
     }
 
-    public void setUserJobDescripMapId(long userJobDescripMapId) {
-        this.userJobDescripMapId = userJobDescripMapId;
+    public void setUserJobMapId(long userJobMapId) {
+        this.userJobMapId = userJobMapId;
     }
 
-    public int getJobDescripId() {
-        return jobDescripId;
+    public int getJobId() {
+        return jobId;
     }
 
-    public void setJobDescripId(int jobDescripId) {
-        this.jobDescripId = jobDescripId;
+    public void setJobId(int jobId) {
+        this.jobId = jobId;
     }
 
     public long getUserId() {
@@ -149,6 +149,5 @@ public class UserJobDescripMap implements Serializable, Comparable<UserJobDescri
     public void setScoreDate(Date scoreDate) {
         this.scoreDate = scoreDate;
     }
-
 
 }

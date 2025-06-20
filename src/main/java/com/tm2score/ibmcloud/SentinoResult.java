@@ -275,7 +275,7 @@ public class SentinoResult implements Serializable {
             parseInventoryScores( SentinoGroupType.SIXFACTOR, scoringJo );
             parseInventoryScores( SentinoGroupType.CPI, scoringJo );
 
-            LogService.logIt("SentinoResult.readFromJson() Found traitMap=" + sentinoTraitMap.size() + " Sentino traits" );
+            // LogService.logIt("SentinoResult.readFromJson() Found traitMap=" + sentinoTraitMap.size() + " Sentino traits" );
         }
         catch( Exception e )
         {

@@ -1,7 +1,7 @@
 package com.tm2score.jobdesc;
 
 import com.tm2score.entity.jobdesc.JobDescrip;
-import com.tm2score.entity.jobdesc.UserJobDescripMap;
+import com.tm2score.entity.jobdesc.UserJobMap;
 import com.tm2score.global.STException;
 import com.tm2score.service.LogService;
 
@@ -44,21 +44,21 @@ public class JobDescripFacade
     }
     
     
-    public List<UserJobDescripMap> getUserJobDescripMapListForUser( long userId ) throws Exception
+    public List<UserJobMap> getUserJobMapListForUser( long userId ) throws Exception
     {
         try
         {
             if( userId<=0 )
                 return new ArrayList<>();
 
-            Query q = em.createNamedQuery( "UserJobDescripMap.findForUserId" );
+            Query q = em.createNamedQuery( "UserJobMap.findForUserId" );
             q.setParameter( "userId", userId );
-            return (List<UserJobDescripMap>) q.getResultList();
+            return (List<UserJobMap>) q.getResultList();
         }
 
         catch( Exception e )
         {
-            LogService.logIt( e, "JobDescripFacade.getUserJobDescripMapListForUser( userId=" + userId + " ) " );
+            LogService.logIt( e, "JobDescripFacade.getUserJobMapListForUser( userId=" + userId + " ) " );
 
             throw new STException( e );
         }
@@ -83,11 +83,11 @@ public class JobDescripFacade
     }      
     
     
-    public UserJobDescripMap saveUserJobDescripMap( UserJobDescripMap ujdm ) throws Exception
+    public UserJobMap saveUserJobMap( UserJobMap ujdm ) throws Exception
     {
         try
         {
-            if( ujdm.getUserJobDescripMapId() > 0 )
+            if( ujdm.getUserJobMapId() > 0 )
             {
                 em.merge(ujdm );
             }
@@ -107,7 +107,7 @@ public class JobDescripFacade
 
         catch( Exception e )
         {
-            LogService.logIt(e, "JobDescripFacade.saveUserJobDescripMap() " + ( ujdm == null ? "UserJobDescripMap is null" : ujdm.toString() ) );
+            LogService.logIt(e, "JobDescripFacade.saveUserJobMap() " + ( ujdm == null ? "UserJobMap is null" : ujdm.toString() ) );
 
             throw new STException( e );
         }

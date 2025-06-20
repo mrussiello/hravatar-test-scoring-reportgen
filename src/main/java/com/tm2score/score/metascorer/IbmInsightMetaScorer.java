@@ -189,7 +189,7 @@ public class IbmInsightMetaScorer extends BaseMetaScorer implements MetaScorer {
             
             countWords();
             
-            LogService.logIt("IbmInsightMetaScorer.calculate() BBB testEventId=" + testEvent.getTestEventId() + ", Num Text Snippets=" + (textList==null ? 0 : textList.size()) + ", total words=" + wordCount);
+            // LogService.logIt("IbmInsightMetaScorer.calculate() BBB testEventId=" + testEvent.getTestEventId() + ", Num Text Snippets=" + (textList==null ? 0 : textList.size()) + ", total words=" + wordCount);
             
             //if( wordCount<MIN_WORDS_REQUIRED )
             //{
@@ -203,7 +203,7 @@ public class IbmInsightMetaScorer extends BaseMetaScorer implements MetaScorer {
             
             Object[] data =iiUtils.evaluateTextForProfile(textList, sourceLocale, reportLocale, hraTraitPackageType.getHraPackageTypeId(), hraTraitTypeIdsToIncludeList );
             
-            LogService.logIt( "IbmInsightMetaScorer.calculate() CCC testEventId=" + testEvent.getTestEventId()  );
+            // LogService.logIt( "IbmInsightMetaScorer.calculate() CCC testEventId=" + testEvent.getTestEventId()  );
             
             String result = (String) data[0];
                         
@@ -353,7 +353,7 @@ public class IbmInsightMetaScorer extends BaseMetaScorer implements MetaScorer {
                 // no sentino traits - ignore it.
                 if( intn.getCt5Str1()==null || intn.getCt5Str1().isBlank() )
                 {
-                    LogService.logIt( "IbmInsightMetaScorer.collectText() Intn is not designated for IbmInsight processing. ScoredAvIactnResp" + air.getExtItemId() + ", " + air.toString() + ", ignoring response for IbmInsight processing." );
+                    // LogService.logIt( "IbmInsightMetaScorer.collectText() Intn is not designated for IbmInsight processing. ScoredAvIactnResp" + air.getExtItemId() + ", " + air.toString() + ", ignoring response for IbmInsight processing." );
                     continue;
                 }
                 

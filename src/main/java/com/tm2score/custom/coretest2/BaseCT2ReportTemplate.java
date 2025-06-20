@@ -29,6 +29,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.LineSeparator;
 // import com.itseasy.rtf.text.Border;
 import com.tm2builder.sim.xml.SimJ;
+import com.tm2score.ai.MetaScoreType;
 import com.tm2score.battery.BatteryScoringUtils;
 import com.tm2score.bot.ChatMessageType;
 import com.tm2score.custom.bestjobs.BaseBestJobsReportTemplate;
@@ -37,6 +38,7 @@ import com.tm2score.custom.bestjobs.BestJobsReportUtils;
 import com.tm2score.custom.bestjobs.EeoMatch;
 import com.tm2score.custom.coretest2.cefr.CefrScoreType;
 import com.tm2score.custom.coretest2.cefr.CefrUtils;
+import com.tm2score.entity.ai.MetaScore;
 import com.tm2score.entity.proctor.ProctorEntry;
 import com.tm2score.entity.event.TestEvent;
 
@@ -3590,6 +3592,210 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
         return false;
     }
 
+    
+    public void addAiScoresSection() throws Exception
+    {
+        if( reportData.getReportRuleAsBoolean( "skipaiscoressection" ) )
+            return;
+
+        if( reportData.getReport().getIncludeAiScores()==0 )
+            return;
+
+        // next see if there are any metascores
+        if( reportData.getTestKey().getMetaScoreList()==null || reportData.getTestKey().getMetaScoreList().isEmpty() )
+            return;
+        
+        int valCount = 0;
+        for( MetaScore ms : reportData.getTestKey().getMetaScoreList() )
+        {
+            if( ms.getMetaScoreTypeId()>0 && ms.getScore()>0 && ms.getConfidence()>= Constants.MIN_METASCORE_CONFIDENCE )
+                valCount++;
+        }
+        
+        if( valCount<=0 )
+            return;
+        
+        try
+        {
+            if( ReportManager.DEBUG_REPORTS )
+                LogService.logIt(  "BaseCT2ReportTemplate.addAiScoresSection() BBB.1 valCount=" + valCount );
+            
+            PdfPCell c;
+            PdfPTable t;
+            float outerWid = pageWidth - 2*CT2_MARGIN - 2*CT2_BOX_EXTRAMARGIN;
+
+            // First, add a table
+            t = new PdfPTable( new float[] { 2,1,1,4  } );
+            // t.setHorizontalAlignment( Element.ALIGN_CENTER );
+            t.setTotalWidth( outerWid );
+            t.setLockedWidth( true );
+            t.setHeaderRows( 1 );
+
+            c = new PdfPCell( new Phrase( lmsg("g.EstimatedValue"), fontLargeWhite ) );
+            c.setCellEvent(new CellBackgroundCellEvent(reportData.getIsLTR(), ct2Colors.hraBlue,true, false, false, false ) );
+            c.setBorder( Rectangle.NO_BORDER );
+            c.setBorderWidth( scoreBoxBorderWidth );
+            c.setHorizontalAlignment( Element.ALIGN_LEFT );
+            c.setPadding( 1 );
+            c.setPaddingLeft( 5 );
+            c.setPaddingBottom( 5 );
+            c.setBackgroundColor( ct2Colors.hraBlue );
+            setRunDirection( c );
+            t.addCell(c);
+
+            c = new PdfPCell( new Phrase( lmsg("g.Score"), fontLargeWhite ) );
+            c.setBorder( Rectangle.NO_BORDER );
+            c.setBorderWidth( scoreBoxBorderWidth );
+            c.setHorizontalAlignment( Element.ALIGN_CENTER );
+            c.setPadding( 1);
+            c.setPaddingBottom( 5 );
+            c.setBackgroundColor( ct2Colors.hraBlue );
+            setRunDirection( c );
+            t.addCell(c);
+
+            c = new PdfPCell( new Phrase( lmsg("g.Confidence"), fontLargeWhite ) );
+            c.setBorder( Rectangle.NO_BORDER );
+            c.setBorderWidth( scoreBoxBorderWidth );
+            c.setHorizontalAlignment( Element.ALIGN_CENTER );
+            c.setPadding( 1 );
+            c.setPaddingLeft( 5 );
+            c.setPaddingBottom( 5 );
+            c.setBackgroundColor( ct2Colors.hraBlue );
+            setRunDirection( c );
+            t.addCell(c);
+
+            c = new PdfPCell( new Phrase( lmsg("g.Interpretation"), fontLargeWhite ) );
+            c.setBorder( Rectangle.NO_BORDER );
+            c.setBorderWidth( scoreBoxBorderWidth );
+            c.setHorizontalAlignment( Element.ALIGN_CENTER );
+            c.setPadding( 1 );
+            c.setPaddingBottom( 5 );
+            c.setBackgroundColor( ct2Colors.hraBlue );
+            c.setCellEvent(new CellBackgroundCellEvent(reportData.getIsLTR(), ct2Colors.hraBlue,false, true, false, false ) );
+            setRunDirection( c );
+            t.addCell(c);
+
+            BaseColor graybg = new BaseColor(0xf4,0xf4,0xf4);
+            
+            // start with gray for odd counts.
+            boolean useGrayBg = valCount%2!=0;            
+            
+            Font fontToUse = font;
+            Font smallFontToUse = fontSmall;
+            int scrDigits = reportData.getReport().getIntParam2() >= 0 ? reportData.getReport().getIntParam2() : reportData.getTestEvent().getScorePrecisionDigits();
+            String scr;
+            String scoreText;
+            
+            int count = 0;
+            MetaScoreType metaScoreType;
+            String lastUpdate;
+            Paragraph par;
+            
+            for( MetaScore metaScore : reportData.getTestKey().getMetaScoreList() )
+            {
+                if( metaScore.getMetaScoreTypeId()<=0 || metaScore.getScore()<=0 || metaScore.getConfidence()<Constants.MIN_METASCORE_CONFIDENCE )
+                    continue;
+                count++;
+                
+                metaScoreType = MetaScoreType.getValue(metaScore.getMetaScoreTypeId() );
+
+                c = new PdfPCell(new Phrase( metaScoreType.getName(reportData.getLocale()), fontToUse));
+                c.setBorder( Rectangle.NO_BORDER );
+                c.setBorderWidth( 0 );
+                c.setPadding( 2 );
+                c.setPaddingBottom( 5 );
+                if( useGrayBg )
+                    c.setBackgroundColor(graybg);
+                if( count==valCount && useGrayBg )
+                    c.setCellEvent(new CellBackgroundCellEvent(reportData.getIsLTR(), graybg,false, false, false, true ) );
+                setRunDirection( c );
+                t.addCell(c);
+
+                scr = I18nUtils.getFormattedNumber( reportData.getLocale(), metaScore.getScore(), scrDigits );                
+                c = new PdfPCell(new Phrase( scr, fontToUse));
+                c.setBorder( Rectangle.NO_BORDER );
+                c.setBorderWidth( 0 );
+                c.setPadding( 2 );
+                c.setPaddingBottom( 5 );
+                c.setHorizontalAlignment(Element.ALIGN_CENTER);
+                if( useGrayBg )
+                    c.setBackgroundColor(graybg);
+                setRunDirection( c );
+                t.addCell(c);
+
+                scr = I18nUtils.getFormattedNumber( reportData.getLocale(), metaScore.getConfidence(), 1 );                
+                c = new PdfPCell(new Phrase( scr, fontToUse));
+                c.setBorder( Rectangle.NO_BORDER );
+                c.setBorderWidth( 0 );
+                c.setHorizontalAlignment(Element.ALIGN_CENTER);
+                c.setPadding( 2 );
+                c.setPaddingBottom( 5 );
+                if( useGrayBg )
+                    c.setBackgroundColor(graybg);
+                setRunDirection( c );
+                t.addCell(c);
+                
+                scoreText = metaScore.getScoreText();
+                
+                metaScore.setLocale(reportData.getLocale());
+                c = new PdfPCell();
+                par = new Paragraph(metaScoreType.getDescription(reportData.getLocale()) + " " + lmsg("g.AiMetaScrInputTypesUsed", new String[]{metaScore.getMetaScoreInputTypesStr()}), smallFontToUse);
+                c.addElement(par);
+
+                if( scoreText!=null && !scoreText.isBlank() )
+                {
+                    par = new Paragraph(scoreText, smallFontToUse);
+                    c.addElement(par);
+                }
+                
+                lastUpdate = I18nUtils.getFormattedDateTime(reportData.getLocale(), metaScore.getLastUpdate(), reportData.getTimeZone());
+                par = new Paragraph( lmsg("g.AiMetaScrCalcDateX", new String[]{lastUpdate}), smallFontToUse);
+                c.addElement(par);  
+                
+                c.setBorder( Rectangle.NO_BORDER );
+                c.setBorderWidth( 0 );
+                c.setPadding( 2 );
+                c.setPaddingBottom( 5 );
+                
+                if( useGrayBg )
+                    c.setBackgroundColor(graybg);
+                if( count==valCount && useGrayBg )
+                    c.setCellEvent(new CellBackgroundCellEvent(reportData.getIsLTR(), graybg,false, false, true, false ) );
+                setRunDirection( c );
+                t.addCell(c);
+                
+                // toggle
+                useGrayBg = !useGrayBg;
+            }
+
+            // LogService.logIt( "BaseCT2ReportTemplate.addAiScoresSection() validCount=" + validCount + ", thgt=" + thgt + ", y=" + y );
+
+            previousYLevel =  currentYLevel; // - TPAD;
+            float y = previousYLevel;
+            
+            float thgt = t.calculateHeights();
+            if( thgt + 80 > y )
+            {
+                addNewPage();
+
+                y = currentYLevel;
+            }
+
+            y = addTitle(y, lmsg( "g.AiGenScores" ), lmsg("g.AiGenScoresSubtitle" ), null, null );
+
+            y -= TPAD;
+            
+            currentYLevel = addTableToDocument(y, t, false, true );
+            
+            
+        }
+        catch( Exception e )
+        {
+            LogService.logIt( e, "BaseCT2ReportTemplate.addAiScoresSection()" );
+            throw new STException( e );
+        }
+            
+    }
 
     public void addComparisonSection() throws Exception
     {
@@ -3855,11 +4061,9 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             // currentYLevel -= PAD;
         }
-
         catch( Exception e )
         {
             LogService.logIt( e, "BaseCT2ReportTemplate.addComparisonSection()" );
-
             throw new STException( e );
         }
     }
@@ -8713,7 +8917,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
     public void addIbmInsightSubsection( java.util.List<TextAndTitle> ttlAll ) throws Exception
     {
-        // if( ReportManager.DEBUG_REPORTS )
+        if( ReportManager.DEBUG_REPORTS )
             LogService.logIt(  "BaseCT2ReportTemplate.addIbmInsightSubsection() AAA " );
 
         if( reportData.getR2Use().getIncludeIbmInsight()<= 0 || reportData.getReportRuleAsBoolean( "ibminsightoff") )
@@ -8721,7 +8925,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
         try
         {
-            // if( ReportManager.DEBUG_REPORTS )
+            if( ReportManager.DEBUG_REPORTS )
                 LogService.logIt(  "BaseCT2ReportTemplate.addIbmInsightSubsection() BBB ttlAll.size=" + ttlAll.size() );
 
             if( ttlAll.isEmpty() )
@@ -8748,11 +8952,11 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             if( ttl.isEmpty() )
             {
-                LogService.logIt(  "BaseCT2ReportTemplate.addIbmInsightSubsection() BBB.3 No valid TextAndTitles found" );
+                // LogService.logIt(  "BaseCT2ReportTemplate.addIbmInsightSubsection() BBB.3 No valid TextAndTitles found" );
                 return;
             }
 
-            LogService.logIt(  "BaseCT2ReportTemplate.addIbmInsightSubsection() BBB.4 ttl=" + ttl.size()  );
+            // LogService.logIt(  "BaseCT2ReportTemplate.addIbmInsightSubsection() BBB.4 ttl=" + ttl.size()  );
             Collections.sort( ttl );
 
             addNewPage();
@@ -8943,13 +9147,13 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             currentYLevel = addTableToDocument(y, t, true, true );
 
-            LogService.logIt( "BaseCT2ReportTemplate.addIbmInsightSection() SSS.1 currentYLevel=" +  currentYLevel );            
+            // LogService.logIt( "BaseCT2ReportTemplate.addIbmInsightSection() SSS.1 currentYLevel=" +  currentYLevel );            
             if( hasUnavailable )
             {
                 currentYLevel = addSimpleText( currentYLevel, lmsg("g.IbmInsightLowConfidenceNote") );
             }
             
-            LogService.logIt( "BaseCT2ReportTemplate.addIbmInsightSection() SSS.2 currentYLevel=" +  currentYLevel );            
+            // LogService.logIt( "BaseCT2ReportTemplate.addIbmInsightSection() SSS.2 currentYLevel=" +  currentYLevel );            
 
 
             

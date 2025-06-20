@@ -173,7 +173,7 @@ public class SentinoUtils
         {
             // init();
             
-            LogService.logIt("SentinoUtils.evaluateTextForProfile() contentList.size()=" + contentList.size() );
+            // LogService.logIt("SentinoUtils.evaluateTextForProfile() contentList.size()=" + contentList.size() );
                
             if( sourceLocale==null )
                 sourceLocale = Locale.US;
@@ -256,15 +256,15 @@ public class SentinoUtils
                 }
             }
 
-            LogService.logIt("SentinoUtils.evaluateTextForProfile() hraTraitPackageTypeId=" + hraTraitPackageTypeId + ", hraTtl=" + hraTtl.size() + ", sentinoTraitTypeList=" + sentinoTraitTypeSet.size() + ", sentinoGroupTypeList=" + sentinoGroupTypeSet.size() );
+            // LogService.logIt("SentinoUtils.evaluateTextForProfile() hraTraitPackageTypeId=" + hraTraitPackageTypeId + ", hraTtl=" + hraTtl.size() + ", sentinoTraitTypeList=" + sentinoTraitTypeSet.size() + ", sentinoGroupTypeList=" + sentinoGroupTypeSet.size() );
             
             payload = getJsonPayloadForProfile(contentList, sourceLocale.getLanguage(), sentinoGroupTypeSet, sentinoTraitTypeSet );
 
-            LogService.logIt( "SentinoUtils.evaluateTextForProfile() url=" + postUrl + ", payload=" + payload );
+            // LogService.logIt( "SentinoUtils.evaluateTextForProfile() url=" + postUrl + ", payload=" + payload );
             
             jsonResponse = sendApiPost(postUrl, paramMap, sourceLocale.getLanguage(), reportLocale.getLanguage(), payload );
             
-            LogService.logIt( "SentinoUtils.evaluateTextForProfile() unconditioned text back: " + jsonResponse.length() );
+            // LogService.logIt( "SentinoUtils.evaluateTextForProfile() unconditioned text back: " + jsonResponse.length() );
             
             SentinoResult result = new SentinoResult( false, jsonResponse, hraTraitPackageTypeId, hraTraitTypeIdsToInclude);
             

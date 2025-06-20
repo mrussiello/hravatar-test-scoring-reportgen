@@ -71,6 +71,8 @@ public class Ct5ResumeUtils {
     
     public static SimJ.Intn getResumeIntnByUniqueId( String uniqueId )
     {
+        // LogService.logIt( "ResumeAdminUtils.getResumeIntnByUniqueId() Seeking Resume Intn.uniqueId=" + uniqueId );
+            
         if( uniqueId==null || uniqueId.isBlank() )
             return null;
         
@@ -78,7 +80,7 @@ public class Ct5ResumeUtils {
         {
             if( resumeSimJ==null )
                 init();
-            
+
             for( SimJ.Intn intn : resumeSimJ.getIntn() )
             {
                 if( intn.getCt5Itemtypeid()!=Ct5ItemType.RESUME.getCt5ItemTypeId() )

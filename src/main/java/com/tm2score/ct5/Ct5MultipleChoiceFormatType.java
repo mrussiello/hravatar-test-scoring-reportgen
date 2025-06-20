@@ -16,7 +16,9 @@ public enum Ct5MultipleChoiceFormatType {
     COMBO(2,"c5mcst.combo" ),
     CHECKBOXES(3,"c5mcst.checkboxes" ),
     HOTSPOTS(4,"c5mcst.hotspots" ),
-    FILLBLANK(5,"c5mcst.fillblank" );
+    FILLBLANK(5,"c5mcst.fillblank" ),
+    MULTI_RADIO(6,"c5mcst.multiradio" ),
+    SWIPE(7,"c5mcst.swipe" );
 
     
     private final int ct5MultipleChoiceFormatTypeId;
@@ -32,6 +34,11 @@ public enum Ct5MultipleChoiceFormatType {
         this.key = n;
     }
 
+    public boolean getIsSwipe()
+    {
+        return equals( SWIPE );
+    }
+        
     public boolean getIsHotSpots()
     {
         return equals(HOTSPOTS);

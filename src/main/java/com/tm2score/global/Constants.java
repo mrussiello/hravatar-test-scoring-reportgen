@@ -170,4 +170,6 @@ public class Constants
     public static final String CSVEMAILHEADER="CSVEMAILHEADER";
     public static final String CSVEMAILFOOTER="CSVEMAILFOOTER";
     public static final String CSVPOSTTESTCONTACTSTR="CSVPOSTTESTCONTACTSTR";
+    
+    public static final float MIN_METASCORE_CONFIDENCE = 0.4f;
 }

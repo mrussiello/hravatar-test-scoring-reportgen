@@ -778,7 +778,7 @@ public abstract class AvReportTemplate extends BaseCT2ReportTemplate  implements
             
             VoiceVibesResult vvr = VoiceVibesResult.getFromPackedString(tp1);
 
-            LogService.logIt(  "AvReportTemplate.createVoiceVibesInfoTable() " + (vvr==null ? "null" : "not null, scoreList.size=" + vvr.getScoreList().size() ) );
+            // LogService.logIt(  "AvReportTemplate.createVoiceVibesInfoTable() " + (vvr==null ? "null" : "not null, scoreList.size=" + vvr.getScoreList().size() ) );
             
             if( vvr==null || vvr.getScoreList()==null || vvr.getScoreList().isEmpty() )
                 return null;

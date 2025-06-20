@@ -6,10 +6,16 @@ package com.tm2score.ai;
 
 import com.tm2score.entity.user.Resume;
 import com.tm2score.entity.user.User;
+import com.tm2score.global.RuntimeConstants;
 import com.tm2score.service.LogService;
+import com.tm2score.service.Tracker;
+import com.tm2score.util.JsonUtils;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  *
@@ -17,7 +23,87 @@ import jakarta.json.JsonObjectBuilder;
  */
 public class AiRequestUtils
 {
+    private static Boolean AI_SYSTEM_AVAILABLE;
+    private static Date AI_CHECK_DATE;
+    
+    public static synchronized void resetAiSystemAvailable()
+    {
+        AI_CHECK_DATE=null;
+        AI_SYSTEM_AVAILABLE=null;
+        getIsAiSystemAvailable();
+    }
 
+    public static synchronized void checkAiSystemAvailable()
+    {
+        //if( AI_SYSTEM_AVAILABLE!=null  )
+        //    return;
+
+        if( !RuntimeConstants.getBooleanValue( "tm2ai_rest_api_ok") )
+        {
+            AI_SYSTEM_AVAILABLE = false;
+            return;
+        }
+
+        AI_CHECK_DATE = new Date();
+                        
+        AiCallType aiCallType = AiCallType.TEST_CONNECT;
+            
+        try
+        {
+            JsonObjectBuilder job = getBasePayloadJsonObjectBuilder(aiCallType, null );
+
+            JsonObject joReq = job.build();
+
+            AiRequestClient client = new AiRequestClient();
+
+            JsonObject jo = client.getJsonObjectFromAiCallRequest( joReq );
+            if( jo==null || !jo.containsKey("status") || jo.isNull("status") )
+            {
+                LogService.logIt("AiRequestUtils.getIsAiSystemAvailable() response JO is null. " );
+                AI_SYSTEM_AVAILABLE = false;
+                return;
+            }
+            if( !jo.containsKey("status") || jo.isNull("status") )
+            {
+                LogService.logIt("AiRequestUtils.getIsAiSystemAvailable() JO Status is present. " + JsonUtils.convertJsonObjectToString(jo) );
+                AI_SYSTEM_AVAILABLE = false;
+                return;
+            }
+
+            String status = JsonUtils.getStringFmJson(jo, "status" );
+            if( status==null ||!status.equalsIgnoreCase("complete") )
+            {
+                LogService.logIt("AiRequestUtils.getIsAiSystemAvailable() JO Status is not complete. " + JsonUtils.convertJsonObjectToString(jo) );
+                AI_SYSTEM_AVAILABLE = false;
+                return;
+            }
+            
+            AI_SYSTEM_AVAILABLE = true;
+        }
+        catch( Exception e )
+        {
+            LogService.logIt(e, "AiRequestUtils.getIsAiSystemAvailable() aiCallType=" +  aiCallType.getName() );
+            AI_SYSTEM_AVAILABLE = false;
+        }        
+    }
+    
+    public static boolean getIsAiSystemAvailable()
+    {
+        if( AI_CHECK_DATE!=null )
+        {
+            Calendar cal = new GregorianCalendar();
+            cal.add( Calendar.HOUR_OF_DAY, -1 );
+            
+            if( AI_CHECK_DATE.before( cal.getTime() ) )
+                checkAiSystemAvailable();
+        }
+        
+        if( AI_SYSTEM_AVAILABLE==null  )
+            checkAiSystemAvailable();
+                        
+        return AI_SYSTEM_AVAILABLE;
+    }
+    
     public static JsonObject parseResume( Resume resume, User user, boolean autoUpdate) throws Exception
     {
         return doResumeParsingCall(resume, user, AiCallType.RESUME_PARSE, autoUpdate );
@@ -50,10 +136,13 @@ public class AiRequestUtils
 
             AiRequestClient client = new AiRequestClient();
 
+            Tracker.addAiCall();
+                        
             return client.getJsonObjectFromAiCallRequest( joReq );
         }
         catch( Exception e )
         {
+            Tracker.addAiCallError();
             LogService.logIt(e, "AiRequestUtils.doResumeParsingCall() aiCallType=" +  aiCallType.getName() +", ResumeId=" + (resume==null ? "null" : resume.getResumeId() + ", userId=" + resume.getUserId() + ", orgId=" + resume.getOrgId()) + ", userId=" + (user==null ? "null" : user.getUserId()) );
             throw e;
         }
@@ -69,9 +158,39 @@ public class AiRequestUtils
 
         job.add( "tran", aiCallType.getTran() );
         job.add( "sourcetypeid", aiCallSourceType.getAiCallSourceTypeId() );
-        job.add( "useridenc", user.getUserIdEncrypted() );
+        if( user!=null )
+            job.add( "useridenc", user.getUserIdEncrypted() );
 
         return job;
 
     }
+    
+    public static void checkAiCallResponse( JsonObject responseJo ) throws Exception
+    {
+        if( !responseJo.containsKey("status") || responseJo.isNull("status") )
+        {
+            int aiCallHistoryId = responseJo.containsKey("aicallhistoryid") ? responseJo.getInt("aicallhistoryid") : 0;
+            String msg = "Returned Json has no status field. aiCallHistoryId=" + aiCallHistoryId;
+            LogService.logIt("AiRequestUtils.checkAiCallResponse() " + msg + ", json returned=" + JsonUtils.convertJsonObjectToString(responseJo) );
+            throw new Exception( msg );
+        }
+
+        String status = JsonUtils.getStringFmJson(responseJo, "status");
+        if( status.equals( AiCallStatusType.ERROR.getStatusStr() ) )
+        {
+            int aiCallHistoryId = responseJo.containsKey("aicallhistoryid") ? responseJo.getInt("aicallhistoryid") : 0;
+            String msg = "Error code=" + (responseJo.containsKey("errorcode") ? responseJo.getInt("errorcode") : "none") + ", Error message=" + (responseJo.containsKey("errormessage") ? JsonUtils.getStringFmJson( responseJo, "errormessage") : "none") + ", aiCallHistoryId=" + aiCallHistoryId;
+            LogService.logIt("AiRequestUtils.checkAiCallResponse() " + msg + ", json returned=" + JsonUtils.convertJsonObjectToString(responseJo) );
+            throw new Exception( msg );
+        }
+
+        if( !status.equals( AiCallStatusType.COMPLETED.getStatusStr() ) )
+        {
+            int aiCallHistoryId = responseJo.containsKey("aicallhistoryid") ? responseJo.getInt("aicallhistoryid") : 0;
+            String msg = "Call status is not complete. status=" + status + ", aiCallHistoryId=" + aiCallHistoryId;
+            LogService.logIt("AiRequestUtils.checkAiCallResponse() " + msg + ", json returned="  + JsonUtils.convertJsonObjectToString(responseJo) );
+            throw new Exception( msg );
+        }        
+    }
+    
 }

@@ -39,6 +39,7 @@ import com.tm2score.score.ScoringException;
 import com.tm2score.service.LogService;
 import com.tm2score.service.Tracker;
 import com.tm2score.sim.SimJUtils;
+import com.tm2score.user.ResumeHelpUtils;
 import com.tm2score.user.UserFacade;
 import com.tm2score.util.MessageFactory;
 import com.tm2score.util.StringUtils;
@@ -660,6 +661,9 @@ public class BaseReportManager {
             if( te.getTestEventScoreList()==null )
                 te.setTestEventScoreList( eventFacade.getTestEventScoresForTestEvent( te.getTestEventId(), true ));
 
+            if( tk.getMetaScoreList()==null )
+                tk.setMetaScoreList( eventFacade.getReportableMetaScoreListForTestKey( tk.getTestKeyId()));
+            
             ReportData rd = new ReportData( tk, te, r, tk.getUser(), tk.getOrg(), te.getProfile() );
 
             if( forceCalcSection )
@@ -672,6 +676,15 @@ public class BaseReportManager {
                 if( userFacade==null )
                     userFacade=UserFacade.getInstance();
                 tk.getUser().setResume( userFacade.getResumeForUser( tk.getUserId()));
+                if( tk.getUser().getResume()!=null && tk.getUser().getResume().getNeedsParse()==1 )
+                {
+                    boolean success = ResumeHelpUtils.parseResumeByAiNoErrors( tk.getUser(), tk.getUser().getResume());
+                    if( success )
+                    {
+                        Thread.sleep(500);
+                        tk.getUser().setResume( userFacade.getResumeForUser(tk.getUserId()));
+                    }
+                }                                    
             }
             
             if( te.getLocaleStrReport()!=null && !te.getLocaleStrReport().isEmpty() )
@@ -1065,7 +1078,9 @@ public class BaseReportManager {
                 }
             }
 
-
+            if( tk.getMetaScoreList()==null )
+                tk.setMetaScoreList( eventFacade.getReportableMetaScoreListForTestKey( tk.getTestKeyId()));
+            
             if( (tk.getTestKeyProctorTypeId()>0 || tk.getOnlineProctoringType().getIsAnyPremium()) && tk.getProctorSuspensionList()==null)
             {
                 if( proctorFacade==null )
@@ -1087,6 +1102,15 @@ public class BaseReportManager {
                 if( userFacade==null )
                     userFacade=UserFacade.getInstance();
                 tk.getUser().setResume( userFacade.getResumeForUser( tk.getUserId()));
+                if( tk.getUser().getResume()!=null && tk.getUser().getResume().getNeedsParse()==1 )
+                {
+                    boolean success = ResumeHelpUtils.parseResumeByAiNoErrors( tk.getUser(), tk.getUser().getResume());
+                    if( success )
+                    {
+                        Thread.sleep(500);
+                        tk.getUser().setResume( userFacade.getResumeForUser(tk.getUserId()));
+                    }
+                }                    
             }
             
             SimDescriptor langEquivSimDescriptor = eventFacade.getSimDescriptor( langEquivSimId, -1, true );

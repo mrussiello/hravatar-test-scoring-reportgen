@@ -974,6 +974,11 @@ public class ReportManager extends BaseReportManager
                 tk.setAuthUser( userFacade.getUser( tk.getAuthorizingUserId() ));
             }
 
+            if( tk.getMetaScoreList()==null )
+                tk.setMetaScoreList( eventFacade.getReportableMetaScoreListForTestKey( tk.getTestKeyId()));
+            
+            
+            
             ReportData rd = new ReportData( tk, te, r, tk.getUser(), tk.getOrg(), te.getProfile() );
 
             if( forceCalcSection )

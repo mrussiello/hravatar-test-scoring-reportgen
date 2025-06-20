@@ -15,7 +15,6 @@ import com.tm2score.imo.xml.Clicflic;
 import com.tm2score.score.ScoringException;
 import com.tm2score.service.LogService;
 import java.util.Collections;
-import java.util.List;
 
 /**
  *

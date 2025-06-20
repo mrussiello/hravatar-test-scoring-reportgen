@@ -79,7 +79,7 @@ public class DataEntryIactnResp extends IactnResp implements ScorableResponse
     @Override
     public String toString()
     {
-        return "DataEntryIactnResp{ " + ( intnObj == null ? " intn is null" :  intnObj.getName() + ", id" + intnObj.getId() + ", nodeSeq=" + intnObj.getSeq() ) + ( intnResultObj==null ? " intnResultObj is null" : ", sel SubSeq=" + intnResultObj.getSnseq() ) + "}";
+        return "DataEntryIactnResp{ " + ( intnObj == null ? " intn is null" :  intnObj.getName() + ", id=" + intnObj.getId() + ", nodeSeq=" + intnObj.getSeq() ) + ( intnResultObj==null ? " intnResultObj is null" : ", sel SubSeq=" + intnResultObj.getSnseq() ) + "}";
     }
 
 

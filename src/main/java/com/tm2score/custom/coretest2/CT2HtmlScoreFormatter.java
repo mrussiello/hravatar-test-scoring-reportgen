@@ -168,6 +168,19 @@ public class CT2HtmlScoreFormatter extends BaseScoreFormatter implements ScoreFo
                     sb.append( getRowSpacer( rowStyle0 ) );
                 }
 
+                // AI Section
+                if( !getReportRuleAsBoolean( "skipaiscoressection" ) &&  getReport().getIncludeAiScores()==1 )
+                {
+                    out = getStandardGenAISection(tog, null );
+                    temp = (String) out[0];
+                    if( !temp.isEmpty() )
+                    {
+                        sb.append( temp );
+                        tog = ( (Boolean) out[1]);
+                        // if( !isBatt )
+                        sb.append( getRowSpacer( rowStyle0 ) );
+                    }
+                }
 
                 // Report Section
                 if( !getReportRuleAsBoolean( "rptdwnldoff" ) && !getReportRuleAsBoolean( "emlrptdwnldoff" ) )
@@ -275,7 +288,7 @@ public class CT2HtmlScoreFormatter extends BaseScoreFormatter implements ScoreFo
                         sb.append( getRowSpacer( rowStyle0 ) );
                     }
 
-                    out = getStandardAiSection( tog );
+                    out = getStandardAiCompetenciesSection( tog );
                     temp = (String) out[0];
                     if( !temp.isEmpty() )
                     {

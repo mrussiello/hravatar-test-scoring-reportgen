@@ -39,7 +39,9 @@ public class AvReport extends AvReportTemplate implements ReportTemplate
             addResponseRatingSection();
             
             addComparisonSection();
-
+            
+            addAiScoresSection();
+            
             if( reportData.getReportRuleAsBoolean("cmptysumoff") ||
                 reportData.getReport().getIncludeCompetencyScores()!=1 ||
                 ( reportData.getReport().getIncludeSubcategoryCategory()!=1 &&

@@ -431,7 +431,7 @@ public class AvScoringUtils {
         Integer o = (Integer) cout[2];
         
         if( o!=null && o.intValue()!=0 )
-            uuf.setOrientation( o.intValue() );
+            uuf.setOrientation(o);
 
         // LogService.logIt( "AvScoringUtils.checkVideoOrientation() CCC Orietnation=" + (o!=null ? o.toString() : "null") );
         
