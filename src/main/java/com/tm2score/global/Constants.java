@@ -110,6 +110,8 @@ public class Constants
     
     // public static int MIN_WORDS_4_INSIGHT = 600;
 
+    public static int MIN_ESSAY_LENGTH_SCORING = 100;
+
     
     /**
      * Comma Delimited list.

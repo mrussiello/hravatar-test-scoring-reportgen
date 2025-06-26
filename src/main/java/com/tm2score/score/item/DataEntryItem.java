@@ -6,7 +6,6 @@
 
 package com.tm2score.score.item;
 
-import com.tm2score.service.LogService;
 import java.util.ArrayList;
 import java.util.List;
 

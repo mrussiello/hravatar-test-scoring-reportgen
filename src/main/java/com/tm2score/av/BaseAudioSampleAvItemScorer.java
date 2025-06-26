@@ -12,7 +12,7 @@ import com.tm2score.entity.event.AvItemResponse;
 import com.tm2score.entity.event.TestEvent;
 import com.tm2score.entity.user.User;
 import com.tm2score.essay.DiscernFacade;
-import com.tm2score.essay.EssayScoringUtils;
+import com.tm2score.essay.LocalEssayScoringUtils;
 import com.tm2score.googlecloud.Speech2TextResult;
 import com.tm2score.ivr.IvrStringUtils;
 import com.tm2score.score.TextAndTitle;
@@ -133,7 +133,7 @@ public class BaseAudioSampleAvItemScorer extends BaseAvItemScorer implements AvI
                      *    data[3] = style errors
                      *    data[4] = total words
                      */
-                    int[] errs = EssayScoringUtils.getWritingErrorCount(text, locale, teIpCountry, getWordsToIgnoreLc() );
+                    int[] errs = LocalEssayScoringUtils.getWritingErrorCount(text, locale, teIpCountry, getWordsToIgnoreLc() );
 
                     // ;total words;totalerrors;spelling errors;grammar errors;style errors;essay machine score;essay machine confidence;essay plagiarized flag
 

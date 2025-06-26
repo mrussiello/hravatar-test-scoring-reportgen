@@ -16,8 +16,10 @@ import software.amazon.awssdk.services.rekognition.RekognitionClient;
 import software.amazon.awssdk.services.rekognition.model.Attribute;
 import software.amazon.awssdk.services.rekognition.model.DetectFacesRequest;
 import software.amazon.awssdk.services.rekognition.model.DetectFacesResponse;
+import software.amazon.awssdk.services.rekognition.model.FaceDetail;
 import software.amazon.awssdk.services.rekognition.model.Image;
 import software.amazon.awssdk.services.rekognition.model.OrientationCorrection;
+import software.amazon.awssdk.services.rekognition.model.Pose;
 
 /**
  *
@@ -112,6 +114,23 @@ public class AmazonRekognitionUtils {
             
             // LogService.logIt( "AmazonRekognitionUtils.getSingleFaceDetails() orientation String=" + oStr );
             
+            String ocorStr = res.orientationCorrectionAsString();
+            
+            FaceDetail faceDetail=null;
+            if( !res.faceDetails().isEmpty() )
+            {
+                faceDetail=res.faceDetails().get(0);                
+            }
+            
+            Float roll = null;
+            if( faceDetail!=null )
+            {
+                Pose pose = faceDetail.pose();
+                if( pose!=null )
+                    roll = pose.roll();                
+            }
+            
+            
             int oVal = 0;
             if( ocor!=null )
             {
@@ -128,7 +147,28 @@ public class AmazonRekognitionUtils {
                     default:
                         break;
                 }
-            }            
+            }    
+            
+            if( oVal==0 && roll!=null )
+            {
+                LogService.logIt( "AmazonRekognitionUtils.getSingleFaceDetails() Using roll=" + roll + " for oVal, uploadedUserFileId=" + (arii.uuf==null ? "null" : arii.uuf.getUploadedUserFileId()) );
+                
+                // Roll is -180 to +180
+                if( roll>=-224 && roll<-135 )
+                    oVal=180;
+                
+                // rotated counter 90 degrees. correct by going clockwise 90.
+                else if( roll>=-135 && roll<-45 )
+                    oVal=90;
+                
+                else if( roll>135 && roll<=225 )
+                    oVal=180;
+                
+                // rotated clockwise 90. Correct by going clockwise 270
+                else if( roll>45 && roll<=135 )
+                    oVal=270;                 
+            }
+            
             out[2]= oVal;
             
             

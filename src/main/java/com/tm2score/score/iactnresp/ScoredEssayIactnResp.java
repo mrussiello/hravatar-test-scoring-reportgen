@@ -13,12 +13,13 @@ import com.tm2score.interview.InterviewQuestion;
 import com.tm2score.sim.SimCompetencyClass;
 import com.tm2builder.sim.xml.SimJ;
 import com.tm2score.entity.event.TestEvent;
+import com.tm2score.essay.AiEssayScoringUtils;
+import com.tm2score.essay.EssayMetaScoreType;
 import com.tm2score.global.Constants;
 import com.tm2score.global.I18nUtils;
 import com.tm2score.report.ReportUtils;
 import com.tm2score.score.SimletScore;
 import com.tm2score.score.TextAndTitle;
-import com.tm2score.service.LogService;
 import com.tm2score.sim.IncludeItemScoresType;
 import com.tm2score.util.HtmlUtils;
 import com.tm2score.util.StringUtils;
@@ -117,6 +118,12 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse
         int scrCt=0;
         float tMachScr=0;
         float tConf=0;
+        float tClarity=0;
+        int tClarityCt=0;
+        float tArgument=0;
+        int tArgumentCt=0;
+        float tMechanics=0;
+        int tMechanicsCt=0;
 
         float tTransCompareScr=0;
         int transCompareScrCt=0;
@@ -150,6 +157,7 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse
             seii = new ScoredEssayIntnItem( simletScore.getTestEvent().getTestEventId(),
                                             simletScore.getTestEvent().getUser(),
                                             teIpCountry,      // teIpCountry
+                                            simletScore.getTestEvent().getLocaleStr(),
                                             simJ,
                                             intnObj,
                                             intItemObj,
@@ -178,6 +186,32 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse
             scrCt++;
             tMachScr += seii.getMachineScore();
             tConf += seii.getConfidence();
+            
+            Map<Integer,Float> essayMetaScoreMap = seii.getEssayMetaScoreMap();
+            
+            // only use these values if have enough confidence
+            if( essayMetaScoreMap!=null && 
+                AiEssayScoringUtils.getAiEssayScoringOn() && 
+                ((AiEssayScoringUtils.getAiEssayScoringUseScore2() && seii.getConfidence2()>ScoredEssayIntnItem.MIN_CONFIDENCE_AI) || 
+                 (!AiEssayScoringUtils.getAiEssayScoringUseScore2() && seii.getConfidence()>ScoredEssayIntnItem.MIN_CONFIDENCE_AI) ) )
+            {                
+                if( essayMetaScoreMap.containsKey(EssayMetaScoreType.CLARITY.getEssayMetaScoreTypeId()) )
+                {
+                    tClarity += essayMetaScoreMap.get(EssayMetaScoreType.CLARITY.getEssayMetaScoreTypeId() );
+                    tClarityCt++;
+                }
+                if( essayMetaScoreMap.containsKey(EssayMetaScoreType.ARGUMENT.getEssayMetaScoreTypeId()) )
+                {
+                    tArgument += essayMetaScoreMap.get(EssayMetaScoreType.ARGUMENT.getEssayMetaScoreTypeId() );
+                    tArgumentCt++;
+                }
+                if( essayMetaScoreMap.containsKey(EssayMetaScoreType.MECHANICS.getEssayMetaScoreTypeId()) )
+                {
+                    tMechanics += essayMetaScoreMap.get(EssayMetaScoreType.MECHANICS.getEssayMetaScoreTypeId() );
+                    tMechanicsCt++;
+                }
+            }
+
 
             if( seii.getTransCompareScore()>=0 )
             {
@@ -220,7 +254,17 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse
 
             points = transCompareScore>=0 && transCompareScrCt>0 ? maxPoints*transCompareScore : maxPoints*machineScore/100;
 
-            metaScores = new float[12];
+            if( tClarityCt>1 )
+                tClarity=tClarity/((float)tClarityCt);
+
+            if( tArgumentCt>1 )
+                tArgument=tArgument/((float)tArgumentCt);
+            
+            if( tMechanicsCt>1 )
+                tMechanics=tMechanics/((float)tMechanicsCt);
+                        
+            
+            metaScores = new float[15];
 
             // spell Errors and other Errors are represented here as errors per 100 words.
             if( totalWords > 0 )
@@ -240,6 +284,10 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse
             metaScores[9] = transCompareScore;
             metaScores[10] = wpm;
             metaScores[11] = highWpm;
+            
+            metaScores[12] = tClarity;
+            metaScores[13] = tArgument;
+            metaScores[14] = tMechanics;
 
             // LogService.logIt( "ScoredEssayIactnResp. scrCt=" + scrCt + ", spellErrors=" + spellErrors + ", otherErrors=" + otherErrors + ", machineScore=" + machineScore + ", totalWords=" + totalWords + ", transCompareScore=" + transCompareScore + ", points=" + points + ", wpm=" + wpm );
 
@@ -410,9 +458,10 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse
 
                 // title = XMLUtils.decodeURIComponent( iitm.getTitle());
 
-                title = StringUtils.getBracketedArtifactFromString(Constants.TRANSLATECOMPARE, iitm.getTextscoreparam1() );
+                // title = StringUtils.getBracketedArtifactFromString(Constants.TRANSLATECOMPARE, iitm.getTextscoreparam1() );
 
-                if( title!=null && !title.isBlank() )
+                // if( title!=null && !title.isBlank() || (iitm.getTextscoreparam1().contains("[") || iitm.getTextscoreparam1().contains("]")) )
+                if( iitm.getTextscoreparam1().contains("[") || iitm.getTextscoreparam1().contains("]") )
                     title = StringUtils.getBracketedArtifactFromString(Constants.ESSAYTITLE, iitm.getTextscoreparam1() );
                 else
                     title = UrlEncodingUtils.decodeKeepPlus( iitm.getTextscoreparam1() );
@@ -456,7 +505,7 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse
         return out;
     }
 
-
+    
     private String getMisSpellsStr( Map<String,Integer> vals )
     {
         if( vals==null || vals.isEmpty() )

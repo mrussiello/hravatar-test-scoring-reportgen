@@ -543,6 +543,21 @@
                                     -->
                                     <xs:attribute name="score12combinationtype" type="xs:int" default="0" />
 
+                                    <!-- For competencyScore elements that have item types that produce a score8 value, this is how the score values
+                                         shoud be combined. 0=Do not combine, 1=Sum all scores, 11=average all non-sero scores, 12=average all scores
+                                    -->
+                                    <xs:attribute name="score13combinationtype" type="xs:int" default="0" />
+
+                                    <!-- For competencyScore elements that have item types that produce a score8 value, this is how the score values
+                                         shoud be combined. 0=Do not combine, 1=Sum all scores, 11=average all non-sero scores, 12=average all scores
+                                    -->
+                                    <xs:attribute name="score14combinationtype" type="xs:int" default="0" />
+
+                                    <!-- For competencyScore elements that have item types that produce a score8 value, this is how the score values
+                                         shoud be combined. 0=Do not combine, 1=Sum all scores, 11=average all non-sero scores, 12=average all scores
+                                    -->
+                                    <xs:attribute name="score15combinationtype" type="xs:int" default="0" />
+
                                     <!-- 0=no score, 1=percent correct, 2=percent of total possible points, 3=normed -->
                                     <xs:attribute name="scoretype" type="xs:int" default="0" />
 

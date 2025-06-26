@@ -2016,6 +2016,9 @@ public class BaseTestEventScorer
                 tes.setScore10( scs.getMetaScore( 10 ));
                 tes.setScore11( scs.getMetaScore( 11 ));
                 tes.setScore12( scs.getMetaScore( 12 ));
+                tes.setScore13( scs.getMetaScore( 13 ));
+                tes.setScore14( scs.getMetaScore( 14 ));
+                tes.setScore15( scs.getMetaScore( 15 ));
 
 
                 if( scs.getCompetencyScoreType() != null )

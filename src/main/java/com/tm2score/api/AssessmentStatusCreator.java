@@ -942,6 +942,61 @@ public class AssessmentStatusCreator {
             hms=true;
         }
 
+        if( tes.getScore10()!=0 )
+        {
+            ms.setName10( scc.getMetaName(10) );
+            ms.setScore10(tes.getScore10());
+            if( scc.getMetaIsCanonical(10) )
+                ms.setCanon10(1);
+            hms=true;
+        }
+
+        if( tes.getScore11()!=0 )
+        {
+            ms.setName11( scc.getMetaName(11) );
+            ms.setScore11(tes.getScore11());
+            if( scc.getMetaIsCanonical(11) )
+                ms.setCanon11(1);
+            hms=true;
+        }
+
+        if( tes.getScore12()!=0 )
+        {
+            ms.setName12( scc.getMetaName(12) );
+            ms.setScore12(tes.getScore12());
+            if( scc.getMetaIsCanonical(12) )
+                ms.setCanon12(1);
+            hms=true;
+        }
+
+        if( tes.getScore13()!=0 )
+        {
+            ms.setName13( scc.getMetaName(13) );
+            ms.setScore13(tes.getScore13());
+            if( scc.getMetaIsCanonical(13) )
+                ms.setCanon13(1);
+            hms=true;
+        }
+
+        if( tes.getScore14()!=0 )
+        {
+            ms.setName14( scc.getMetaName(14) );
+            ms.setScore14(tes.getScore14());
+            if( scc.getMetaIsCanonical(14) )
+                ms.setCanon14(1);
+            hms=true;
+        }
+
+        if( tes.getScore15()!=0 )
+        {
+            ms.setName15( scc.getMetaName(15) );
+            ms.setScore15(tes.getScore15());
+            if( scc.getMetaIsCanonical(15) )
+                ms.setCanon15(1);
+            hms=true;
+        }
+        
+
         if( hms )
             dtl.setMetascores(ms );
 

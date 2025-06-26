@@ -16,7 +16,7 @@ import com.tm2score.entity.bot.BotInstance;
 import com.tm2score.entity.event.BotEvent;
 import com.tm2score.entity.event.TestEvent;
 import com.tm2score.entity.user.User;
-import com.tm2score.essay.EssayScoringUtils;
+import com.tm2score.essay.LocalEssayScoringUtils;
 import com.tm2score.global.Constants;
 import com.tm2score.global.I18nUtils;
 import com.tm2score.score.TextAndTitle;
@@ -330,7 +330,7 @@ public class ScoredChatIntnItem
                 
                 // dl[0] = int[] vals
                 // dl[1] = MAP misspelled words and counts.
-                d1 = EssayScoringUtils.getWritingAnalysis(resp, getTestLocale(), getIpCountry(), getWordsToIgnoreLc() );
+                d1 = LocalEssayScoringUtils.getWritingAnalysis(resp, getTestLocale(), getIpCountry(), getWordsToIgnoreLc() );
                 
                 // total errs [0]
                 // spelling [1]

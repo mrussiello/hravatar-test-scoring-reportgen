@@ -5,7 +5,6 @@ import com.tm2score.score.iactnresp.IactnResp;
 import com.tm2score.score.iactnresp.RadioButtonGroupResp;
 import com.tm2score.act.G2ChoiceFormatType;
 import com.tm2builder.sim.xml.SimJ;
-import com.tm2score.score.iactnresp.IvrIactnResp;
 
 
 
@@ -90,12 +89,12 @@ public enum ScoredItemParadigmType
         if( ir.simletCompetencyScore!=null && ir.simletCompetencyScore.getCompetencyScoreType().isDataEntry())
             return DATA_ENTRY_SPEED;
 
-        if( ir instanceof IvrIactnResp )
-        {
-            IvrIactnResp ivrIr = (IvrIactnResp) ir;
+        //if( ir instanceof IvrIactnResp )
+        //{
+        //    IvrIactnResp ivrIr = (IvrIactnResp) ir;
             
-            return ivrIr.getScoredItemParadigmType();
-        }
+        //    return ivrIr.getScoredItemParadigmType();
+        //}
         
         int clkableCt = 0;
         int drgTgtCt = 0;

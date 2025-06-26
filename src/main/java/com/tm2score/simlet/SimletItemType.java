@@ -165,8 +165,21 @@ public enum SimletItemType
 
     public boolean hasScore12()
     {
+        return equals(AUTO_ESSAY);
+    }
+    public boolean hasScore13()
+    {
+        return equals(AUTO_ESSAY);
+    }
+    public boolean hasScore14()
+    {
+        return equals(AUTO_ESSAY);
+    }
+    public boolean hasScore15()
+    {
         return false;
     }
+
     
     /*
     public boolean isManualText()

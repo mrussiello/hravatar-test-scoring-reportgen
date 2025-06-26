@@ -46,6 +46,7 @@ public class IvrStringUtils {
      * Returns data[0]=Essay promptId
      *         data[1]=Min words
      *         data[2]=Max Words
+     *         
      * @return 
      */
     public static int[] getEssayScoreInfo( String txt )
@@ -154,7 +155,7 @@ public class IvrStringUtils {
         if( txt.isEmpty() )
             return "";
         
-        if( txt.indexOf( "[" ) < 0 )
+        if( !txt.contains("[") )
             return txt;
         
         if( txt.indexOf( "[" )==0 )

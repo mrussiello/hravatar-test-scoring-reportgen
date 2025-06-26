@@ -4,6 +4,7 @@
  */
 package com.tm2score.ai;
 
+import com.tm2score.entity.essay.UnscoredEssay;
 import com.tm2score.entity.user.Resume;
 import com.tm2score.entity.user.User;
 import com.tm2score.global.RuntimeConstants;
@@ -56,7 +57,7 @@ public class AiRequestUtils
 
             AiRequestClient client = new AiRequestClient();
 
-            JsonObject jo = client.getJsonObjectFromAiCallRequest( joReq );
+            JsonObject jo = client.getJsonObjectFromAiCallRequest(joReq, BaseAiClient.AI_CALL_TIMEOUT_SHORT );
             if( jo==null || !jo.containsKey("status") || jo.isNull("status") )
             {
                 LogService.logIt("AiRequestUtils.getIsAiSystemAvailable() response JO is null. " );
@@ -109,6 +110,7 @@ public class AiRequestUtils
         return doResumeParsingCall(resume, user, AiCallType.RESUME_PARSE, autoUpdate );
     }
         
+    
     public static JsonObject doResumeParsingCall( Resume resume, User user, AiCallType aiCallType, boolean autoUpdate) throws Exception
     {
         try
@@ -138,12 +140,53 @@ public class AiRequestUtils
 
             Tracker.addAiCall();
                         
-            return client.getJsonObjectFromAiCallRequest( joReq );
+            return client.getJsonObjectFromAiCallRequest(joReq, BaseAiClient.AI_CALL_TIMEOUT_LONG );
         }
         catch( Exception e )
         {
             Tracker.addAiCallError();
             LogService.logIt(e, "AiRequestUtils.doResumeParsingCall() aiCallType=" +  aiCallType.getName() +", ResumeId=" + (resume==null ? "null" : resume.getResumeId() + ", userId=" + resume.getUserId() + ", orgId=" + resume.getOrgId()) + ", userId=" + (user==null ? "null" : user.getUserId()) );
+            throw e;
+        }
+    }
+
+    public static JsonObject doEssayScoringCall( UnscoredEssay unscoredEssay, AiCallType aiCallType, boolean useScore2, boolean autoUpdate, String forcePromptStr) throws Exception
+    {
+        try
+        {
+            if( unscoredEssay==null )
+                throw new Exception( "unscoredEssay is null" );
+
+            if( unscoredEssay.getUnscoredEssayId()<=0 )
+                throw new Exception( "UnscoredEssay.unscoredEssayId is invalid: " + unscoredEssay.getUnscoredEssayId() );
+            
+            if( (unscoredEssay.getEssay()==null || unscoredEssay.getEssay().isBlank()) ) 
+                throw new Exception( "UnscoredEssay does not have an Essay to score." );
+            
+            if( (forcePromptStr==null || forcePromptStr.isBlank()) && unscoredEssay.getEssayPromptId()<=0 )
+                throw new Exception( "UnscoredEssay has an invalid essaypromptid: " + unscoredEssay.getEssayPromptId() );
+
+            JsonObjectBuilder job = getBasePayloadJsonObjectBuilder(aiCallType, null );
+            
+            job.add("intparam1", unscoredEssay.getUnscoredEssayId() );
+            if( useScore2 )
+                job.add("intparam2", 1 );                
+            job.add("autoupdate", autoUpdate ? 1 : 0 );
+            if( forcePromptStr!=null && !forcePromptStr.isBlank() )
+                job.add( "strparam1", forcePromptStr );
+
+            JsonObject joReq = job.build();
+
+            AiRequestClient client = new AiRequestClient();
+
+            Tracker.addAiCall();
+                        
+            return client.getJsonObjectFromAiCallRequest(joReq, BaseAiClient.AI_CALL_TIMEOUT_LONG );
+        }
+        catch( Exception e )
+        {
+            Tracker.addAiCallError();
+            LogService.logIt(e, "AiRequestUtils.doEssayScoringCall() aiCallType=" +  aiCallType.getName() +", unscoredEssayId=" + (unscoredEssay==null ? "null" : unscoredEssay.getUnscoredEssayId()+ ", userId=" + unscoredEssay.getUserId()) );
             throw e;
         }
     }
@@ -164,6 +207,40 @@ public class AiRequestUtils
         return job;
 
     }
+
+    public static boolean wasAiCallSuccess( JsonObject responseJo ) throws Exception
+    {
+        if( responseJo==null )
+            return false;
+        
+        if( !responseJo.containsKey("status") || responseJo.isNull("status") )
+        {
+            int aiCallHistoryId = responseJo.containsKey("aicallhistoryid") ? responseJo.getInt("aicallhistoryid") : 0;
+            String msg = "Returned Json has no status field. aiCallHistoryId=" + aiCallHistoryId;
+            LogService.logIt("AiRequestUtils.wasAiCallSuccess() " + msg + ", json returned=" + JsonUtils.convertJsonObjectToString(responseJo) );
+            return false;
+        }
+
+        String status = JsonUtils.getStringFmJson(responseJo, "status");
+        if( status.equals( AiCallStatusType.ERROR.getStatusStr() ) )
+        {
+            int aiCallHistoryId = responseJo.containsKey("aicallhistoryid") ? responseJo.getInt("aicallhistoryid") : 0;
+            String msg = "Error code=" + (responseJo.containsKey("errorcode") ? responseJo.getInt("errorcode") : "none") + ", Error message=" + (responseJo.containsKey("errormessage") ? JsonUtils.getStringFmJson( responseJo, "errormessage") : "none") + ", aiCallHistoryId=" + aiCallHistoryId;
+            LogService.logIt("AiRequestUtils.wasAiCallSuccess() " + msg + ", json returned=" + JsonUtils.convertJsonObjectToString(responseJo) );
+            return false;
+        }
+
+        if( !status.equals( AiCallStatusType.COMPLETED.getStatusStr() ) )
+        {
+            int aiCallHistoryId = responseJo.containsKey("aicallhistoryid") ? responseJo.getInt("aicallhistoryid") : 0;
+            String msg = "Call status is not complete. status=" + status + ", aiCallHistoryId=" + aiCallHistoryId;
+            LogService.logIt("AiRequestUtils.wasAiCallSuccess() " + msg + ", json returned="  + JsonUtils.convertJsonObjectToString(responseJo) );
+            return false;
+        }        
+
+        return true;
+    }
+
     
     public static void checkAiCallResponse( JsonObject responseJo ) throws Exception
     {

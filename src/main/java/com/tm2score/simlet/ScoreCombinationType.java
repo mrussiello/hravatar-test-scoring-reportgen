@@ -1,6 +1,5 @@
 package com.tm2score.simlet;
 import com.tm2score.score.iactnresp.ScorableResponse;
-import com.tm2score.service.LogService;
 import java.util.List;
 
 

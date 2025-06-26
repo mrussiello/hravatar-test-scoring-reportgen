@@ -448,6 +448,9 @@ public class RuntimeConstants
         // Discern (Essay Scoring)
         // ////////////////////////////////////////////////////////////////////////////
         cache.put( "discernOn", true );
+        
+        cache.put( "ai-essay-scoring-ok", true );
+        cache.put( "ai-essay-scoring-use-score2", true );
 
         // ////////////////////////////////////////////////////////////////////////////
         // PlagTracker

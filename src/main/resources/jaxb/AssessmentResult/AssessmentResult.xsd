@@ -401,6 +401,31 @@
                                  <xs:attribute name="canon9" type="xs:int" />
                                  <xs:attribute name="name9" type="xs:string" />
                                  <xs:attribute name="score9" type="xs:float" />
+
+                                 <xs:attribute name="canon10" type="xs:int" />
+                                 <xs:attribute name="name10" type="xs:string" />
+                                 <xs:attribute name="score10" type="xs:float" />
+                                 
+                                 <xs:attribute name="canon11" type="xs:int" />
+                                 <xs:attribute name="name11" type="xs:string" />
+                                 <xs:attribute name="score11" type="xs:float" />
+
+                                 <xs:attribute name="canon12" type="xs:int" />
+                                 <xs:attribute name="name12" type="xs:string" />
+                                 <xs:attribute name="score12" type="xs:float" />
+
+                                 <xs:attribute name="canon13" type="xs:int" />
+                                 <xs:attribute name="name13" type="xs:string" />
+                                 <xs:attribute name="score13" type="xs:float" />
+
+                                 <xs:attribute name="canon14" type="xs:int" />
+                                 <xs:attribute name="name14" type="xs:string" />
+                                 <xs:attribute name="score14" type="xs:float" />
+
+                                 <xs:attribute name="canon15" type="xs:int" />
+                                 <xs:attribute name="name15" type="xs:string" />
+                                 <xs:attribute name="score15" type="xs:float" />
+                                 
                             </xs:complexType>
                            </xs:element>
                            

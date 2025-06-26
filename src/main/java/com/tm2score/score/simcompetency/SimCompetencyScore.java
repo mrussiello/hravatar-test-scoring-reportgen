@@ -22,6 +22,7 @@ import com.tm2builder.sim.xml.InterviewQuestionObj;
 import com.tm2builder.sim.xml.SimJ;
 import com.tm2builder.sim.xml.SimJ.Simcompetency;
 import com.tm2score.entity.profile.ProfileEntry;
+import com.tm2score.essay.EssayMetaScoreType;
 import com.tm2score.global.DisplayOrderObject;
 import com.tm2score.global.NumberUtils;
 import com.tm2score.global.UserRankObject;
@@ -134,6 +135,9 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
      * metaScores[10] = score 10
      * metaScores[11] = score 11
      * metaScores[12] = score 12
+     * metaScores[13] = score 13
+     * metaScores[14] = score 14
+     * metaScores[15] = score 15
      */
     protected float[] metaScores;
 
@@ -568,7 +572,7 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
 
             SimCompetencyScoreCalculationType simCompetencyScoreCalculationType = SimCompetencyScoreCalculationType.getValue( simCompetencyScoreCalcTypeId );
 
-            metaScores = new float[13];
+            metaScores = new float[16];
 
             if( simCompetencyObj.getIncludeitemscorestype()>0 )
                 itemScoreTextAndTitleList = new ArrayList<>();
@@ -624,7 +628,7 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
                     if( slcs.hasDataToAutoScore() )
                     {
                         // Metascores are always averaged - if they have this
-                        for( int i=2; i<=12; i++ )
+                        for( int i=2; i<=15; i++ )
                         {
                             // LogService.logIt( "SimCompetencyScore adding simletCompetencyScore.metascore[] index=" + i + " value=" + scs.getMetaScore(i));
 
@@ -652,9 +656,10 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
             // Metascores are always averaged, so complete the average.
             if( smltCompScrList.size()>1 )
             {
-                for( int i=2; i<=12; i++ )
+                for( int i=2; i<=15; i++ )
                 {
-                    metaScores[i] /= ((float) smltCompScrList.size() );
+                    if( metaScores.length>i )
+                        metaScores[i] /= ((float) smltCompScrList.size() );
                 }
             }
 
@@ -1525,6 +1530,16 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
                         caveatList.add( MessageFactory.getStringMessage( locale , "g.EssayMachineConfidenceX" , new String[]{ Integer.toString( Math.round( 100*metaScores[3] ) )} ) );
                     }
 
+                    if( metaScores.length>14 )
+                    {
+                        if( metaScores[12]>0 )
+                            caveatList.add( MessageFactory.getStringMessage( locale , EssayMetaScoreType.CLARITY.getKeyX() , new String[]{ Integer.toString( Math.round( metaScores[12] ) )} ) );
+                        if( metaScores[13]>0 )
+                            caveatList.add( MessageFactory.getStringMessage( locale , EssayMetaScoreType.ARGUMENT.getKeyX() , new String[]{ Integer.toString( Math.round( metaScores[13] ) )} ) );
+                        if( metaScores[14]>0 )
+                            caveatList.add( MessageFactory.getStringMessage( locale , EssayMetaScoreType.MECHANICS.getKeyX() , new String[]{ Integer.toString( Math.round( metaScores[14] ) )} ) );                            
+                    }
+                    
                     caveatList.add( MessageFactory.getStringMessage( locale , "g.EssaySpellErrorsPer100WordsX" , new String[]{ Integer.toString( Math.round( metaScores[4] ) )} ) );
                     caveatList.add( MessageFactory.getStringMessage( locale , "g.EssayOtherErrorsPer100WordsX" , new String[]{ Integer.toString( Math.round( metaScores[5] ) )} ) );
 

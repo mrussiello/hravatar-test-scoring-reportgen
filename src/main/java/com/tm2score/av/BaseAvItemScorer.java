@@ -185,6 +185,7 @@ public class BaseAvItemScorer {
         return sr.getTranscriptAlts();
     }
     
+    /*
     public List<String> getMatchValuesFmTextScoreParams( SimJ.Intn intn ) throws Exception
     {
         List<String> out = new ArrayList<>();
@@ -195,7 +196,7 @@ public class BaseAvItemScorer {
         // Must remove any brackets.
         String tsp = IvrStringUtils.removeAllBracketsForVoice( UrlEncodingUtils.decodeKeepPlus( intn.getTextscoreparam1() ) );
         
-        // choices are alsways delimited by ;
+        // choices are always delimited by ;
         for( String m : tsp.split(";") )
         {
             if( m.trim().isEmpty() )
@@ -214,6 +215,7 @@ public class BaseAvItemScorer {
         
         return out;
     }
+    */
     
     protected String removeBranchingInfo( String inStr )
     {
@@ -223,7 +225,7 @@ public class BaseAvItemScorer {
         return inStr.substring(0,inStr.indexOf("|") );
     }
         
-    
+    /*
     public Map<String,Float> getIntnLevelMatchPointsMap( SimJ.Intn intn ) 
     {
         Map<String,Float> out = new HashMap<>();
@@ -271,6 +273,7 @@ public class BaseAvItemScorer {
         
         return out;
     }
+    */
         
     public boolean isResponseCorrect( float similarity , float confidenceFactor )
     {

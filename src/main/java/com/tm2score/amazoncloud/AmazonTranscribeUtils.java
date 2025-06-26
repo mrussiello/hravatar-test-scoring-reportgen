@@ -39,7 +39,7 @@ import software.amazon.awssdk.services.transcribe.model.StartTranscriptionJobReq
 import software.amazon.awssdk.services.transcribe.model.StartTranscriptionJobResponse;
 import software.amazon.awssdk.services.transcribe.model.TranscriptionJob;
 import software.amazon.awssdk.services.transcribe.model.TranscriptionJobStatus;
-import software.amazon.awssdk.services.translate.model.ConflictException;
+import software.amazon.awssdk.services.transcribe.model.ConflictException;
 
 /**
  *
@@ -192,7 +192,7 @@ public class AmazonTranscribeUtils
         }
         catch( Exception e )
         {
-            LogService.logIt( e, "AmazonTranscribeUtils.startTranscriptionJob()  locale=" + locale.toString() + ", mediaFileUri=" + mediaFileUri + ", mediaFormat=" + mediaFormat + ", outputBucketName=" + outputBucketName + ", transJobName=" + transJobName );
+            LogService.logIt( e, "AmazonTranscribeUtils.startTranscriptionJob() XXX.1 locale=" + locale.toString() + ", mediaFileUri=" + mediaFileUri + ", mediaFormat=" + mediaFormat + ", outputBucketName=" + outputBucketName + ", transJobName=" + transJobName );
             throw new IvrScoreException( 0, "AmazonTranscribeUtils.startTranscriptionJob() " + e.toString() + ", transJobName=" + transJobName );
         }
     }

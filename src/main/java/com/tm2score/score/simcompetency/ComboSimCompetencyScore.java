@@ -112,7 +112,7 @@ public class ComboSimCompetencyScore {
             if( scs.getCaveatList() == null )
                 scs.setCaveatList( new ArrayList<>() );
             
-            scs.metaScores = new float[13];
+            scs.metaScores = new float[16];
             
             scs.competencyScoreType = comboType.getForcedCompetencyScoreType();
             
@@ -336,7 +336,7 @@ public class ComboSimCompetencyScore {
                 scs.scaledScoreFloor = scsx.scaledScoreFloor;
 
 
-            for( int i=2; i<=12; i++ )
+            for( int i=2; i<=15; i++ )
             {
                 // LogService.logIt( "SimCompetencyScore adding simletCompetencyScore.metascore[] index=" + i + " value=" + scs.getMetaScore(i));
 
@@ -601,9 +601,10 @@ public class ComboSimCompetencyScore {
         // Metascores are always averaged, so complete the average.
         if( !members.isEmpty() )
         {
-            for( int i=2; i<=9; i++ )
+            for( int i=2; i<=15; i++ )
             {
-                scs.metaScores[i] /= ((float) members.size() );
+                if( scs.metaScores.length>i )
+                    scs.metaScores[i] /= ((float) members.size() );
             }   
         }
         

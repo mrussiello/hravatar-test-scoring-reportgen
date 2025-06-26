@@ -1016,12 +1016,22 @@ public class SimletCompetencyScore
 
         if( competencyScoreObj.getScore12Combinationtype()>0 )
             combineMetaScores( irl, 12 , competencyScoreObj.getScore12Combinationtype() );
+
+        if( competencyScoreObj.getScore13Combinationtype()>0 )
+            combineMetaScores( irl, 13 , competencyScoreObj.getScore13Combinationtype() );
+
+        if( competencyScoreObj.getScore14Combinationtype()>0 )
+            combineMetaScores( irl, 14 , competencyScoreObj.getScore14Combinationtype() );
+
+        if( competencyScoreObj.getScore15Combinationtype()>0 )
+            combineMetaScores( irl, 15 , competencyScoreObj.getScore15Combinationtype() );
+        
     }
 
     protected void combineMetaScores( List<ScorableResponse> irl, int index, int scoreCombinationTypeId )
     {
         if( metaScores==null )
-            metaScores = new float[13];
+            metaScores = new float[16];
 
         metaScores[index] = ScoreCombinationType.getValue( scoreCombinationTypeId ).combineScores( irl , index );
 

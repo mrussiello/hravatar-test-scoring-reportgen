@@ -4,6 +4,7 @@ import com.tm2score.score.ScoredItemParadigmType;
 
 public enum AvItemType
 {    
+    /*
     // Type 1 Read Text From Page. Records speech and sends back to HRA.
     // Scoring - First, do a Speech-to-text. Get the text and confidence. Store in avItemResponse.
     //           Compare the recorded speech -to-text to Stem1 and multiple by confidence. Similarity is 0 - 1.0 where match=1.0. Confidence is 0-1.0 where match=1.0,  Score is percent match 100*similarity. Set item Score to 100.
@@ -184,6 +185,7 @@ public enum AvItemType
     //           [IVRPRELUDE] (Optional. Uses default if not present. Only used if IVRQ has no audio) This is the prelude text read to the user over the phone.
     //           [IVRQ] (Required) is read as the question text, along with instructions on what to do (like "press or say 1 for yes and 0 for no"). Can include an [AUDIO] tag if you have an audio. 
     TYPE8(8, "Type 8 - Single Keypad Answer", 0, 30, 0, 60, null, "txa.Section8ItemNoAnswer", 0 ),
+    */
     
     //////////////////////////////////////////////////////////////////////////////////////////
     // Uploaded User File Types. Handled differently by scoring programs.
@@ -236,7 +238,7 @@ public enum AvItemType
 
     public boolean getRequiresTranscription()
     {
-        return equals(TYPE112) || equals(TYPE122) || equals(TYPE1) || equals(TYPE2) || equals(TYPE5) || equals(TYPE6);
+        return equals(TYPE112) || equals(TYPE122); //  || equals(TYPE1) || equals(TYPE2) || equals(TYPE5) || equals(TYPE6);
     }
     
     public int getAudioSampleRate()
@@ -256,60 +258,62 @@ public enum AvItemType
     
     public int getMaxAlternativesForSpeechToText()
     {
-        if( equals(TYPE2) )
-            return 5;
+        // if( equals(TYPE2) )
+        //     return 5;
         
         return 1;
     }
     
     
-    public boolean supportsTextAndTitle()
-    {
-        return equals(TYPE3) ;
-    }
+    //public boolean supportsTextAndTitle()
+    //{
+    //    return equals(TYPE3) ;
+    //}
     
     
     public boolean is100Score()
     {
-        return equals( TYPE1 ) || equals( TYPE3 ) || equals( TYPE5 );
+        return false; // equals( TYPE1 ) || equals( TYPE3 ) || equals( TYPE5 );
     }
 
 
     public boolean is1Score()
     {
-        return equals( TYPE2 ) || equals( TYPE4 ) || equals( TYPE6 ) || equals( TYPE8 );
+        return false; // equals( TYPE2 ) || equals( TYPE4 ) || equals( TYPE6 ) || equals( TYPE8 );
     }
     
     public boolean supportsEssayScoring()
     {
-        return equals( TYPE3 ) || equals( TYPE101 ) || equals( TYPE102 );
+        return equals( TYPE101 ) || equals( TYPE102 );
+        // return equals( TYPE3 ) || equals( TYPE101 ) || equals( TYPE102 );
     }
     
-    public boolean supportsIntnLevelDtmfGatherBasedBranching()
-    {
-        return equals(TYPE6) || equals(TYPE8);        
-    }
+    //public boolean supportsIntnLevelDtmfGatherBasedBranching()
+    //{
+    //    return equals(TYPE6) || equals(TYPE8);        
+    //}
     
-    public boolean supportsIntnLevelAdminFlagsAndInfo()
-    {
-        return equals( TYPE1 ) || equals( TYPE2 ) || equals( TYPE3 ) || equals( TYPE4 ) || equals( TYPE5 ) || equals(TYPE6)  || equals(TYPE7) || equals(TYPE8);
-    }
+    //public boolean supportsIntnLevelAdminFlagsAndInfo()
+    //{
+    //    return equals( TYPE1 ) || equals( TYPE2 ) || equals( TYPE3 ) || equals( TYPE4 ) || equals( TYPE5 ) || equals(TYPE6)  || equals(TYPE7) || equals(TYPE8);
+    //}
     
-    public boolean supportsIntnItemDtmfGatherBasedBranching()
-    {
-        return equals(TYPE4) ;        
-    }
+    //public boolean supportsIntnItemDtmfGatherBasedBranching()
+    //{
+    //    return equals(TYPE4) ;        
+    //}
     
     
     public boolean supportsVoiceVibesAnalysis()
     {
-        return equals(TYPE3) || equals(TYPE101) || equals( TYPE102 );
+        return equals(TYPE101) || equals( TYPE102 );
+        // return equals(TYPE3) || equals(TYPE101) || equals( TYPE102 );
     }    
     
-    public boolean requiresDistractorValues()
-    {
-        return equals(TYPE4);
-    }
+    //public boolean requiresDistractorValues()
+    //{
+    //    return equals(TYPE4);
+    //}
     
     public boolean getIsTwilio()
     {
@@ -319,7 +323,8 @@ public enum AvItemType
     
     public boolean getStoreRecordedAudio()
     {
-        return equals(TYPE1) || equals(TYPE3) || equals(TYPE5);        
+        return false;
+        // return equals(TYPE1) || equals(TYPE3) || equals(TYPE5);        
     }
     
     public ScoredItemParadigmType getScoredItemParadigmType()
@@ -327,10 +332,11 @@ public enum AvItemType
         if( equals(TYPE101) || equals(TYPE102) )
             return ScoredItemParadigmType.AV_UPLOAD;
         
-        if( equals(TYPE1) || equals(TYPE3) || equals(TYPE5) )
-            return ScoredItemParadigmType.IVR_RECORDING;
+        //if( equals(TYPE1) || equals(TYPE3) || equals(TYPE5) )
+         //   return ScoredItemParadigmType.IVR_RECORDING;
         
-        if( equals(TYPE6) || equals(TYPE7) || equals(TYPE8) || equals(TYPE112) || equals(TYPE122)  )
+        // if( equals(TYPE6) || equals(TYPE7) || equals(TYPE8) || equals(TYPE112) || equals(TYPE122)  )
+        if( equals(TYPE112) || equals(TYPE122)  )
             return ScoredItemParadigmType.FILL_BLANK;
         
         return ScoredItemParadigmType.MULTIPLE_CHOICE;
@@ -338,7 +344,8 @@ public enum AvItemType
     
     public boolean requiresRecordVoice()
     {
-        return equals(TYPE1) || equals(TYPE2) || equals(TYPE3) || equals(TYPE5) || equals(TYPE101) || equals(TYPE102) || equals(TYPE112) || equals(TYPE122);
+        return equals(TYPE101) || equals(TYPE102) || equals(TYPE112) || equals(TYPE122);
+        // return equals(TYPE1) || equals(TYPE2) || equals(TYPE3) || equals(TYPE5) || equals(TYPE101) || equals(TYPE102) || equals(TYPE112) || equals(TYPE122);
     }
 
     public int getRecordingTimeoutSecs() {

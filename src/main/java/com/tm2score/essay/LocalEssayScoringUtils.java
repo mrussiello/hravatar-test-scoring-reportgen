@@ -63,7 +63,7 @@ import org.languagetool.rules.spelling.SpellingCheckRule;
  *
  * @author Mike
  */
-public class EssayScoringUtils {
+public class LocalEssayScoringUtils {
 
     private static String[] SPELLING_RULE_CATEGORY_NAMES = new String[] { "Possible Typo", "Commonly Confused Words", "Nonstandard Phrases" };
 
@@ -121,14 +121,14 @@ public class EssayScoringUtils {
                 fractErrs[3] = ((float) vals[3])/((float) numWords );
             }
 
-             // LogService.logIt("EssayScoringUtils.isValidWriting() numWords=" + numWords + " total errors=" + vals[0] + ", Spelling Errors: " + vals[1] + ", grammar errors=" + vals[2]  + " style errors=" + vals[2] + ", Locale=" + locale.toString() + ", Text=" + text );
+             // LogService.logIt("LocalEssayScoringUtils.isValidWriting() numWords=" + numWords + " total errors=" + vals[0] + ", Spelling Errors: " + vals[1] + ", grammar errors=" + vals[2]  + " style errors=" + vals[2] + ", Locale=" + locale.toString() + ", Text=" + text );
 
              return fractErrs[1] < 0.3f && fractErrs[2]<0.1f && fractErrs[3]<0.1f;
         }
 
         catch( Exception e )
         {
-            LogService.logIt(e, "EssayScoringUtils.isValidWriting() Locale=" + locale.toString() + ", Text=" + text );
+            LogService.logIt(e, "LocalEssayScoringUtils.isValidWriting() Locale=" + locale.toString() + ", Text=" + text );
 
             return true;
         }
@@ -163,7 +163,7 @@ public class EssayScoringUtils {
     
     public static boolean getWritingAnalysisSupported( String language ) throws Exception
     {
-        for( String l : EssayScoringUtils.SUPPORTED_LANGS )
+        for( String l : LocalEssayScoringUtils.SUPPORTED_LANGS )
         {
             if( l.equalsIgnoreCase(language))
                 return true;
@@ -245,7 +245,7 @@ public class EssayScoringUtils {
     {
         init();
 
-        // LogService.logIt( "EssayScoringUtils.getWritingErrorCount() START language=" + language + ", country=" + country  );        
+        // LogService.logIt( "LocalEssayScoringUtils.getWritingErrorCount() START language=" + language + ", country=" + country  );        
 
         Object[] out = new Object[2];
         
@@ -260,12 +260,12 @@ public class EssayScoringUtils {
         if( text == null || text.isEmpty() )
             return out;
 
-        //LogService.logIt( "EssayScoringUtils.getWritingErrorCount() AA11" );        
+        //LogService.logIt( "LocalEssayScoringUtils.getWritingErrorCount() AA11" );        
         nums[4] = StringUtils.numWords(text);
 
         
         
-        //LogService.logIt( "EssayScoringUtils.getWritingErrorCount() AAA numwords=" + out[4] );        
+        //LogService.logIt( "LocalEssayScoringUtils.getWritingErrorCount() AAA numwords=" + out[4] );        
         
         try
         {
@@ -397,7 +397,7 @@ public class EssayScoringUtils {
             {
                 nums[7]=0;
                 //lang = new AmericanEnglish();
-                LogService.logIt("EssayScoringUtils.getWritingAnalysisForCountry() Unsupported language. Returning empty values. Language: " + language + ", words=" + nums[4] + ", rule matches=" + nums[0] + ", spell=" + nums[1] + ", grammar=" + nums[2] + ", style=" + nums[3] );  
+                LogService.logIt("LocalEssayScoringUtils.getWritingAnalysisForCountry() Unsupported language. Returning empty values. Language: " + language + ", words=" + nums[4] + ", rule matches=" + nums[0] + ", spell=" + nums[1] + ", grammar=" + nums[2] + ", style=" + nums[3] );  
                 return out;
             }
             
@@ -409,7 +409,7 @@ public class EssayScoringUtils {
             
             JLanguageTool langTool = null;
             
-        //LogService.logIt( "EssayScoringUtils.getWritingErrorCount() BBB " ); 
+        //LogService.logIt( "LocalEssayScoringUtils.getWritingErrorCount() BBB " ); 
             int tryCount = 0;
             
             while( langTool==null && tryCount<5 )
@@ -424,7 +424,7 @@ public class EssayScoringUtils {
                     langTool = null;
                     if( tryCount<5 )
                     {
-                        LogService.logIt( "EssayScoringUtils.getWritingErrorCount() BBB.2 NONFATAL " + e.toString() + " tryCount=" + tryCount + " will try again after ~1 sec wait." );
+                        LogService.logIt( "LocalEssayScoringUtils.getWritingErrorCount() BBB.2 NONFATAL " + e.toString() + " tryCount=" + tryCount + " will try again after ~1 sec wait." );
                         long v = Math.round(Math.random()*1000f);
                         
                         Thread.sleep(1000 + v );
@@ -434,12 +434,12 @@ public class EssayScoringUtils {
                         throw e;
                 }
             }
-        //LogService.logIt( "EssayScoringUtils.getWritingErrorCount() CCC " );        
+        //LogService.logIt( "LocalEssayScoringUtils.getWritingErrorCount() CCC " );        
             // langTool.activateDefaultPatternRules();
-        //LogService.logIt( "EssayScoringUtils.getWritingErrorCount() DDD " );        
+        //LogService.logIt( "LocalEssayScoringUtils.getWritingErrorCount() DDD " );        
             List<RuleMatch> matches = langTool.check( text );
         
-            // LogService.logIt( "EssayScoringUtils.getWritingErrorCount() EEE matches=" + matches.size() );        
+            // LogService.logIt( "LocalEssayScoringUtils.getWritingErrorCount() EEE matches=" + matches.size() );        
 
             String category;
             
@@ -492,7 +492,7 @@ public class EssayScoringUtils {
 
                 else
                 {
-                    // LogService.logIt( "EssayScoringUtils.getWritingAnalysisForCountry() Unidentified Rule Category match. Adding to GRAMMAR errors.  Rule=" + m.getRule().getDescription() + ", id=" + m.getRule().getId() + ", category=" + m.getRule().getCategory().getName() );
+                    // LogService.logIt( "LocalEssayScoringUtils.getWritingAnalysisForCountry() Unidentified Rule Category match. Adding to GRAMMAR errors.  Rule=" + m.getRule().getDescription() + ", id=" + m.getRule().getId() + ", category=" + m.getRule().getCategory().getName() );
                     nums[2]++;
                 }
             }
@@ -506,7 +506,7 @@ public class EssayScoringUtils {
             
             //if( !language.equalsIgnoreCase( "en" ) )
             //{
-            //    LogService.logIt("EssayScoringUtils.getWritingAnalysisForCountry() END language=" + language + ", words=" + nums[4] + ", rule matches=" + nums[0] + ", spell=" + nums[1] + ", grammar=" + nums[2] + ", style=" + nums[3] );                
+            //    LogService.logIt("LocalEssayScoringUtils.getWritingAnalysisForCountry() END language=" + language + ", words=" + nums[4] + ", rule matches=" + nums[0] + ", spell=" + nums[1] + ", grammar=" + nums[2] + ", style=" + nums[3] );                
             //}
             
             // indicate that spelling/style/grammar anal was done.
@@ -516,7 +516,7 @@ public class EssayScoringUtils {
 
         catch( Exception e )
         {
-            LogService.logIt(e, "EssayScoringUtils.getWritingAnalysisForCountry() language=" + language + ", country=" + country + ", Text=" + text );
+            LogService.logIt(e, "LocalEssayScoringUtils.getWritingAnalysisForCountry() language=" + language + ", country=" + country + ", Text=" + text );
 
             throw e;
         }

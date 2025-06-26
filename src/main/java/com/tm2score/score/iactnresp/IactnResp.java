@@ -2250,6 +2250,12 @@ public class IactnResp implements ScorableResponse
             return getSimletItemType().hasScore11();
         if( i==12 )
             return getSimletItemType().hasScore12();
+        if( i==13 )
+            return getSimletItemType().hasScore13();
+        if( i==14 )
+            return getSimletItemType().hasScore14();
+        if( i==15 )
+            return getSimletItemType().hasScore15();
 
         return false;
     }

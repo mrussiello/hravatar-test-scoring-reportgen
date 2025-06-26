@@ -210,6 +210,13 @@ public class UploadedUserFile implements Serializable
     @Column( name = "meta5" )
     private float meta5;
 
+    /**
+     *  This is used only for General File Uploads to hold the text content in the uploaded file for AI Processing.
+     */
+    @Column( name = "uploadedtext" )
+    private String uploadedText;
+        
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="createdate")
     private Date createDate;
@@ -1011,5 +1018,17 @@ public class UploadedUserFile implements Serializable
         this.tempInt3 = tempInt3;
     }
     
+    public String getUploadedText()
+    {
+        return uploadedText;
+    }
+
+    public void setUploadedText(String uploadedText)
+    {
+        if( uploadedText!=null && uploadedText.isBlank() )
+            uploadedText=null;
+        
+        this.uploadedText = uploadedText;
+    }
     
 }

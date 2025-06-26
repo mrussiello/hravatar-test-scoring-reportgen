@@ -195,7 +195,7 @@ public class VoicePerformanceSimCompetencyScore extends SimCompetencyScore imple
             if( ScoreManager.DEBUG_SCORING )
                 LogService.logIt( "VoicePerformanceSimCompetencyScore.calculateScore() scaled score=" + scaledScore + ", raw score=" + rawScore + ",  composite total=" + composite + ", confidence=" + confidence + ", assertive=" + assertive + ", boring=" + boring + ", detached=" + detached ); 
                                    
-            metaScores = new float[13];  
+            metaScores = new float[16];  
             metaScores[0] = confidence;
             metaScores[1] = assertive;
             metaScores[2] = boring;
