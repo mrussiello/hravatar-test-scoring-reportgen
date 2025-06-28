@@ -28,13 +28,13 @@ public class XmlUtils
                     continue;
                 }
 
-                if ((c == 9) || (c == 10) || (c == 13) || ((c >= 32) && (c <= 55295)) || ((c >= 57344) && (c <= 65533)) || ((c >= 65536) && (c <= 1114111))) {
+                if ((c==9) || (c==10) || (c==13) || ((c >= 32) && (c <= 55295)) || ((c >= 57344) && (c <= 65533)) || ((c >= 65536) && (c <= 1114111))) {
                     out.append(c);
                 }
             }
             return out.toString();
         } catch (Exception e) {
-            LogService.logIt(e, "ImoLongXmlUtils.stripNonValidXMLCharacters() \n" + in);
+            LogService.logIt(e, "XmlUtils.stripNonValidXMLCharacters() \n" + in);
             return in;
         }
     }

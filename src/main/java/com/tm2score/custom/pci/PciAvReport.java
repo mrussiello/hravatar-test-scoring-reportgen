@@ -69,7 +69,8 @@ public class PciAvReport extends BasePciAvReportTemplate implements ReportTempla
 
             addKSInfo();
 
-            addAIMSInfo();
+            if( reportData.getReport().getIntParam1()==1)
+                addAIMSInfo();
 
             addBiodataInfo();
 

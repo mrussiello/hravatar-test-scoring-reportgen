@@ -14,9 +14,11 @@ import com.tm2score.interview.InterviewQuestion;
 import com.tm2score.service.LogService;
 import com.tm2score.sim.NonCompetencyItemType;
 import com.tm2builder.sim.xml.SimJ;
+import com.tm2score.corp.CorpFacade;
 import com.tm2score.custom.coretest2.cefr.CefrScoreType;
 import com.tm2score.custom.coretest2.cefr.CefrType;
 import com.tm2score.custom.coretest2.cefr.CefrUtils;
+import com.tm2score.entity.corp.Corp;
 import com.tm2score.entity.event.ItemResponse;
 import com.tm2score.entity.event.Percentile;
 import com.tm2score.entity.event.TestEventArchive;
@@ -26,6 +28,7 @@ import com.tm2score.entity.proctor.RemoteProctorEvent;
 import com.tm2score.entity.proctor.SuspiciousActivity;
 import com.tm2score.entity.report.Report;
 import com.tm2score.entity.sim.SimDescriptor;
+import com.tm2score.entity.user.Suborg;
 import com.tm2score.entity.user.User;
 import com.tm2score.event.OnlineProctoringType;
 import com.tm2score.event.PercentileScoreType;
@@ -51,7 +54,6 @@ import com.tm2score.score.ComboSimCompetencyScoreUtils;
 import com.tm2score.score.MergableScoreObject;
 import com.tm2score.score.MergableScoreObjectCombiner;
 import com.tm2score.report.ReportRules;
-import com.tm2score.report.SampleReportUtils;
 import com.tm2score.score.iactnresp.ScorableResponse;
 import com.tm2score.score.ScoreManager;
 import com.tm2score.score.ScoreUtils;
@@ -258,8 +260,25 @@ public class BaseTestEventScorer
             if( te.getTotalTestTime()<=0 )
                 te.setTotalTestTime( te.getResultXmlObj().getEvent().getTtime() );
         }
+        
+        Report r = te.getReport();
+        if( r==null && te.getReportId()>0 )
+            r = eventFacade.getReport( te.getReportId() );
+        if( r==null && te.getSimXmlObj()!=null && te.getSimXmlObj().getReport()>0 )
+            r = eventFacade.getReport( te.getSimXmlObj().getReport() );
+        te.setReport(r);
 
-        reportRules = new ReportRules( te.getOrg(), null, te.getProduct(), null, null );
+        Corp c = tk.getCorp();
+        if( c==null && tk.getCorpId()>0 )
+            c=CorpFacade.getInstance().getCorp( tk.getCorpId());
+        tk.setCorp(c);
+        
+        Suborg s = te.getSuborg();
+        if( s==null && te.getSuborgId()>0 )
+            s = userFacade.getSuborg( te.getSuborgId() );
+        te.setSuborg(s);
+        
+        reportRules = new ReportRules( te.getOrg(), s, te.getProduct(), r, c );
 
         simLocale = I18nUtils.getLocaleFromCompositeStr( te.getSimXmlObj().getLang() );
 

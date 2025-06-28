@@ -47,7 +47,14 @@ public abstract class BasePciAvReportTemplate extends AvReportTemplate {
         
         initFonts();
         
-        initColors();        
+        initColors();  
+        
+        if( ct2Colors!=null )
+            ct2Colors.clearBorders();
+
+        scoreBoxBorderWidth=0;
+        lightBoxBorderWidth=0;
+        
 
         prepNotes = new ArrayList<>();
 

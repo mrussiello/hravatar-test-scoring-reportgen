@@ -11,6 +11,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
+import com.tm2score.custom.coretest2.CellBackgroundCellEvent;
 import com.tm2score.entity.event.TestEventScore;
 import com.tm2score.event.TestEventScoreType;
 import com.tm2score.report.ReportTemplate;
@@ -252,6 +253,7 @@ public class PciReport extends BasePciReportTemplate implements ReportTemplate
     }
     
 
+    /*
     public void addPciCompetencySummaryTable2() throws Exception
     {
         try
@@ -314,6 +316,7 @@ public class PciReport extends BasePciReportTemplate implements ReportTemplate
             throw new STException( e );
         }
     }
+    */
 
     private void addHeaderRow( String cola, PdfPTable t )
     {
@@ -328,7 +331,8 @@ public class PciReport extends BasePciReportTemplate implements ReportTemplate
             c.setPaddingBottom( 5 );
             c.setPaddingLeft( CT2_BOXHEADER_LEFTPAD );
             c.setHorizontalAlignment( Element.ALIGN_LEFT);
-            c.setBackgroundColor( ct2Colors.hraBlue );
+            //c.setBackgroundColor( ct2Colors.hraBlue );
+            c.setCellEvent(new CellBackgroundCellEvent(reportData.getIsLTR(), ct2Colors.hraBlue,true, false, false, true) );
             setRunDirection( c );
             t.addCell(c);
 
@@ -354,7 +358,8 @@ public class PciReport extends BasePciReportTemplate implements ReportTemplate
             c.setPadding( 1 );
             c.setPaddingBottom( 5 );
             // c.setPaddingLeft( 25 );
-            c.setBackgroundColor( ct2Colors.hraBlue );
+            // c.setBackgroundColor( ct2Colors.hraBlue );
+            c.setCellEvent(new CellBackgroundCellEvent(reportData.getIsLTR(), ct2Colors.hraBlue,false, true, true, false) );
             setRunDirection( c );
             t.addCell(c);        
     }

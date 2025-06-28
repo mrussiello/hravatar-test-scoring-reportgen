@@ -11,7 +11,7 @@ import com.tm2score.entity.essay.EssayPrompt;
 import com.tm2score.entity.essay.UnscoredEssay;
 import com.tm2score.global.STException;
 import com.tm2score.service.LogService;
-import com.tm2score.util.StringUtils;
+import com.tm2score.xml.XmlUtils;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -932,7 +932,10 @@ public class DiscernFacade
             else if( r.getSecondsToCompose()> 1000000 )
                 r.setSecondsToCompose( 1000000 );
                         
-            r.setEssay( StringUtils.removeNonAscii( r.getEssay() ));
+            // r.setEssay( StringUtils.removeNonAscii( r.getEssay() ));
+            
+            // get rid of invalid XML chars.
+            // r.setEssay( XmlUtils.stripNonValidXMLCharacters(r.getEssay()));
 
             if( withValidation )
             {

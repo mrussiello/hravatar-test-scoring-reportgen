@@ -1019,6 +1019,11 @@ public class ScoredEssayIntnItem {
                 if( usesDummyEssayPrompt() || essayPromptId<=0 )
                 {
                     forcePromptStr=question;
+                    if( forcePromptStr==null || forcePromptStr.isBlank() )
+                    {
+                        LogService.logIt( "ScoredEssayIntnItem.submitForAiScoring() BBB.1 Cannot call AI because forcePromptStr is empty but usesDummyPrompt()=" + usesDummyEssayPrompt() + ", and essayPromptId=" + essayPromptId + ", unscoredEssayId=" + unscoredEssayId );
+                        return false;
+                    }
                 }
 
                 AiEssayScoringThread aiest = new AiEssayScoringThread( ue, forceRescore, true, forcePromptStr );

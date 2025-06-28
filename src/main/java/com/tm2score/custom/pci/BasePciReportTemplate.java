@@ -18,7 +18,6 @@ import com.tm2score.global.RuntimeConstants;
 import com.tm2score.report.ReportData;
 import com.tm2score.service.LogService;
 import java.io.ByteArrayOutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -48,8 +47,14 @@ public abstract class BasePciReportTemplate extends BaseCT2ReportTemplate {
         
         initFonts();
         
-        initColors();        
+        initColors();  
+        
+        if( ct2Colors!=null )
+            ct2Colors.clearBorders();
 
+        scoreBoxBorderWidth=0;
+        lightBoxBorderWidth=0;
+        
         prepNotes = new ArrayList<>();
 
         document = new Document( PageSize.LETTER );

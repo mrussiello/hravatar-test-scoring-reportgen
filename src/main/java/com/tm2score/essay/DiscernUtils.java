@@ -215,6 +215,7 @@ public class DiscernUtils {
         if( t==null || t.isBlank() )
             return false;
         
+        // Remove non-Ascii characters (Discern does this).
         t = t.replaceAll( "[^\\x00-\\x7F]", "" );
         
         t = XmlUtils.stripNonValidXMLCharacters(t);
