@@ -46,7 +46,7 @@ public class AiEssayScoringUtils {
     }
             
     
-    public static boolean computeAiEssayScore( UnscoredEssay unscoredEssay, boolean autoUpdate, boolean forceRescore, String forcePromptStr )
+    public static boolean computeAiEssayScore( UnscoredEssay unscoredEssay, boolean autoUpdate, boolean forceRescore, String forcePromptStr, String idealResponseStr)
     {
         try
         {
@@ -95,7 +95,7 @@ public class AiEssayScoringUtils {
                 return false;
             }
             
-            JsonObject responseJo = AiRequestUtils.doEssayScoringCall(unscoredEssay, AiCallType.ESSAY_SCORE, USE_SCORE_2, autoUpdate, forcePromptStr);
+            JsonObject responseJo = AiRequestUtils.doEssayScoringCall(unscoredEssay, AiCallType.ESSAY_SCORE, USE_SCORE_2, autoUpdate, forcePromptStr, idealResponseStr);
             
             if( !AiRequestUtils.wasAiCallSuccess( responseJo ) )
             {

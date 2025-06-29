@@ -50,7 +50,7 @@ public class DiscernUtils {
     
     public void checkForNewScore( UnscoredEssay ue ) throws Exception
     {
-        if( ue.getScoreStatusTypeId() != EssayScoreStatusType.SUBMITTED.getEssayScoreStatusTypeId() )
+        if( ue.getScoreStatusTypeId()!= EssayScoreStatusType.SUBMITTED.getEssayScoreStatusTypeId() )
             throw new Exception( "Essay not in correct status. UnscoredEssayId=" + ue.getUnscoredEssayId() );
 
         if( ue.getDiscernEssayId()<=0 )

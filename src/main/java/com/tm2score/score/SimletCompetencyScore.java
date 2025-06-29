@@ -96,6 +96,9 @@ public class SimletCompetencyScore
      * metaScores[10] = score 10
      * metaScores[11] = score 11
      * metaScores[12] = score 12
+     * metaScores[13] = score 13
+     * metaScores[14] = score 14
+     * metaScores[15] = score 15
      */
     float[] metaScores;
 

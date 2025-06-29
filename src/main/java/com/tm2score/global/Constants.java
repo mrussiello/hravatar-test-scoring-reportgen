@@ -117,6 +117,8 @@ public class Constants
      * Comma Delimited list.
      */
     public static String SPELLING_IGNORE_KEY = "SPELLIGNORE";
+    public static String IDEAL_RESPONSE_KEY = "IDEALRESPONSE";
+
     
     public static String TOPIC_KEY = "TOPIC";
     public static String POINTS_KEY = "POINTS";

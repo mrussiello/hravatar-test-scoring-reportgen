@@ -150,7 +150,7 @@ public class AiRequestUtils
         }
     }
 
-    public static JsonObject doEssayScoringCall( UnscoredEssay unscoredEssay, AiCallType aiCallType, boolean useScore2, boolean autoUpdate, String forcePromptStr) throws Exception
+    public static JsonObject doEssayScoringCall( UnscoredEssay unscoredEssay, AiCallType aiCallType, boolean useScore2, boolean autoUpdate, String forcePromptStr, String idealResponseStr) throws Exception
     {
         try
         {
@@ -172,9 +172,13 @@ public class AiRequestUtils
             if( useScore2 )
                 job.add("intparam2", 1 );                
             job.add("autoupdate", autoUpdate ? 1 : 0 );
+            
             if( forcePromptStr!=null && !forcePromptStr.isBlank() )
                 job.add( "strparam1", forcePromptStr );
 
+            if( idealResponseStr!=null && !idealResponseStr.isBlank() )
+                job.add( "strparam2", idealResponseStr );
+            
             JsonObject joReq = job.build();
 
             AiRequestClient client = new AiRequestClient();

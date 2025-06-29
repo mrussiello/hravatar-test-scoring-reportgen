@@ -184,20 +184,20 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
             // only use these values if have enough confidence
             if (essayMetaScoreMap != null
                     && AiEssayScoringUtils.getAiEssayScoringOn()
-                    && ((AiEssayScoringUtils.getAiEssayScoringUseScore2() && seii.getConfidence2() > ScoredEssayIntnItem.MIN_CONFIDENCE_AI)
-                    || (!AiEssayScoringUtils.getAiEssayScoringUseScore2() && seii.getConfidence() > ScoredEssayIntnItem.MIN_CONFIDENCE_AI)))
+                    && ((AiEssayScoringUtils.getAiEssayScoringUseScore2() && seii.getConfidence2()>ScoredEssayIntnItem.MIN_CONFIDENCE_AI)
+                    || (!AiEssayScoringUtils.getAiEssayScoringUseScore2() && seii.getConfidence()>ScoredEssayIntnItem.MIN_CONFIDENCE_AI)))
             {
-                if (essayMetaScoreMap.containsKey(EssayMetaScoreType.CLARITY.getEssayMetaScoreTypeId()))
+                if (essayMetaScoreMap.containsKey(EssayMetaScoreType.CLARITY.getEssayMetaScoreTypeId()) && essayMetaScoreMap.get(EssayMetaScoreType.CLARITY.getEssayMetaScoreTypeId())>0)
                 {
                     tClarity += essayMetaScoreMap.get(EssayMetaScoreType.CLARITY.getEssayMetaScoreTypeId());
                     tClarityCt++;
                 }
-                if (essayMetaScoreMap.containsKey(EssayMetaScoreType.ARGUMENT.getEssayMetaScoreTypeId()))
+                if (essayMetaScoreMap.containsKey(EssayMetaScoreType.ARGUMENT.getEssayMetaScoreTypeId()) && essayMetaScoreMap.get(EssayMetaScoreType.ARGUMENT.getEssayMetaScoreTypeId())>0)
                 {
                     tArgument += essayMetaScoreMap.get(EssayMetaScoreType.ARGUMENT.getEssayMetaScoreTypeId());
                     tArgumentCt++;
                 }
-                if (essayMetaScoreMap.containsKey(EssayMetaScoreType.MECHANICS.getEssayMetaScoreTypeId()))
+                if (essayMetaScoreMap.containsKey(EssayMetaScoreType.MECHANICS.getEssayMetaScoreTypeId()) && essayMetaScoreMap.get(EssayMetaScoreType.MECHANICS.getEssayMetaScoreTypeId())>0 )
                 {
                     tMechanics += essayMetaScoreMap.get(EssayMetaScoreType.MECHANICS.getEssayMetaScoreTypeId());
                     tMechanicsCt++;
@@ -231,7 +231,7 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
             }
         }
 
-        if (!pendingExternalScores && scrCt > 0)
+        if (!pendingExternalScores && scrCt>0)
         {
             // LogService.logIt( "ScoredEssayIactnResp. scrCt=" + scrCt + ", tMachScr=" + tMachScr + ", tConf=" + tConf );
 
@@ -590,7 +590,7 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
             // LogService.logIt( "ScoredEssayIactnResp.getItemScoreTextTitle() DDD.1 unique=" + this.intnObj.getUniqueid() + ", simletCompetencyScore=" + (simletCompetencyScore==null ? "null" : "present, class=" + simletCompetencyScore.getSimletCompetencyClass().getName()) );
 
             String scoreText;
-            if (simletCompetencyScore != null && simletCompetencyScore.getSimletCompetencyClass().isUnscored())
+            if (simletCompetencyScore!=null && simletCompetencyScore.getSimletCompetencyClass().isUnscored())
                 scoreText = null;  // return;
             
             else

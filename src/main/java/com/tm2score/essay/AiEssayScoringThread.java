@@ -17,13 +17,16 @@ public class AiEssayScoringThread implements Runnable
     boolean forceRescore;
     boolean autoUpdate;
     String forcePromptStr;
+    String idealResponseStr;
     
-    public AiEssayScoringThread( UnscoredEssay ue, boolean forceRescore, boolean autoUpdate, String forcePromptStr )
+    
+    public AiEssayScoringThread( UnscoredEssay ue, boolean forceRescore, boolean autoUpdate, String forcePromptStr, String idealResponseStr)
     {
         this.unscoredEssay=ue;
         this.forceRescore=forceRescore;
         this.autoUpdate=autoUpdate;
         this.forcePromptStr=forcePromptStr;
+        this.idealResponseStr=idealResponseStr;
     }
 
     @Override
@@ -42,7 +45,7 @@ public class AiEssayScoringThread implements Runnable
     
     public boolean performEssayScore() throws Exception
     {
-        return AiEssayScoringUtils.computeAiEssayScore(unscoredEssay, autoUpdate, forceRescore, forcePromptStr);
+        return AiEssayScoringUtils.computeAiEssayScore(unscoredEssay, autoUpdate, forceRescore, forcePromptStr, idealResponseStr);
     }
     
     
