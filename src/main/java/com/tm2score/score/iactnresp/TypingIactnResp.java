@@ -340,11 +340,13 @@ public class TypingIactnResp extends IactnResp implements ScorableResponse
     }
 
 
+    /*
     @Override
     public String getCaveatText()
     {
         return null;
     }
+    */
 
 
     @Override

@@ -28,11 +28,14 @@ import com.tm2score.global.I18nUtils;
 import com.tm2score.global.RuntimeConstants;
 import com.tm2score.ivr.IvrStringUtils;
 import com.tm2score.purchase.ProductType;
+import com.tm2score.score.CaveatScore;
+import com.tm2score.score.CaveatScoreType;
 import com.tm2score.service.EncryptUtils;
 import com.tm2score.sim.SimCompetencyClass;
 import com.tm2score.sim.SimJUtils;
 import com.tm2score.util.MessageFactory;
 import com.tm2score.util.NVPair;
+import com.tm2score.util.STStringTokenizer;
 import com.tm2score.util.StringUtils;
 import com.tm2score.util.UrlEncodingUtils;
 import com.tm2score.xml.ClipHist;
@@ -427,6 +430,78 @@ public class ReportUtils
     }
     
     
+    public static List<CaveatScore> getTopicCaveatScoreListFromLegacyCaveatStr( String cl )
+    {
+        List<CaveatScore> out = new ArrayList<>();
+
+        if( cl==null || cl.isEmpty() )
+            return out;
+
+        
+        //String cl = StringUtils.getBracketedArtifactFromString( textParam1 , Constants.CAVEATSKEY );
+        //if( cl == null || cl.isEmpty() )
+        //    return out;
+
+        STStringTokenizer st = new STStringTokenizer( cl , Constants.DELIMITER );
+
+        STStringTokenizer tt;
+        String[] t;
+
+        while( st.hasMoreTokens() )
+        {
+            t = new String[5];
+            t[0] = st.nextToken();
+            if( t[0].contains("TOPIC") )
+            {
+                tt = new STStringTokenizer( t[0] , "~" );
+                if( tt.hasMoreTokens() )
+                    t[0]=tt.nextToken();  // TOPIC                
+                if( tt.hasMoreTokens() )
+                    t[1]=tt.nextToken();  // Topic name or NOTOPIC
+                if( tt.hasMoreTokens() )
+                    t[2]=tt.nextToken();  // T1
+                if( tt.hasMoreTokens() )
+                    t[3]=tt.nextToken();  // T2
+                if( tt.hasMoreTokens() )
+                    t[4]=tt.nextToken();  // T3
+
+                // LogService.logIt( "Parse tokens. TOPIC=" + t[0] + ", name=" + t[1] + ", t1=" + t[2]  + ", t2=" + t[3] + ", t3=" + t[4]);
+
+                out.add( new CaveatScore(out.size()+1, CaveatScoreType.TOPIC_CORRECT.getCaveatScoreTypeId(), Integer.parseInt(t[2]), Integer.parseInt(t[3]), Integer.parseInt(t[4]), t[1], null ) );                
+            }
+            
+        }
+
+        return out;
+    }
+
+    public static List<CaveatScore> getLegacyCaveatScoreListFromLegacyCaveatStr( String cl )
+    {
+        List<CaveatScore> out = new ArrayList<>();
+
+        if( cl == null || cl.isEmpty() )
+            return out;
+
+        //String cl = StringUtils.getBracketedArtifactFromString( textParam1 , Constants.CAVEATSKEY );
+        //if( cl == null || cl.isEmpty() )
+        //    return out;
+
+        STStringTokenizer st = new STStringTokenizer( cl , Constants.DELIMITER );
+
+        String t;
+
+        while( st.hasMoreTokens() )
+        {
+            t = st.nextToken();
+            if( t!=null && !t.isBlank() )
+                out.add( new CaveatScore(out.size()+1, CaveatScoreType.LEGACY_STRING.getCaveatScoreTypeId(), t, null ) );
+        }
+
+        return out;
+    }
+
+    
+    
     /**
      * Returns LIST of:
      * 
@@ -437,7 +512,7 @@ public class ReportUtils
      * @param cl
      * @param l
      * @return 
-     */
+     *
     public static List<String[]> getParsedTopicScores( List<String> cl, Locale l, int simCompetencyClassId)
     {
         List<String[]> out = new ArrayList<>();
@@ -455,6 +530,41 @@ public class ReportUtils
         
         return out;
     }
+    */
+
+    /**
+     * Returns LIST of:
+     * 
+     *   data[0]=Key - normally TOPIC
+     *   data[1]=Topic Name
+     *   data[2]=Value
+     * 
+     * @param cl
+     * @param l
+     * @return 
+     */
+    public static List<String[]> getParsedTopicScoresForCaveatScores( List<CaveatScore> cl, Locale l, int simCompetencyClassId)
+    {
+        List<String[]> out = new ArrayList<>();
+        
+        List<CaveatScore> tl = new ArrayList<>();
+        
+        for( CaveatScore c : cl )
+        {
+            if( c.getCaveatScoreType().getIsTopic() ) // Constants.TOPIC_KEY + "~" ) )
+                tl.add( c );            
+        }
+        
+        for( CaveatScore c : tl )
+        {
+            c.setLocale(l);
+            
+            out.add(parseTopicCaveatScore(c, tl.size()==1, simCompetencyClassId ) );
+        }
+        
+        return out;
+    }
+
     
     /**
      * format of inStr is KEY~S1~S2~S3
@@ -464,6 +574,48 @@ public class ReportUtils
      *   data[1]=Topic Name
      *   data[2]=Value
      */
+    public static String[] parseTopicCaveatScore( CaveatScore cs, boolean isOneLine, int simCompetencyClassId)
+    {
+        // LogService.logIt( "ReportUtils.parseTopicCaveatStr() inStr=" + inStr );
+                    
+        String[] out = new String[3];
+                
+        if( cs==null || !cs.getHasValidInfo() )
+            return out;
+        
+        String[] ct = new String[]{ "TOPIC", cs.getStrValue(), cs.getValueAsStr(),cs.getValue2AsStr(),cs.getValue3AsStr() };
+        int partial = cs.getValue3Int();
+        
+        String stub = "";
+        
+        if( simCompetencyClassId>=0 )
+            stub = SimCompetencyClass.getValue( simCompetencyClassId ).getTopicCorrectStub();
+          
+        out[0]="TOPIC";
+
+        out[1] = cs.getStrValue().equals( "NOTOPIC" ) ? MessageFactory.getStringMessage( cs.getLocale(), isOneLine ? "g.CaveatOneTopicName" : "g.CaveatGeneralTopic" ) : ct[1];
+
+        // either there is no partially correct items or this is an old score.
+        if( partial<=0 ) 
+            out[2] = MessageFactory.getStringMessage( cs.getLocale(), "g.CaveatXofYCorrect" + stub, ct ); 
+
+        // Has Partials!
+        else
+            out[2] = MessageFactory.getStringMessage( cs.getLocale(), "g.CaveatXofYCorrectWithPartial" + stub, ct ); 
+        
+        return out;        
+    }
+    
+    
+    
+    /**
+     * format of inStr is KEY~S1~S2~S3
+     * 
+     * Returns
+     *   data[0]=Key - normally TOPIC
+     *   data[1]=Topic Name
+     *   data[2]=Value
+     *
     public static String[] parseTopicCaveatStr( String inStr, Locale locale, boolean isOneLine, int simCompetencyClassId)
     {
         // LogService.logIt( "ReportUtils.parseTopicCaveatStr() inStr=" + inStr );
@@ -503,8 +655,30 @@ public class ReportUtils
         
         return out;        
     }
+    */
 
     
+    
+    public static void swapTopicNamesInCaveatScores( Map<String,String> equivTopicNameMap, List<CaveatScore> topicCsl )
+    {
+        // In order to swap we need both SimJs and we need some topics. 
+        if( equivTopicNameMap==null || topicCsl==null || topicCsl.isEmpty() )
+            return;
+                
+        String tn2;
+        
+        for( CaveatScore t : topicCsl )
+        {
+            if( t.getStrValue()!=null && ! t.getStrValue().isEmpty() )
+            {
+                tn2 = equivTopicNameMap.get(  t.getStrValue() );
+                
+                // Swap if found.
+                if( tn2!=null && !tn2.isEmpty() )
+                    t.setStrValue( tn2 );
+            }
+        }        
+    }
     
     public static void swapTopicNames( Map<String,String> equivTopicNameMap, List<String[]> topicCaveatListIn )
     {

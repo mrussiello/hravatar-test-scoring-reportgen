@@ -7,6 +7,7 @@ package com.tm2score.av;
 
 import com.tm2builder.sim.xml.SimJ;
 import com.tm2score.entity.event.AvItemResponse;
+import com.tm2score.score.CaveatScore;
 import com.tm2score.score.iactnresp.ScorableResponse;
 import com.tm2score.score.TextAndTitle;
 import java.util.List;
@@ -46,5 +47,7 @@ public interface AvItemScorer {
     public float[] getMaxPointsArray();
     
     public TextAndTitle getItemScoreTextTitle(int includeItemScoreTypeId, ScorableResponse sr );
+    
+    public List<CaveatScore> getCaveatScoreList();
     
 }

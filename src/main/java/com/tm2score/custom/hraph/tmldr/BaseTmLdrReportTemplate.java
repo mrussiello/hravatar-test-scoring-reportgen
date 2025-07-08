@@ -34,6 +34,7 @@ import static com.tm2score.custom.coretest2.CT2ReportSettings.MAX_CUSTLOGO_W_V2;
 import com.tm2score.entity.event.TestEvent;
 import com.tm2score.entity.event.TestEventScore;
 import com.tm2score.entity.file.UploadedUserFile;
+import com.tm2score.entity.proctor.RemoteProctorEvent;
 import com.tm2score.entity.profile.Profile;
 import com.tm2score.entity.purchase.Product;
 import com.tm2score.entity.user.User;
@@ -52,6 +53,8 @@ import com.tm2score.global.NumberUtils;
 import com.tm2score.global.RuntimeConstants;
 import com.tm2score.global.STException;
 import com.tm2score.interview.InterviewQuestion;
+import com.tm2score.proctor.ProctorHelpUtils;
+import com.tm2score.proctor.ProctorUtils;
 import com.tm2score.profile.ProfileFacade;
 import com.tm2score.profile.ProfileStrParam1Comparator;
 import com.tm2score.profile.ProfileUsageType;
@@ -60,6 +63,7 @@ import com.tm2score.profile.alt.AltScoreCalculatorFactory;
 import com.tm2score.report.ReportData;
 import com.tm2score.report.ReportTemplate;
 import com.tm2score.report.ReportUtils;
+import com.tm2score.score.CaveatScore;
 import com.tm2score.score.ScoreUtils;
 import com.tm2score.score.TextAndTitle;
 import com.tm2score.service.LogService;
@@ -136,6 +140,7 @@ public abstract class BaseTmLdrReportTemplate extends TmLdrReportSettings implem
     TableBackground tableHeaderRowEvent;
 
     ReportUtils reportUtils;
+    ProctorUtils proctorUtils;
 
     float PAD = 5;
     float TPAD = 8;
@@ -2722,52 +2727,68 @@ public abstract class BaseTmLdrReportTemplate extends TmLdrReportSettings implem
                 if( scoreText == null )
                     scoreText = "";
 
-                //Phrase pg;
-                java.util.List<String[]> topicCaveatList = reportData.getReportRuleAsBoolean( "cmptytopicsoff" ) ? new ArrayList<>() :  ReportUtils.getParsedTopicScores(reportData.getCaveatList(tes), reportData.getLocale(), tes.getSimCompetencyClassId() );
+                List<CaveatScore> topicCsl = reportData.getReportRuleAsBoolean( "cmptytopicsoff" ) ? new ArrayList<>() :  reportData.getTopicCaveatScoreList(tes);
+                String cHdrStr=null;
+                String cFtrStr=null;
                 
-                com.itextpdf.text.List cl = new com.itextpdf.text.List( com.itextpdf.text.List.UNORDERED, 12 );
-                Paragraph cHdr=null;
-                Paragraph cFtr=null;
-                float spcg = 8;
-                cl.setListSymbol( "\u2022");
-
-                Phrase cst = new Phrase( new Phrase( scoreText, getFontSmall() ) );
-                cst.setLeading( 10 );
-
-                for( String ct : reportData.getCaveatList(tes) )
-                {
-                    if( ct.isEmpty() )
-                        continue;
-
-                    if( ct.startsWith( Constants.TOPIC_KEY + "~" ) )
-                        continue;
-                    
-                    cl.add( new ListItem( new Paragraph( ct , getFontSmall() ) ) );
-                }
-
-                for( String[] ct : topicCaveatList )
-                {                                        
-                    // String[] ct = topicCaveatList.get(0);
-                    cl.add( new ListItem( new Paragraph( ct[1] + ": " + ct[2] , getFontSmall() ) ) );                    
-                }                
-                
-                if( cl.size()>0 )
+                if( !topicCsl.isEmpty() )
                 {
                     if( caveatHeaderKey != null && !caveatHeaderKey.isEmpty() )
-                    {
-                        cHdr = new Paragraph( lmsg( caveatHeaderKey ) , getFontSmall() );
-                        cHdr.setSpacingBefore( spcg );
-                        cHdr.setSpacingAfter( spcg );
-                        cHdr.setLeading( 10 );
-                    }
+                        cHdrStr = lmsg( caveatHeaderKey );
 
                     if( caveatFooterKey != null && !caveatFooterKey.isEmpty() )
-                    {
-                        cFtr = new Paragraph( lmsg( caveatFooterKey ) , getFontSmall() );
-                        cFtr.setSpacingBefore( spcg );
-                        cFtr.setLeading( 10 );
-                    }
+                        cFtrStr = lmsg( caveatFooterKey );
                 }
+                
+                PdfPTable scoreTextAndCaveatTable = getScoreTextAndTopicCaveatScoreTable(scoreText, cHdrStr, cFtrStr, topicCsl, getFontSmall(), tes.getSimCompetencyClassId() );
+                
+                
+                //Phrase pg;
+                //java.util.List<String[]> topicCaveatList = reportData.getReportRuleAsBoolean( "cmptytopicsoff" ) ? new ArrayList<>() :  ReportUtils.getParsedTopicScores(reportData.getCaveatList(tes), reportData.getLocale(), tes.getSimCompetencyClassId() );
+                
+                //com.itextpdf.text.List cl = new com.itextpdf.text.List( com.itextpdf.text.List.UNORDERED, 12 );
+                //Paragraph cHdr=null;
+                //Paragraph cFtr=null;
+                //float spcg = 8;
+                //cl.setListSymbol( "\u2022");
+
+                //Phrase cst = new Phrase( new Phrase( scoreText, getFontSmall() ) );
+                //cst.setLeading( 10 );
+
+                //for( String ct : reportData.getCaveatList(tes) )
+                //{
+                 //   if( ct.isEmpty() )
+                //        continue;
+
+                //    if( ct.startsWith( Constants.TOPIC_KEY + "~" ) )
+                //        continue;
+                    
+                //    cl.add( new ListItem( new Paragraph( ct , getFontSmall() ) ) );
+                //}
+
+                //for( String[] ct : topicCaveatList )
+                //{                                        
+                    // String[] ct = topicCaveatList.get(0);
+                //    cl.add( new ListItem( new Paragraph( ct[1] + ": " + ct[2] , getFontSmall() ) ) );                    
+                //}                
+                
+                //if( cl.size()>0 )
+                //{
+                //    if( caveatHeaderKey != null && !caveatHeaderKey.isEmpty() )
+                //    {
+                //        cHdr = new Paragraph( lmsg( caveatHeaderKey ) , getFontSmall() );
+                //        cHdr.setSpacingBefore( spcg );
+                //        cHdr.setSpacingAfter( spcg );
+                //        cHdr.setLeading( 10 );
+                //    }
+
+                //    if( caveatFooterKey != null && !caveatFooterKey.isEmpty() )
+                //    {
+                //        cFtr = new Paragraph( lmsg( caveatFooterKey ) , getFontSmall() );
+                //       cFtr.setSpacingBefore( spcg );
+                //        cFtr.setLeading( 10 );
+                //    }
+                //}
 
                 // ScoreText Cell
                 c = new PdfPCell(); // new Phrase( scoreText, getFontSmall() )  );
@@ -2775,13 +2796,14 @@ public abstract class BaseTmLdrReportTemplate extends TmLdrReportSettings implem
                 c.setBackgroundColor( useGrayBg ? graybg : BaseColor.WHITE );
                 c.setColspan( 2 );
                 c.setPaddingTop( 10 );
-                c.addElement( cst );
-                if( cl.size()>0 )
-                {
-                    c.addElement( cHdr );
-                    c.addElement( cl );
-                    c.addElement( cFtr );
-                }
+                c.addElement( scoreTextAndCaveatTable );
+                //c.addElement( cst );
+                //if( cl.size()>0 )
+                //{
+                //    c.addElement( cHdr );
+                //    c.addElement( cl );
+                //    c.addElement( cFtr );
+                //}
 
                 compT.addCell(c);
 
@@ -5271,6 +5293,32 @@ public abstract class BaseTmLdrReportTemplate extends TmLdrReportSettings implem
     
     
     public void addIdentityImageCaptureSection() throws Exception
+    {
+        // LogService.logIt(  "BaseCT2ReportTemplate.addIdentityImageCaptureInfo() UsePremium=" + ProctorHelpUtils.getUseExternalProctoring(reportData.getTestKey()) );
+
+        if( ProctorHelpUtils.getUseExternalProctoring(reportData.getTestKey()) )
+        {
+            if( reportData.getTestEvent().getRemoteProctorEvent()==null )
+            {
+                if( proctorUtils==null )
+                    proctorUtils = new ProctorUtils();
+                proctorUtils.setupRemoteProctorEvent( reportData.getLocale(), reportData.getUser().getTimeZone(), reportData.getTestEvent() );
+            }
+
+            if( reportData.getTestKey().getOnlineProctoringType().getIsPremiumWithImageCap() || reportData.getTestEvent().getRemoteProctorEvent()!=null )
+            {
+                addPremiumIdentityImageCaptureSection();
+                return;
+            }
+
+            // if external but no images, do not include.
+            //return;
+        }
+
+    }
+    
+    /*
+    public void addIdentityImageCaptureSection() throws Exception
     {   
         try
         {
@@ -5318,7 +5366,225 @@ public abstract class BaseTmLdrReportTemplate extends TmLdrReportSettings implem
             throw new STException( e );
         }        
     }
+    */
     
 
+    public void addPremiumIdentityImageCaptureSection() throws Exception
+    {
+        try
+        {
+            // LogService.logIt( "BaseCT2ReportTemplate.addPremiumIdentityImageCaptureSection() Start. " );
+            if( !ProctorHelpUtils.getUseExternalProctoring(reportData.tk) )
+                return;
+
+            if( reportData.getReportRuleAsBoolean( "hideimgcaptpdf" ) || reportData.getReportRuleAsBoolean( "allprocpdf")  )
+                return;
+
+            RemoteProctorEvent rpe = reportData.te.getRemoteProctorEvent();
+            if( proctorUtils==null )
+                proctorUtils = new ProctorUtils();
+            if( rpe==null || rpe.getUploadedUserFileList()==null )
+            {
+                proctorUtils.setupRemoteProctorEvent( reportData.getLocale(), reportData.getUser().getTimeZone(), reportData.te );
+                rpe = reportData.te.getRemoteProctorEvent();
+            }
+
+            //LogService.logIt( "BaseCT2ReportTemplate.addPremiumIdentityImageCaptureSection() rpe=" + (rpe==null ? "null" : "id=" + rpe.getRemoteProctorEventId() + ", status=" + rpe.getRemoteProctorEventStatusType().getName()) + ", uploadedUserFiles=" + (rpe!=null && rpe.getUploadedUserFileList()!=null ? rpe.getUploadedUserFileList().size() : " null - 0")   );
+
+            if( rpe==null )
+                return;
+
+            // boolean imageComparisonsComplete = rpe.getRemoteProctorEventStatusTypeId()>=RemoteProctorEventStatusType.IMAGE_COMPARISONS_COMPLETE.getRemoteProctorEventStatusTypeId();
+
+            // No photos at all.
+            List<UploadedUserFile> ufl = rpe.getUploadedUserFileListForPhotos();
+            List<UploadedUserFile> uflRec = rpe.getOnlineProctoringType().getRecordsVideo() ? rpe.getUploadedUserFileListForRecordings() : null;
+            if( uflRec!=null && !uflRec.isEmpty() )
+                ufl.addAll(uflRec);
+
+            List<UploadedUserFile> uflIds = rpe.getUploadedUserFileListForIds();
+            if( ufl.isEmpty() && uflIds.isEmpty() )
+            {
+                //LogService.logIt( "BaseCT2ReportTemplate.addPremiumIdentityImageCaptureSection() ufl.size=" + ufl.size() + ", uflIds.size=" + uflIds.size() );
+                return;
+            }
+
+            boolean showImages = reportData.o.getCandidateImageViewTypeId()<=0 && !reportData.getReportRuleAsBoolean( "captimgsoff" ) && !reportData.getReportRuleAsBoolean( "captimgsoffpdfonly" ) && !reportData.tk.getHideMediaInReports() && reportData.o.getHideProcImagesPdf()<=0;
+
+            boolean forceIncludeAllImages = false; // showImages && (rpe.getMultiFaceThumbs()>0);
+
+            int maxImagesToShow = 22;
+
+            //float avgScoreId = rpe.getThumbScore();
+            //float avgScoreFace = rpe.getIdFaceMatchPercent();
+            //float overallProctorScore = rpe.getOverallProctorScore();
+            //float tot;
+            //float count=0;
+
+            if( proctorUtils==null )
+                proctorUtils = new ProctorUtils();
+            List<UploadedUserFile> ufl2 = showImages ? proctorUtils.getFauxUploadedUserFileListForReportThumbs( ufl, forceIncludeAllImages, maxImagesToShow ) : new ArrayList<>();
+            List<UploadedUserFile> uflId2 = showImages ? proctorUtils.getFauxUploadedUserFileListForReportThumbs( uflIds, forceIncludeAllImages, maxImagesToShow ) : new ArrayList<>();
+
+            boolean hasMax = ufl2.size()>=maxImagesToShow;
+
+            List<String[]> caveatList = proctorUtils.getPremiumCaveatList( reportData.getTestKey().getProctoringIdCaptureTypeId(),  rpe, reportData.getLocale(), hasMax );
+
+            //LogService.logIt( "BaseCT2ReportTemplate.addPremiumIdentityImageCaptureSection() showImages=" + showImages + ", ufl2.size=" + ufl2.size() + ", uflId2.size=" + uflId2.size() + ", caveatList.size=" + caveatList.size() );
+
+            PdfPTable t = generateIdentityImageCaptureTableTop(reportData,
+                                                             caveatList,
+                                                             rpe.getOverallProctorScore(),
+                                                             pageWidth );
+
+            if( t==null )
+                return;
+
+            addNewPage();
+            previousYLevel =  currentYLevel;
+            float y = addTitle(previousYLevel, lmsg( "g.ImgCapReportTitle" ), lmsg( "g.ImgCapReportSubtitle.Premium" )); // , null, null );
+
+            currentYLevel = addTableToDocument(y, t ); //, false, true );
+
+            t = generateIdentityImageCaptureTableImages(reportData,
+                                                             ufl2,
+                                                             uflId2,
+                                                             pageWidth );
+
+            if( t==null )
+                return;
+
+            previousYLevel =  currentYLevel;
+            y = previousYLevel; // addTitle( previousYLevel, lmsg( "g.ImgCapReportTitle" ), lmsg( "g.ImgCapReportSubtitle.Premium" ) );
+
+            currentYLevel = addTableToDocument(y, t ); //, false, true );
+
+           // LogService.logIt( "BaseCT2ReportTemplate.addIdentityImageCaptureSection() END" );
+        }
+
+        catch( Exception e )
+        {
+            LogService.logIt( e, "BaseCT2ReportTemplate.addPremiumIdentityImageCaptureSection() testEventId=" + (reportData.te==null ? "null" : reportData.te.getTestEventId()) + ", reportId=" + (reportData.r2Use==null ? "null" : reportData.r2Use.getReportId()) );
+            throw new STException( e );
+        }
+
+    }
+    
+    public PdfPTable getScoreTextAndTopicCaveatScoreTable( String scoreText, String headerStr, String footerStr, List<CaveatScore> csl, Font fontToUse, int simCompetencyClassId )
+    {
+        if( (scoreText==null ||scoreText.isBlank()) && 
+            (csl==null || csl.isEmpty()))
+            return null;
+        
+        //if( (csl==null || csl.isEmpty())  )
+        //    return null;
+
+        try
+        {
+            PdfPTable t = new PdfPTable(2);
+            setRunDirection(t);
+            t.setHorizontalAlignment(Element.ALIGN_LEFT);
+
+            PdfPCell c;
+            
+            
+            if( scoreText!=null && !scoreText.isBlank() )
+            {
+                c = new PdfPCell(new Phrase(scoreText, fontToUse));
+                c.setColspan(2);
+                c.setBorderWidth(0);
+                c.setPadding(2);
+                c.setPaddingBottom(10);
+                c.setPaddingLeft(CT2_BOXHEADER_LEFTPAD);
+                c.setHorizontalAlignment( reportData.getIsLTR() ? Element.ALIGN_LEFT : Element.ALIGN_RIGHT );
+                setRunDirection(c);
+                t.addCell(c);                
+            }
+            
+            if( headerStr!=null && !headerStr.isBlank() )
+            {
+                c = new PdfPCell(new Phrase(headerStr, fontToUse));
+                c.setColspan(2);
+                c.setBorderWidth(0);
+                c.setPadding(2);
+                c.setPaddingLeft(CT2_BOXHEADER_LEFTPAD);
+                c.setHorizontalAlignment( reportData.getIsLTR() ? Element.ALIGN_LEFT : Element.ALIGN_RIGHT );
+                setRunDirection(c);
+                t.addCell(c);                
+            }
+            
+            for (CaveatScore cs : csl)
+            {
+                if (cs.getLocale() == null)
+                    cs.setLocale(reportData.getLocale());
+
+                // Either the last or the second to last CS can be a Topic.
+                if( cs.getIsTopic() )
+                {
+                    String[] dd = ReportUtils.parseTopicCaveatScore(cs, csl.size()==1, simCompetencyClassId);
+
+                    c = new PdfPCell(new Phrase("\u2022 " + dd[1] + ":", fontToUse));
+                    c.setColspan(1);
+                    c.setBorderWidth(0);
+                    c.setPadding(2);
+                    c.setPaddingLeft(CT2_BOXHEADER_LEFTPAD);
+                    c.setHorizontalAlignment( reportData.getIsLTR() ? Element.ALIGN_LEFT : Element.ALIGN_RIGHT );
+                    setRunDirection(c);
+                    t.addCell(c);
+
+                    c = new PdfPCell(new Phrase(dd[2], fontToUse));
+                    c.setColspan(1);
+                    c.setBorderWidth(0);
+                    c.setPadding(2);
+                    c.setHorizontalAlignment( reportData.getIsLTR() ? Element.ALIGN_LEFT : Element.ALIGN_RIGHT );
+                    setRunDirection(c);
+                    t.addCell(c);
+                    
+                    continue;
+                }
+                
+                c = new PdfPCell(new Phrase("\u2022 " + cs.getCol1() + (cs.getCaveatScoreType().getColspan()==1 ? ":" : ""), fontToUse));
+                c.setColspan(cs.getCaveatScoreType().getColspan());
+                c.setBorderWidth(0);
+                c.setPadding(2);
+                c.setPaddingLeft(CT2_BOXHEADER_LEFTPAD);
+                c.setHorizontalAlignment( reportData.getIsLTR() ? Element.ALIGN_LEFT : Element.ALIGN_RIGHT );
+                setRunDirection(c);
+                t.addCell(c);
+                
+                if(cs.getCaveatScoreType().getColspan()>1)
+                    continue;
+                
+                c = new PdfPCell(new Phrase(cs.getCol2(), fontToUse));
+                c.setColspan(1);
+                c.setBorderWidth(0);
+                c.setPadding(2);
+                c.setHorizontalAlignment( reportData.getIsLTR() ? Element.ALIGN_LEFT : Element.ALIGN_RIGHT );
+                setRunDirection(c);
+                t.addCell(c);
+            }
+            
+            // Footer
+            if( footerStr!=null && !footerStr.isBlank() )
+            {
+                c = new PdfPCell(new Phrase(footerStr, fontToUse));
+                c.setColspan(2);
+                c.setBorderWidth(0);
+                c.setPadding(2);
+                c.setPaddingLeft(CT2_BOXHEADER_LEFTPAD);
+                c.setHorizontalAlignment( reportData.getIsLTR() ? Element.ALIGN_LEFT : Element.ALIGN_RIGHT );
+                setRunDirection(c);
+                t.addCell(c);                
+            }
+
+            return t;
+        } catch (Exception e)
+        {
+            LogService.logIt(e, "BaseTmLdrReportTemplate.getCaveatScoreTable() ");
+            throw e;
+        }        
+    }
+    
+    
 
 }

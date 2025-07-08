@@ -21,6 +21,7 @@ import com.tm2score.file.FileUploadFacade;
 import com.tm2score.file.FileXferUtils;
 import com.tm2score.global.RuntimeConstants;
 import com.tm2score.interview.InterviewQuestion;
+import com.tm2score.score.CaveatScore;
 import com.tm2score.score.ScoreManager;
 import com.tm2score.score.ScoredItemParadigmType;
 import com.tm2score.score.SimletScore;
@@ -702,12 +703,19 @@ public class ResumeIactnResp extends IactnResp implements ScorableResponse
     }
 
 
+    /*
     @Override
     public String getCaveatText()
     {
         return null;
     }
+    */
 
+    @Override
+    public List<CaveatScore> getCaveatScoreList()
+    {
+        return new ArrayList<>();
+    }    
 
     @Override
     public InterviewQuestion getScoreTextInterviewQuestion()

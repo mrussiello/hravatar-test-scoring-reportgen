@@ -17,11 +17,11 @@ import java.util.Locale;
  */
 public class Type102AvUploadItemScorer extends BaseAudioSampleAvItemScorer implements AvItemScorer {
     
-    int avItemTypeId;
+    // int avItemTypeId;
     
     public Type102AvUploadItemScorer( int avItemTypeId, Locale locale, String teIpCountry, User user, TestEvent testEvent)
     {
         super(locale, teIpCountry, user, testEvent );
-        this.avItemTypeId=avItemTypeId;
+        // this.avItemTypeId=avItemTypeId;
     }
 }

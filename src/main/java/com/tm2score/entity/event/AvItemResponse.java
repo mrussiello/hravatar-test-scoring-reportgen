@@ -28,6 +28,8 @@ import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -74,11 +76,14 @@ public class AvItemResponse implements Comparable<AvItemResponse>, Serializable 
     private int unscoredEssayId;
 
     @Column(name = "essaystatustypeid")
-    private int essayStatusTypeId;
+    private int avItemEssayStatusTypeId;
 
     @Column(name = "itemuniqueid")
     private String itemUniqueId;
 
+    /*
+     This is set in Tm2Convert when the AvItemResponse is created.
+    */
     @Column(name = "avItemTypeId")
     private int avItemTypeId;
 
@@ -324,6 +329,25 @@ public class AvItemResponse implements Comparable<AvItemResponse>, Serializable 
     {
         return VoiceVibesAccountType.getValue(this.voiceVibesAccountTypeId);
     }
+    
+    public Map<Integer,Float> getMetaScoreMap()
+    {
+        Map<Integer,Float> out = new HashMap<>();
+        
+        if( this.metaScoreTypeId1>0 )
+            out.put( this.metaScoreTypeId1, metaScore1);
+        if( this.metaScoreTypeId2>0 )
+            out.put( this.metaScoreTypeId2, metaScore2);
+        if( this.metaScoreTypeId3>0 )
+            out.put( this.metaScoreTypeId3, metaScore3);
+        if( this.metaScoreTypeId4>0 )
+            out.put( this.metaScoreTypeId4, metaScore4);
+        if( this.metaScoreTypeId5>0 )
+            out.put( this.metaScoreTypeId5, metaScore5);
+        
+        return out;
+    }
+    
 
     public AvItemType getAvItemType()
     {
@@ -389,9 +413,9 @@ public class AvItemResponse implements Comparable<AvItemResponse>, Serializable 
         return VoiceVibesStatusType.getValue(voiceVibesStatusTypeId);
     }
 
-    public AvItemEssayStatusType getEssayStatusType()
+    public AvItemEssayStatusType getAvItemEssayStatusType()
     {
-        return AvItemEssayStatusType.getValue(essayStatusTypeId);
+        return AvItemEssayStatusType.getValue(avItemEssayStatusTypeId);
     }
 
     public boolean isValidRawResponse()
@@ -410,14 +434,17 @@ public class AvItemResponse implements Comparable<AvItemResponse>, Serializable 
 
     public boolean isPendingScoring() throws Exception
     {
-        return this.getEssayStatusType().isRequested();
+        return getAvItemEssayStatusType().isRequested();
     }
 
     public boolean isReadyForScoring() throws Exception
     {
         // contains pending audio
         if (getAvItemAudioStatusType().isPendingFromSource())
+        {
+            // LogService.logIt( "AvItemResponse.isReadyForScoring() Pending from source. avItemResponseId=" + avItemResponseId + ", testEventId=" + testEventId  );
             return false;
+        }
 
         // if already marked as skipped or invalid. will be treated as wrong or ignored.
         // if( getIvrItemScoringStatusType().isSkipped() || getIvrItemScoringStatusType().isInvalid() || getIvrItemScoringStatusType().isReadyForScoring() )
@@ -436,7 +463,7 @@ public class AvItemResponse implements Comparable<AvItemResponse>, Serializable 
         // audio present, and required, but no bytes.  audio not stored in dbms
         if (getAvItemType().getStoreRecordedAudio() && getAudioStatusType().isPresent() && (audioBytes == null || audioBytes.length == 0))
         {
-            // LogService.logIt( "AvItemResponse.isReadyForScoring() avItemType stores audio and AudioStatusType.isPresent but no audioBytes. avItemResponseId=" + avItemResponseId + ", testEventId=" + testEventId  );
+            LogService.logIt( "AvItemResponse.isReadyForScoring() avItemType stores audio and AudioStatusType.isPresent but no audioBytes. avItemResponseId=" + avItemResponseId + ", testEventId=" + testEventId  );
             return false;
         }
 
@@ -498,7 +525,7 @@ public class AvItemResponse implements Comparable<AvItemResponse>, Serializable 
     {
         try
         {
-            return EncryptUtils.urlSafeEncrypt(new Long(avItemResponseId).toString());
+            return EncryptUtils.urlSafeEncrypt(Long.toString(avItemResponseId));
         } catch (Exception e)
         {
             LogService.logIt(e, "AvItemResponse.getAvItemResponseIdEncrypted() " + toString());
@@ -1007,14 +1034,14 @@ public class AvItemResponse implements Comparable<AvItemResponse>, Serializable 
         this.unscoredEssayId = unscoredEssayId;
     }
 
-    public int getEssayScoreStatusTypeId()
+    public int getAvItemEssayStatusTypeId()
     {
-        return essayStatusTypeId;
+        return avItemEssayStatusTypeId;
     }
 
-    public void setEssayStatusTypeId(int essayStatusTypeId)
+    public void setAvItemEssayStatusTypeId(int essayStatusTypeId)
     {
-        this.essayStatusTypeId = essayStatusTypeId;
+        this.avItemEssayStatusTypeId = essayStatusTypeId;
     }
 
     public float getEssayMachineScore()

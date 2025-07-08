@@ -74,7 +74,8 @@ public class SimletCompetencyScore
     protected float scaledScoreCeiling = 0;
     protected float scaledScoreFloor = 0;
 
-    protected List<String> caveatList = null;
+    // protected List<String> caveatList = null;
+    protected List<CaveatScore> caveatList2 = null;
     protected List<String> forceRiskFactorsList = null;
 
     protected List<InterviewQuestion> scoreTextInterviewQuestionList;
@@ -165,8 +166,12 @@ public class SimletCompetencyScore
                   competencyScoreType.isScoredChat() ||
                   competencyScoreType.isScoredAvUpload() ) )
         {
+            long intnLevelCompetencyScoreId;
+            
             for( SimJ.Intn intn : simletScore.intnObjList )
             {
+                intnLevelCompetencyScoreId=intn.getCompetencyscoreid();
+                
                 if( intn.getCompetencyscoreid()==competencyScoreObj.getId() )
                 {
                     // If we can score this item multiple times.
@@ -219,7 +224,7 @@ public class SimletCompetencyScore
 
                 for( SimJ.Intn.Intnitem ii : intn.getIntnitem() )
                 {
-                    if( ii.getCompetencyscoreid()==competencyScoreObj.getId() )
+                    if( ii.getCompetencyscoreid()==competencyScoreObj.getId() && ii.getCompetencyscoreid()!=intnLevelCompetencyScoreId )
                     {
                         totalScorableItems++;
                         totalScorableItemsCountAdjusted += ii.getCt5Float1()>0 ? ii.getCt5Float1() : 1f;
@@ -230,7 +235,7 @@ public class SimletCompetencyScore
         }
 
         if( ScoreManager.DEBUG_SCORING )
-            LogService.logIt( "SimletCompetencyScore.initForScoring() " + this.competencyScoreObj.getName() + ", totalScorableItems=" + totalScorableItems + ", maxPoints=" + maxPoints + ", irList.size=" + irList.size() + ", useTotalItemsSimLevel=" + useTotalItemsSimLevel + ", useTotalItemsSimletCompetencyLevel=" + useTotalItemsSimletCompetencyLevel );
+            LogService.logIt( "SimletCompetencyScore.initForScoring() " + this.competencyScoreObj.getName() + ", useTotalItemsSimLevel=" + useTotalItemsSimLevel +", useTotalItemsSimletCompetencyLevel=" + useTotalItemsSimletCompetencyLevel + ", totalScorableItems=" + totalScorableItems + ", maxPoints=" + maxPoints + ", irList.size=" + irList.size() + ", useTotalItemsSimLevel=" + useTotalItemsSimLevel + ", useTotalItemsSimletCompetencyLevel=" + useTotalItemsSimletCompetencyLevel );
     }
 
 
@@ -383,11 +388,13 @@ public class SimletCompetencyScore
         // Sets values such as totalScorableItems
         initForScoring( irList );
 
-        String caveat;
+        // String caveat;
         InterviewQuestion iq;
 
-        caveatList = new ArrayList<>();
-
+        caveatList2 = new ArrayList<>();
+        //else
+        //    caveatList = new ArrayList<>();
+            
         forceRiskFactorsList = new ArrayList<>();
 
         scoreTextInterviewQuestionList = new ArrayList<>();
@@ -402,7 +409,7 @@ public class SimletCompetencyScore
         TextAndTitle itemScoreTextTitle;
 
         if( ScoreManager.DEBUG_SCORING )
-            LogService.logIt( "SimletCompetencyScore.calculateScore() AAA. Competency=" + competencyScoreObj.getName() + ", responses in irList=" + irList.size() );
+            LogService.logIt( "SimletCompetencyScore.calculateScore() AAA. totalScorableItems=" + totalScorableItems + ", Competency=" + competencyScoreObj.getName() + ", responses in irList=" + irList.size() );
 
         // talley the items
         for( ScorableResponse sr : irList )
@@ -465,14 +472,19 @@ public class SimletCompetencyScore
             if( sr.getCeiling()!=0 && sr.getCeiling()>scaledScoreCeiling )
                 scaledScoreCeiling = sr.getCeiling();
 
-            caveat = sr.getCaveatText();
+            //if( !Constants.USE_CAVEATS2 )
+            //    caveat = sr.getCaveatText();
+                
 
             if( sr.getForcedRiskFactorsList() != null )
                 forceRiskFactorsList.addAll( sr.getForcedRiskFactorsList() );
 
-            if( caveat != null && !caveat.isEmpty() )
-                caveatList.add( caveat );
-
+            if( sr.getCaveatScoreList()!=null )
+                caveatList2.addAll(sr.getCaveatScoreList() );
+            
+            //if( !Constants.USE_CAVEATS2 && caveat!=null && !caveat.isEmpty() )
+            //    caveatList.add( caveat );
+            
             iq = sr.getScoreTextInterviewQuestion();
 
             if( iq != null )
@@ -608,8 +620,7 @@ public class SimletCompetencyScore
                 }
 
             }
-
-
+            
             else if( competencyScoreType.isAvgZscoreDiff()  )
             {
                 // HRA SJTs use this method
@@ -713,7 +724,11 @@ public class SimletCompetencyScore
 
                     totalScorableItems++;
                     totalScorableItemsCountAdjusted += sr.getTotalItemCountIncrementValue();
+                    //LogService.logIt( "SimletCompetencyScore() incremented totalScorableItems. New value totalScorableItems=" + totalScorableItems + ", itemScore=" + sr.itemScore() +", totalPoints=" + totalPoints );
                 }
+                
+                // if( ScoreManager.DEBUG_SCORING )
+                //LogService.logIt( "SimletCompetencyScore() Added ScoreableResponse Score for Essay/AV totalScorableItems=" + totalScorableItems + ", itemScore=" + sr.itemScore() +", totalPoints=" + totalPoints );
             }
 
             if( includeItemScoreTypeId>0 )
@@ -1201,10 +1216,14 @@ public class SimletCompetencyScore
         return scaledScoreFloor;
     }
 
-    public List<String> getCaveatList() {
-        return caveatList;
-    }
+    //public List<String> getCaveatList() {
+    //    return caveatList;
+    //}
 
+    public List<CaveatScore> getCaveatList2() {
+        return caveatList2;
+    }
+    
     public List<InterviewQuestion> getScoreTextInterviewQuestionList() {
         return scoreTextInterviewQuestionList;
     }

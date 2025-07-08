@@ -41,7 +41,7 @@ public class ScoredEssayIntnItem {
 
     // Dummy Essay prompt will have the system perform spell/plagiarism checks but does not incorporate an essay score.
     // So, it still produces a score.
-    private static final int DUMMY_ESSAY_PROMPT_ID = 999999;
+    public static final int DUMMY_ESSAY_PROMPT_ID = 999999;
     private static Boolean USE_AI_FOR_PRIMARY;
     private static Boolean USE_AI_FOR_SCORE2;
 
@@ -56,15 +56,6 @@ public class ScoredEssayIntnItem {
     {
         "en"
     };
-    /**
-     * Interaction Item values: ScoreParam1 is the promptId number to use.
-     *
-     * ScoreParam3 = Max Points (default (0)=100)
-     *
-     */
-
-    public static float MIN_CONFIDENCE_DISCERN = 0.1f;
-    public static float MIN_CONFIDENCE_AI = 0.5f;
 
     SimJ simJ;
     String localeStr;
@@ -125,9 +116,13 @@ public class ScoredEssayIntnItem {
     List<String> spellWordsToIgnore;
 
     int unscoredEssayId;
+    
+    // 0=Essay, 10=Av
+    int unscoredEssayTypeId = 0;
 
     public boolean hasSpellingGrammarStyle = false;
-    
+    public boolean hasValidAiComputedScore = false;
+
     boolean itemLevelAiScoringOk = false;
     boolean submittedForAiScoring = false;
 
@@ -141,13 +136,13 @@ public class ScoredEssayIntnItem {
             int promptId,
             int ct5ItemId,
             int ct5ItemPartId,
-            String essayStr, 
-            String question, 
-            int minWds, 
-            int maxWords, 
-            float cTime, 
-            int webPlagCheckOk, 
-            int maxPlagCheckRows, 
+            String essayStr,
+            String question,
+            int minWds,
+            int maxWords,
+            float cTime,
+            int webPlagCheckOk,
+            int maxPlagCheckRows,
             String transCompare)
     {
         this.testEventId = testEventId;
@@ -171,11 +166,11 @@ public class ScoredEssayIntnItem {
 
         if( intnObj.getTextscoreparam1()!=null && !intnObj.getTextscoreparam1().isBlank() )
             this.idealResponse = StringUtils.getBracketedArtifactFromString(intnObj.getTextscoreparam1(), Constants.IDEAL_RESPONSE_KEY );
-        
+
         if( (idealResponse==null || idealResponse.isBlank()) &&  intItemObj.getTextscoreparam1()!=null && !intItemObj.getTextscoreparam1().isBlank() )
             this.idealResponse = StringUtils.getBracketedArtifactFromString(intItemObj.getTextscoreparam1(), Constants.IDEAL_RESPONSE_KEY );
-        
-        
+
+
         if (intItemObj.getLangcode() != null && !intItemObj.getLangcode().isBlank())
             txtLocale = I18nUtils.getLocaleFromCompositeStr(intItemObj.getLangcode());
 
@@ -184,7 +179,7 @@ public class ScoredEssayIntnItem {
 
         if( intnObj.getCt5Int25()==1 )
             itemLevelAiScoringOk=true;
-        
+
         setSpellWordsToIgnore(StringUtils.getBracketedArtifactFromString(intItemObj.getTextscoreparam1(), Constants.SPELLING_IGNORE_KEY));
 
         // LogService.logIt( "ScoredEssayIntnItem(testEventId=" + testEventId + ") ndseq=" + nodeSeqId + ", snSeq=" + subnodeSeqId + ", promptId=" + promptId + ", min/max words=" + this.minWords + "/" + this.maxWords );
@@ -197,7 +192,12 @@ public class ScoredEssayIntnItem {
             int nodeSeq,
             int subnodeSeq,
             int promptId,
+            int ct5ItemId,
+            int ct5ItemPartId,
             String essayStr,
+            String question,
+            String idealResponse,
+            boolean itemLevelAiScoringOk,
             int minWds,
             int maxWords,
             float cTime,
@@ -211,12 +211,18 @@ public class ScoredEssayIntnItem {
         this.nodeSeqId = nodeSeq;
         this.subnodeSeqId = subnodeSeq;
         this.essayPromptId = promptId;
+        this.ct5ItemId = ct5ItemId;
+        this.ct5ItemPartId = ct5ItemPartId;
         this.essayStr = essayStr;
+        this.question = question;
+        this.idealResponse=idealResponse;
         this.minWords = minWds > 0 ? minWds : 1;
         this.maxWords = maxWords;
         this.composeTime = cTime;
         this.webPlagCheckOk = webPlagCheckOk;
         this.spellWordsToIgnore = spellWordsToIgnore;
+        this.unscoredEssayTypeId=10;
+        this.itemLevelAiScoringOk=itemLevelAiScoringOk;
 
         LogService.logIt("ScoredEssayIntnItem(testEventId=" + testEventId + ") ndseq=" + nodeSeq + ", snSeq=" + subnodeSeq + ", promptId=" + promptId + ", min/max words=" + this.minWords + "/" + this.maxWords);
 
@@ -227,7 +233,7 @@ public class ScoredEssayIntnItem {
         if (USE_AI_FOR_PRIMARY != null)
             return;
 
-        USE_AI_FOR_PRIMARY = AiEssayScoringUtils.getAiEssayScoringOn() && !AiEssayScoringUtils.getAiEssayScoringUseScore2();
+        USE_AI_FOR_PRIMARY = !AiEssayScoringUtils.getAiEssayScoringUseScore2();
         USE_AI_FOR_SCORE2 = AiEssayScoringUtils.getAiEssayScoringOn() && AiEssayScoringUtils.getAiEssayScoringUseScore2();
     }
 
@@ -238,23 +244,27 @@ public class ScoredEssayIntnItem {
             if (USE_AI_FOR_PRIMARY == null)
                 initVariables();
 
-            if (essayStr != null && !essayStr.isEmpty())
+            if (essayStr!= null && !essayStr.isEmpty())
             {
                 String essayWithoutQuestion = removeQuestionFromEssayStr();
 
-                equivWords = StringUtils.numWords(essayWithoutQuestion); //    DataEntryItem.getEquivWords(essayStr);
+                totalWords = StringUtils.numWords(essayWithoutQuestion); //    DataEntryItem.getEquivWords(essayStr);
+                equivWords = totalWords;
 
-                if (maxWords > 0 && equivWords > maxWords)
+                if (maxWords>0 && equivWords>maxWords)
                 {
                     essayStr = StringUtils.truncateToMaxWordCt(essayStr, maxWords);
                     equivWords = maxWords;
                 }
 
+
                 int wordAdj = Math.round(0.03f * ((float) minWords));
 
-                if (equivWords >= (minWords - wordAdj))
+                // LogService.logIt( "ScoredEssayIntnItem.calculate() AAA.0 minWords=" + minWords +", equivWords=" + equivWords + ", maxWords=" + maxWords + ", totalWords=" + totalWords + ", wordAdj=" + wordAdj + ", testEventId=" + testEventId + "\n\n" + essayStr + "\n\n" + essayWithoutQuestion);
+
+                if (equivWords>=(minWords - wordAdj))
                 {
-                    // LogService.logIt( "ScoredEssayIntnItem.calculate() AAA testEventId=" + testEventId);
+                    LogService.logIt( "ScoredEssayIntnItem.calculate() AAA.01 testEventId=" + testEventId);
                     //if( essayPromptId <= 0 )
                     //    return;
 
@@ -266,11 +276,12 @@ public class ScoredEssayIntnItem {
                     EssayPrompt ep = null;
 
                     boolean hasValidTextForDiscern = hasValidTextForDiscern(essayWithoutQuestion);
+                    boolean hasValidTextForAi = hasValidTextForAi(essayWithoutQuestion);
 
                     // Found an unscored essay. Yay.
-                    if (ue != null)
+                    if (ue!=null)
                     {
-                        LogService.logIt("ScoredEssayIntnItem.calculate() BBB.0  DiscernUtils.isDiscernOn()=" + DiscernUtils.isDiscernOn() + ", testEventId=" + testEventId + ", ue.getWpm()=" + ue.getWpm());
+                        LogService.logIt("ScoredEssayIntnItem.calculate() BBB.0  DiscernUtils.isDiscernOn()=" + DiscernUtils.isDiscernOn() + ", unscoredEssayId=" + ue.getUnscoredEssayId() + ", hasValidTextForDiscern=" + hasValidTextForDiscern + ", hasValidTextForAi=" + hasValidTextForAi + ", testEventId=" + testEventId + ", unscoredEssayId=" + ue.getUnscoredEssayId() + ", ue.getWpm()=" + ue.getWpm());
                         unscoredEssayId = ue.getUnscoredEssayId();
 
                         EssayScoreStatusType scoreStatus = EssayScoreStatusType.getValue(ue.getScoreStatusTypeId());
@@ -285,15 +296,19 @@ public class ScoredEssayIntnItem {
                         translatedText = ue.getTranslatedEssay();
 
                         // Discern Required and Discern turned OFF
-                        if (!USE_AI_FOR_PRIMARY && !DiscernUtils.isDiscernOn() && (scoreStatus.incomplete() || scoreStatus.unsubmitted()))
+                        if ( ((!USE_AI_FOR_PRIMARY && !DiscernUtils.isDiscernOn()) || (USE_AI_FOR_PRIMARY && !AiEssayScoringUtils.getAiEssayScoringOn()) ) && 
+                               (scoreStatus.incomplete() || scoreStatus.unsubmitted()))
                         {
-                            // LogService.logIt( "ScoredEssayIntnItem.calculate() BBB.1 testEventId=" + testEventId + ". Discern is Turned Off." );
+                            LogService.logIt( "ScoredEssayIntnItem.calculate() BBB.1 Primary scoring method is Turned Off. testEventId=" + testEventId + ", unscoredEssayId=" + ue.getUnscoredEssayId() );
 
                             ue.setScoreDate(new Date());
                             ue.setScoreStatusTypeId(EssayScoreStatusType.FAILED_NOTENABLED.getEssayScoreStatusTypeId());
                             discernFacade.saveUnscoredEssay(ue, true);
                             errMsg = "Discern status in progress (incomplete or unsubmitted) but discern is not turned on so marked this as failed.";
                             scoreStatus = EssayScoreStatusType.getValue(ue.getScoreStatusTypeId());
+                            machineScore = plagiarized == 1 ? 0 : ue.getScoreFmErrorRates();
+                            confidence = 0;
+                            totalWords = equivWords;
 
                             if (USE_AI_FOR_SCORE2 && ue.getScoreDate2() != null && ue.getEssayScoreStatusType2().completed())
                             {
@@ -315,12 +330,18 @@ public class ScoredEssayIntnItem {
                         }
 
                         // Discern Required and Discern OFF
-                        if (!USE_AI_FOR_PRIMARY && !DiscernUtils.isDiscernOn())
+                        /*
+                        if ( (!USE_AI_FOR_PRIMARY && !DiscernUtils.isDiscernOn()) || (USE_AI_FOR_PRIMARY && !AiEssayScoringUtils.getAiEssayScoringOn()) )
                         {
+                            ue.setScoreStatusTypeId(EssayScoreStatusType.FAILED_NOTENABLED.getEssayScoreStatusTypeId());
+                            ue.setScoreDate(new Date());
+                            discernFacade.saveUnscoredEssay(ue, true);
+                            scoreStatus = EssayScoreStatusType.getValue(ue.getScoreStatusTypeId());                            
                             machineScore = plagiarized == 1 ? 0 : ue.getScoreFmErrorRates();
-                            confidence = 1;
+                            confidence = 0;
                             totalWords = equivWords;
-                            LogService.logIt( "ScoredEssayIntnItem.calculate() BBB.2 testEventId=" + testEventId + ". machineScoreFmErrors=" + machineScore );
+                            hasValidScore=true;
+                            LogService.logIt( "ScoredEssayIntnItem.calculate() BBB.2 Primary scoring is not enabled. testEventId=" + testEventId + ", unscoredEssayId=" + ue.getUnscoredEssayId() );
 
                             if (USE_AI_FOR_SCORE2 && ue.getScoreDate2() != null && ue.getEssayScoreStatusType2().completed())
                             {
@@ -328,6 +349,7 @@ public class ScoredEssayIntnItem {
                                 confidence2 = ue.getComputedConfidence2();
                             }
                         }
+                        */
 
                         if (scoreStatus.skipped())
                         {
@@ -336,6 +358,7 @@ public class ScoredEssayIntnItem {
 
                             hasValidScore = true;
                             machineScore = plagiarized == 1 ? 0 : ue.getScoreFmErrorRates();
+                            confidence = 0;
                             totalWords = equivWords;
                             // LogService.logIt( "ScoredEssayIntnItem.calculate() BBB.3 testEventId=" + testEventId + ". macineScore=" + machineScore );
                             if (USE_AI_FOR_SCORE2 && ue.getScoreDate2() != null && ue.getEssayScoreStatusType2().completed())
@@ -343,21 +366,35 @@ public class ScoredEssayIntnItem {
                                 essayMetaScoreMap = ue.getMetaScoreMap();
                                 confidence2 = ue.getComputedConfidence2();
                             }
-                            
-                        } else if (!hasValidTextForDiscern || scoreStatus.invalidTextForDiscern())
+                            hasValidScore = true;
+                        }
+                        else if ( (!USE_AI_FOR_PRIMARY && (!hasValidTextForDiscern || scoreStatus.invalidTextForDiscern())) ||
+                                  (USE_AI_FOR_PRIMARY && (!hasValidTextForAi || scoreStatus.invalidTextForDiscern())))
                         {
-                            ue.setScoreDate(new Date());
-                            ue.setScoreStatusTypeId(EssayScoreStatusType.INVALID_TEXT_FOR_DISCERN.getEssayScoreStatusTypeId());
-                            discernFacade.saveUnscoredEssay(ue, true);
+                            if( !scoreStatus.invalidTextForDiscern() )
+                            {
+                                ue.setScoreStatusTypeId(EssayScoreStatusType.INVALID_TEXT_FOR_DISCERN.getEssayScoreStatusTypeId());
+                                ue.setScoreDate(new Date());
+                                discernFacade.saveUnscoredEssay(ue, true);
+                            }
+                            
                             scoreStatus = EssayScoreStatusType.getValue(ue.getScoreStatusTypeId());
                             hasValidScore = true;
                             machineScore = plagiarized == 1 ? 0 : ue.getScoreFmErrorRates();
+                            confidence = 0;
                             totalWords = equivWords;
                             // LogService.logIt( "ScoredEssayIntnItem.calculate() BBB.43 testEventId=" + testEventId + ". macineScore=" + machineScore );
-                        } 
+                            if (USE_AI_FOR_SCORE2 && ue.getScoreDate2() != null && ue.getEssayScoreStatusType2().completed())
+                            {
+                                essayMetaScoreMap = ue.getMetaScoreMap();
+                                confidence2 = ue.getComputedConfidence2();
+                            }
+                        }
+
                         // AI will use the question in place of the dummy prompt, so don't need this for that.
-                        else if (!USE_AI_FOR_PRIMARY && usesDummyEssayPrompt())
+                        else if (usesDummyEssayPrompt() && (!USE_AI_FOR_PRIMARY || !itemLevelAiScoringOk) )
                         {
+                            LogService.logIt( "ScoredEssayIntnItem.calculate() BBB.44B Setting to Skipped  DummyPrompt because uses DummyPrompt and USE_AI_FOR_PRIMARY-" + USE_AI_FOR_PRIMARY + ", itemLevelAiScoringOk=" + itemLevelAiScoringOk + ", testEventId=" + testEventId + ". machineScore=" + machineScore + ", plagiarized=" + plagiarized + ", ue.getScoreFmErrorRates()=" + ue.getScoreFmErrorRates());
                             ue.setScoreDate(new Date());
                             ue.setScoreStatusTypeId(EssayScoreStatusType.SKIPPED_DUMMYPROMPT.getEssayScoreStatusTypeId());
                             ue.setCt5ItemId(ct5ItemId);
@@ -368,6 +405,7 @@ public class ScoredEssayIntnItem {
                             scoreStatus = EssayScoreStatusType.getValue(ue.getScoreStatusTypeId());
                             hasValidScore = true;
                             machineScore = plagiarized == 1 ? 0 : ue.getScoreFmErrorRates();
+                            confidence = 0;
                             totalWords = equivWords;
 
                             if (USE_AI_FOR_SCORE2 && ue.getScoreDate2()!= null && ue.getEssayScoreStatusType2().completed())
@@ -385,9 +423,10 @@ public class ScoredEssayIntnItem {
                             checkDiscernForNewScores(ue);
                         }
 
-                        if (scoreStatus.unsubmitted() && hasValidTextForDiscern)
+                        if (scoreStatus.unsubmitted() && ((!USE_AI_FOR_PRIMARY && hasValidTextForDiscern) || (USE_AI_FOR_PRIMARY && hasValidTextForAi)) )
                         {
-                            ep = discernFacade.getEssayPrompt(essayPromptId);
+                            LogService.logIt( "ScoredEssayIntnItem.calculate() BBB.55 Existing UnscoredEssay was unsubmitted but should be submitted, so submitting. testEventId=" + testEventId + ". unscoredeEssayId=" + unscoredEssayId );
+                            ep = essayPromptId>0 && !this.usesDummyEssayPrompt() ? discernFacade.getEssayPrompt(essayPromptId) : null;
                             ue.setEssayPromptId(essayPromptId);
                             ue.setCt5ItemId(ct5ItemId);
                             ue.setCt5ItemPartId(ct5ItemPartId);
@@ -399,21 +438,52 @@ public class ScoredEssayIntnItem {
                             else
                             {
                                 // do this first since it will be inline and scores will be available for reporting.
-                                if (isAnyAiScoringOk() && USE_AI_FOR_SCORE2)
+                                if (isAnyAiScoringOk() && USE_AI_FOR_SCORE2 && hasValidTextForAi)
                                     submitForAiScoring(ue, false);
 
                                 submitForExternal(ep, ue, essayWithoutQuestion);
 
                             }
+                            scoreStatus = EssayScoreStatusType.getValue(ue.getScoreStatusTypeId());
                             pendingExternalScores = true;
-                        } else if (scoreStatus.incomplete())
+                        }
+
+                        if(scoreStatus.unsubmitted() )
+                        {
+                            LogService.logIt( "ScoredEssayIntnItem.calculate() BBB.555 Existing UnscoredEssay is unsubmitted. Possible ERROR. Should have either been marked invalid or submitted at this point. Marking skipped. testEventId=" + testEventId + ", unscoredeEssayId=" + unscoredEssayId );
+                            ue.setScoreDate(new Date());                            
+                            if( (!USE_AI_FOR_PRIMARY && !hasValidTextForDiscern) || (USE_AI_FOR_PRIMARY && !hasValidTextForAi) )
+                                ue.setScoreStatusTypeId(EssayScoreStatusType.INVALID_TEXT_FOR_DISCERN.getEssayScoreStatusTypeId());
+
+                            else
+                                ue.setScoreStatusTypeId(EssayScoreStatusType.SKIPPED_DUMMYPROMPT.getEssayScoreStatusTypeId());
+                            ue.setCt5ItemId(ct5ItemId);
+                            ue.setCt5ItemPartId(ct5ItemPartId);
+                            discernFacade.saveUnscoredEssay(ue, true);
+
+                            // scoreStatus = EssayScoreStatusType.getValue(ue.getScoreStatusTypeId());
+                            hasValidScore = true;
+                            machineScore = plagiarized == 1 ? 0 : ue.getScoreFmErrorRates();
+                            confidence = 0;
+                            totalWords = equivWords;
+                            if (USE_AI_FOR_SCORE2 && ue.getScoreDate2() != null && ue.getEssayScoreStatusType2().completed())
+                            {
+                                essayMetaScoreMap = ue.getMetaScoreMap();
+                                confidence2 = ue.getComputedConfidence2();
+                            }
+                        }
+
+                        else if (scoreStatus.incomplete())
+                        {
                             pendingExternalScores = true;
+                        }
 
                         else if (scoreStatus.completed())
                         {
                             confidence = ue.getComputedConfidence();
                             machineScore = ue.getComputedScore();
-                            // LogService.logIt( "ScoredEssayIntnItem.calculate() BBB.5 testEventId=" + testEventId + ". macineScore=" + machineScore );
+
+                            // LogService.logIt( "ScoredEssayIntnItem.calculate() reading completed UnscoredEssay. BBB.5555 testEventId=" + testEventId + ". machineScore=" + machineScore + ", confidence=" + confidence );
 
                             totalWords = ue.getTotalWords();
                             spellErrors = ue.getSpellingErrors();
@@ -423,6 +493,8 @@ public class ScoredEssayIntnItem {
                             pctDupWords = ue.getPctDuplicateWords();
                             pctDupLongWords = ue.getPctDuplicateLongWords();
                             plagiarized = ue.getSimilarUnscoredEssayId() > 0 ? 1 : 0;
+
+                            hasValidScore=true;
 
                             if (plagiarized <= 0 && pctDupWords > MAX_DUPLICATE_WORDS_PCT)
                             {
@@ -434,61 +506,92 @@ public class ScoredEssayIntnItem {
                                 LogService.logIt("ScoredEssayIntnItem(testEventId=" + testEventId + ") XXX Invalidating Essay score due to too many duplicate LONG words. pctDupLongWords=" + pctDupLongWords + ", testEventId=" + testEventId);
                             }
 
-                            if (!USE_AI_FOR_PRIMARY && confidence > MIN_CONFIDENCE_DISCERN)
-                                hasValidScore = true;
+                            if (!USE_AI_FOR_PRIMARY && confidence > Constants.MIN_CONFIDENCE_DISCERN)
+                            {
+                                //hasValidScore = true;
+                                hasValidAiComputedScore = machineScore>0;
+                            }
 
-                            if (!USE_AI_FOR_PRIMARY && confidence <= MIN_CONFIDENCE_DISCERN)
-                                errMsg = "Discern Machine Confidence (" + confidence + ") is below minimum (" + MIN_CONFIDENCE_DISCERN + ").";
+                            if (!USE_AI_FOR_PRIMARY && confidence <= Constants.MIN_CONFIDENCE_DISCERN)
+                                errMsg = "Discern Machine Confidence (" + confidence + ") is below minimum (" + Constants.MIN_CONFIDENCE_DISCERN + ").";
 
-                            if (USE_AI_FOR_PRIMARY && confidence > MIN_CONFIDENCE_AI)
-                                hasValidScore = true;
+                            if (USE_AI_FOR_PRIMARY && confidence > Constants.MIN_CONFIDENCE_AI)
+                            {
+                                //hasValidScore = true;
+                                hasValidAiComputedScore = machineScore>0;
+                            }
 
-                            if (USE_AI_FOR_PRIMARY && confidence <= MIN_CONFIDENCE_AI)
-                                errMsg = "AI Machine Confidence (" + confidence + ") is below minimum (" + MIN_CONFIDENCE_AI + ").";
+                            if (USE_AI_FOR_PRIMARY && confidence <= Constants.MIN_CONFIDENCE_AI)
+                                errMsg = "AI Machine Confidence (" + confidence + ") is below minimum (" + Constants.MIN_CONFIDENCE_AI + ").";
 
                             if (USE_AI_FOR_PRIMARY || (USE_AI_FOR_SCORE2 && ue.getScoreDate2() != null && ue.getEssayScoreStatusType2().completed()))
                                 essayMetaScoreMap = ue.getMetaScoreMap();
 
                             if (USE_AI_FOR_SCORE2 && ue.getScoreDate2() != null && ue.getEssayScoreStatusType2().completed())
                                 confidence2 = ue.getComputedConfidence2();
-                        } // Just cause to start over.
+
+                        }
+
+                        // Just cause to start over.
                         else if (scoreStatus.cancelled())
                             ue = null;
 
                         // denote as not scorable.
                         else if (scoreStatus.failed())
                         {
-                            confidence = ue.getComputedConfidence();
-                            machineScore = ue.getComputedScore();
+                            // confidence = ue.getComputedConfidence();
+                            // machineScore = ue.getComputedScore();
+                            // totalWords = equivWords;
+
+                            // hasValidScore=ue.getComputedScore()>0;
+
+                            LogService.logIt( "ScoredEssayIntnItem.calculate() BBB.6 testEventId=" + testEventId + ", unscoredeEssayId=" + unscoredEssayId );
+                            hasValidScore = true;
+                            machineScore = plagiarized == 1 ? 0 : ue.getScoreFmErrorRates();
+                            confidence = 0;
                             totalWords = equivWords;
-                            // LogService.logIt( "ScoredEssayIntnItem.calculate() BBB.6 testEventId=" + testEventId + ". machineScore=" + machineScore );
-                            // hasValidScore = false;
+                            if (USE_AI_FOR_SCORE2 && ue.getScoreDate2() != null && ue.getEssayScoreStatusType2().completed())
+                            {
+                                essayMetaScoreMap = ue.getMetaScoreMap();
+                                confidence2 = ue.getComputedConfidence2();
+                            }
 
                             //if( !hasValidScore )
                             errMsg = "Essay scoring process failed.";
-                        } else if (scoreStatus.notEnabled() || !hasValidTextForDiscern)
+                        }
+                        
+                        else if (scoreStatus.notEnabled() ) // || (!USE_AI_FOR_PRIMARY && !hasValidTextForDiscern) || (USE_AI_FOR_PRIMARY && !hasValidTextForAi) )
                         {
                             //confidence = ue.getComputedConfidence();
                             //machineScore = ue.getComputedScore();
-                            ue.setComputedConfidence(confidence);
-                            ue.setComputedScore(machineScore);
+                            //ue.setComputedConfidence(confidence);
+                            //ue.setComputedScore(machineScore);
+                            //totalWords = equivWords;
+                            LogService.logIt( "ScoredEssayIntnItem.calculate() BBB.66 unable to process score Not Enabled. scoreStatus=" + scoreStatus.getName() + ", hasValidTextForDiscern=" + hasValidTextForDiscern + ", hasValidTextForAi=" + hasValidTextForAi + ", testEventId=" + testEventId + ", unscoredeEssayId=" + unscoredEssayId );
+                            // hasValidScore = true;
+                            machineScore = plagiarized == 1 ? 0 : ue.getScoreFmErrorRates();
+                            confidence = 0;
                             totalWords = equivWords;
-                            // LogService.logIt( "ScoredEssayIntnItem.calculate() BBB.6 testEventId=" + testEventId + ". machineScore=" + machineScore );
-                            hasValidScore = true;
+                            if (USE_AI_FOR_SCORE2 && ue.getScoreDate2() != null && ue.getEssayScoreStatusType2().completed())
+                            {
+                                essayMetaScoreMap = ue.getMetaScoreMap();
+                                confidence2 = ue.getComputedConfidence2();
+                            }
                         }
 
                         if (hasValidScore)
                         {
+                            // sets error rats
                             recomputeWritingAnalysis(ue);
                         }
                     }
 
                     // If at this point, ue is null, we need to submit a new request.
-                    if (ue == null)
+                    if (ue==null)
                     {
                         // LogService.logIt( "ScoredEssayIntnItem(testEventId=" + testEventId + ") Submitting new essay." );
 
-                        if (ep == null)
+                        if (ep==null && essayPromptId>0 && !usesDummyEssayPrompt())
                             ep = discernFacade.getEssayPrompt(essayPromptId);
 
                         // LogService.logIt( "ScoredEssayIntnItem(testEventId=" + testEventId + ") Submitting new essay BBB - Have Promopt" );
@@ -498,6 +601,7 @@ public class ScoredEssayIntnItem {
                         if (user != null)
                             ue.setUserId(user.getUserId());
                         ue.setEssayPromptId(essayPromptId);
+                        ue.setUnscoredEssayTypeId(unscoredEssayTypeId);
                         ue.setCt5ItemId(ct5ItemId);
                         ue.setCt5ItemPartId(ct5ItemPartId);
                         ue.setNodeSequenceId(nodeSeqId);
@@ -507,12 +611,12 @@ public class ScoredEssayIntnItem {
                         ue.setCreateDate(new Date());
                         ue.setSecondsToCompose((int) composeTime);
 
-                        // LogService.logIt( "ScoredEssayIntnItem(testEventId=" + testEventId + ") Submitting new essay CCC" );
+                        // LogService.logIt( "ScoredEssayIntnItem.calculate()  Submitting new essay CCC" );
                         Object[] d1 = LocalEssayScoringUtils.getWritingAnalysis(essayStr, getTextLocale(), teIpCountry, getWordsToIgnoreLc());
 
                         int[] vals = (int[]) d1[0];
                         misSpells = (Map<String, Integer>) d1[1];
-                        // LogService.logIt( "ScoredEssayIntnItem(testEventId=" + testEventId + ") Submitting new essay DDD misSpells.size=" + misSpells.size() );
+                        // LogService.logIt( "ScoredEssayIntnItem.calculate()  CCC.1 Submitting new essay misSpells.size=" + misSpells.size() );
 
                         ue.setTotalWords(vals[4]);
                         ue.setSpellingErrors(vals[1]);
@@ -538,24 +642,25 @@ public class ScoredEssayIntnItem {
                         if (transCompareScore >= 0)
                             hasValidScore = true;
 
-                        // LogService.logIt( "ScoredEssayIntnItem(testEventId=" + testEventId + ") Starting Plag Check." );
+                        // LogService.logIt( "ScoredEssayIntnItem.calculate()  CCC.2Starting Plag Check." );
                         Date procStart = new Date();
 
                         int maxRowsToCheck = EssayPlagiarismCheckType.getValue(performWebDupContentCheck() ? 1 : 0).getMaxRowsToCheck();
 
                         maxPlagCheckRows = Math.max(maxPlagCheckRows, maxRowsToCheck);
 
-                        boolean useCt5ItemId = ct5ItemId > 0 && ct5ItemPartId > 0 && usesDummyEssayPrompt();
+                        boolean useCt5ItemId = ct5ItemId>0 && usesDummyEssayPrompt();
+                        // boolean useCt5ItemId = ct5ItemId>0 && ct5ItemPartId>0 && usesDummyEssayPrompt();
 
                         // no local plag check if transcompare.
-                        UnscoredEssay similarUE = transCompareScore >= 0 || testEventId <= 0 ? null : discernFacade.findSimilarEssayForPrompt(testEventId, essayPromptId, ct5ItemId, ct5ItemPartId, essayStr, maxRowsToCheck, useCt5ItemId);
+                        UnscoredEssay similarUE = transCompareScore>=0 || testEventId<=0 ? null : discernFacade.findSimilarEssayForPrompt(testEventId, essayPromptId, ct5ItemId, ct5ItemPartId, essayStr, maxRowsToCheck, useCt5ItemId);
 
                         Tracker.addResponseTime("Local Plagiarism Test", new Date().getTime() - procStart.getTime());
 
                         // Used to indicate that the score should be forced (usually to 0)
                         float forceScore = -1;
 
-                        if (transCompareScore < 0 && ue.getTotalWords() > 0)
+                        if (transCompareScore<0 && ue.getTotalWords()>0)
                         {
                             float[] errsPerWord = new float[4];
 
@@ -570,12 +675,12 @@ public class ScoredEssayIntnItem {
                             else if (pctDupWords > MAX_DUPLICATE_WORDS_PCT)
                             {
                                 plagiarized = 1;
-                                LogService.logIt("ScoredEssayIntnItem(testEventId=" + testEventId + ") Invalidating Essay score due to too many duplicate words. pctDupWords=" + pctDupWords + ", testEventId=" + testEventId);
+                                LogService.logIt("ScoredEssayIntnItem.calculate()  CCC.3 Invalidating Essay score due to too many duplicate words. pctDupWords=" + pctDupWords + ", testEventId=" + testEventId);
                                 forceScore = 0;
                             } else if (pctDupLongWords > MAX_DUPLICATE_LONGWORDS_PCT)
                             {
                                 plagiarized = 1;
-                                LogService.logIt("ScoredEssayIntnItem(testEventId=" + testEventId + ") Invalidating Essay score due to too many duplicate LONG words. pctDupLongWords=" + pctDupLongWords + ", testEventId=" + testEventId);
+                                LogService.logIt("ScoredEssayIntnItem.calculate()  CCC.4 Invalidating Essay score due to too many duplicate LONG words. pctDupLongWords=" + pctDupLongWords + ", testEventId=" + testEventId);
                                 forceScore = 0;
                             }
                         }
@@ -587,7 +692,7 @@ public class ScoredEssayIntnItem {
                         Object[] webDuplicateContentInfo = null;
 
                         // do not machine score or check for plag if it's a transcompare or if it's a survey (testEventId<=0)
-                        if (testEventId > 0 && transCompareScore < 0 && forceScore < 0 && performWebDupContentCheck())
+                        if (testEventId>0 && transCompareScore < 0 && forceScore<0 && performWebDupContentCheck())
                         {
                             // Only look for dup content if there is no plagarism detected and we haven't already forced the score to 0 and essay is in english
                             if (similarUE == null && isTextLocaleOKForWebDupContentCheck(getTextLocale()))
@@ -599,10 +704,10 @@ public class ScoredEssayIntnItem {
                             } else
                             {
                                 if (similarUE != null)
-                                    LogService.logIt("ScoredEssayIntnItem(testEventId=" + testEventId + ") Found similar UnscoredEssay testEventId=" + testEventId + ", similarUE=" + similarUE.toString());
+                                    LogService.logIt("ScoredEssayIntnItem.calculate() CCC.5 Found similar UnscoredEssay testEventId=" + testEventId + ", similarUE=" + similarUE.toString());
 
                                 if (!isTextLocaleOKForWebDupContentCheck(getTextLocale()))
-                                    LogService.logIt("ScoredEssayIntnItem(testEventId=" + testEventId + ") skipping web dup check because language of test incompatible " + getTextLocale().toString());
+                                    LogService.logIt("ScoredEssayIntnItem.calculate() CCC.6 skipping web dup check because language of test incompatible " + getTextLocale().toString());
                             }
                         }
 
@@ -614,7 +719,7 @@ public class ScoredEssayIntnItem {
 
                             if (webDuplicateContentPercent > 0)
                             {
-                                // LogService.logIt( "ScoredEssayIntItem.webDuplicateContentInfo[] webDuplicateContentPercent=" + webDuplicateContentPercent + ", webDuplicateContentUrl=" + webDuplicateContentUrl + ", output=" + webDupOut );
+                                // LogService.logIt( "ScoredEssayIntItem.webDuplicateContentInfo() CCC.7 webDuplicateContentPercent=" + webDuplicateContentPercent + ", webDuplicateContentUrl=" + webDuplicateContentUrl + ", output=" + webDupOut );
                                 ue.setDuplicateContentWebUrl(webDuplicateContentUrl + ", PERCENT MATCH: " + webDuplicateContentPercent);
 
                             }
@@ -633,20 +738,21 @@ public class ScoredEssayIntnItem {
                         if (testEventId <= 0)
                             forceScore = 0;
 
-                        else if (similarUE != null)
+                        else if (similarUE!=null)
                         {
                             ue.setSimilarUnscoredEssayId(similarUE.getUnscoredEssayId());
                             plagiarized = 1;
                             forceScore = 0;
                         } // THIS IS WHRE WE SEE IF the Language is OK for scoring. If not, we just set forceScore to 0 unless it was plagiarized.
-                        else if (!USE_AI_FOR_PRIMARY && plagiarized != 1 && !eligibleForMachineScoring() && !usesDummyEssayPrompt())
+
+                        else if (!USE_AI_FOR_PRIMARY && plagiarized!=1 && !getEligibleForMachineScoring() && !usesDummyEssayPrompt())
                         {
                             forceScore = 0;
-                            aiScoreOkButDiscernNotOk = plagiarized != 1; //  && !usesDummyEssayPrompt();
+                            aiScoreOkButDiscernNotOk = plagiarized!=1; //  && !usesDummyEssayPrompt();
                         }
 
                         // Some triggered a forced, non-AI-based score.
-                        if (forceScore > -1)
+                        if (forceScore>-1)
                         {
                             ue.setScoreDate(new Date());
                             ue.setComputedScore(forceScore);
@@ -664,7 +770,8 @@ public class ScoredEssayIntnItem {
 
                             unscoredEssayId = ue.getUnscoredEssayId();
                         } // Discern is primary but no Discern Score availalble.
-                        else if (!USE_AI_FOR_PRIMARY && !DiscernUtils.isDiscernOn())
+
+                        else if ( (!USE_AI_FOR_PRIMARY && !DiscernUtils.isDiscernOn()) || (USE_AI_FOR_PRIMARY && !AiEssayScoringUtils.getAiEssayScoringOn()))
                         {
                             ue.setScoreDate(new Date());
                             ue.setScoreStatusTypeId(EssayScoreStatusType.FAILED_NOTENABLED.getEssayScoreStatusTypeId());
@@ -675,19 +782,21 @@ public class ScoredEssayIntnItem {
                             discernFacade.saveUnscoredEssay(ue, true);
                             unscoredEssayId = ue.getUnscoredEssayId();
                             errMsg = "Discern is currently disabled.";
-                            
-                            if (isAnyAiScoringOk() && USE_AI_FOR_SCORE2)
+
+                            if (isAnyAiScoringOk() && USE_AI_FOR_SCORE2 && hasValidTextForAi )
                             {
                                 submitForAiScoring(ue, false);
                                 if (ue.getScoreDate2() != null && ue.getEssayScoreStatusType2().completed())
                                 {
                                     essayMetaScoreMap = ue.getMetaScoreMap();
                                     confidence2 = ue.getComputedConfidence2();
-                                }                                
+                                }
                             }
-                            
+                            hasValidScore=true;
+
                         } // no valid text for Discern
-                        else if (!hasValidTextForDiscern)
+                        
+                        else if ( (!USE_AI_FOR_PRIMARY && !hasValidTextForDiscern) || (USE_AI_FOR_PRIMARY && !hasValidTextForAi) )
                         {
                             ue.setScoreDate(new Date());
                             ue.setScoreStatusTypeId(EssayScoreStatusType.INVALID_TEXT_FOR_DISCERN.getEssayScoreStatusTypeId());
@@ -700,10 +809,23 @@ public class ScoredEssayIntnItem {
                                 ue.setComputedConfidence(0);
                             discernFacade.saveUnscoredEssay(ue, true);
                             unscoredEssayId = ue.getUnscoredEssayId();
+
+                            if (isAnyAiScoringOk() && USE_AI_FOR_SCORE2 && hasValidTextForAi )
+                            {
+                                submitForAiScoring(ue, false);
+                                if (ue.getScoreDate2() != null && ue.getEssayScoreStatusType2().completed())
+                                {
+                                    essayMetaScoreMap = ue.getMetaScoreMap();
+                                    confidence2 = ue.getComputedConfidence2();
+                                }
+                            }
+
                             errMsg = "Invalid text for discern";
                         } // Uses Discern but also uses dummy prompt.
-                        else if (!USE_AI_FOR_PRIMARY && usesDummyEssayPrompt())
+
+                        else if( usesDummyEssayPrompt() && (!USE_AI_FOR_PRIMARY || !itemLevelAiScoringOk) )
                         {
+                            LogService.logIt("ScoredEssayIntnItem.calculate() CCC.8 Setting to SkippedDummyPrompt. USE_AI_FOR_PRIMARY=" + USE_AI_FOR_PRIMARY + ", itemLevelAiScoringOk=" + itemLevelAiScoringOk + ",  testEventId=" + testEventId );                            
                             ue.setScoreDate(new Date());
                             ue.setScoreStatusTypeId(EssayScoreStatusType.SKIPPED_DUMMYPROMPT.getEssayScoreStatusTypeId());
                             ue.setComputedScore(0);
@@ -716,21 +838,21 @@ public class ScoredEssayIntnItem {
                             discernFacade.saveUnscoredEssay(ue, true);
                             unscoredEssayId = ue.getUnscoredEssayId();
                             errMsg = "Dummy Prompt";
-                            
-                            if (isAnyAiScoringOk() && USE_AI_FOR_SCORE2)
+
+                            if (isAnyAiScoringOk() && USE_AI_FOR_SCORE2 && hasValidTextForAi)
                             {
                                 submitForAiScoring(ue, false);
                                  if (ue.getScoreDate2() != null && ue.getEssayScoreStatusType2().completed())
                                 {
                                     essayMetaScoreMap = ue.getMetaScoreMap();
                                     confidence2 = ue.getComputedConfidence2();
-                                }                                
+                                }
                            }
-                            
+
                         } // At this point we can send for AI or Discern/AI scoring.
                         else
                         {
-                            // LogService.logIt( "ScoredEssayIntnItem(testEventId=" + testEventId + ") Submitting for ext scores." );
+                            // LogService.logIt( "ScoredEssayIntnItem.calculate()  Submitting for ext scores." );
                             // submitForExternal(ep, ue, essayWithoutQuestion );
 
                             if (isAnyAiScoringOk() && USE_AI_FOR_PRIMARY)
@@ -745,7 +867,7 @@ public class ScoredEssayIntnItem {
                                     {
                                         essayMetaScoreMap = ue.getMetaScoreMap();
                                         confidence2 = ue.getComputedConfidence2();
-                                    }                                
+                                    }
                                 }
 
                                 submitForExternal(ep, ue, essayWithoutQuestion);
@@ -754,15 +876,15 @@ public class ScoredEssayIntnItem {
 
                         }
 
-                        // catch case where valid text but did not 
-                        if (isAnyAiScoringOk() && !USE_AI_FOR_PRIMARY && USE_AI_FOR_SCORE2 && hasValidTextForDiscern && (forceScore <= -1 || aiScoreOkButDiscernNotOk) && !submittedForAiScoring )
+                        // catch case where valid text but did not
+                        if (isAnyAiScoringOk() && !USE_AI_FOR_PRIMARY && USE_AI_FOR_SCORE2 && hasValidTextForAi && (forceScore <= -1 || aiScoreOkButDiscernNotOk) && !submittedForAiScoring )
                         {
                             submitForAiScoring(ue, false);
                             if (ue.getScoreDate2() != null && ue.getEssayScoreStatusType2().completed())
                             {
                                 essayMetaScoreMap = ue.getMetaScoreMap();
                                 confidence2 = ue.getComputedConfidence2();
-                            }                                
+                            }
                         }
                     }
                 } else
@@ -870,7 +992,7 @@ public class ScoredEssayIntnItem {
         String q = question.toLowerCase();
 
         int idx = t.indexOf(q);
-        if (idx < 0)
+        if (idx<0)
             return essayStr;
 
         LogService.logIt("ScoredEssayIntnItem(testEventId=" + testEventId + ") Question appears in EssayStr. Removing. ndSeq=" + nodeSeqId + ", snSeq=" + subnodeSeqId);
@@ -901,11 +1023,17 @@ public class ScoredEssayIntnItem {
         return essayMetaScoreMap;
     }
 
-    private boolean eligibleForMachineScoring()
+    private boolean getEligibleForMachineScoring()
     {
         if (transCompareScore >= 0)
             return false;
 
+        if( USE_AI_FOR_PRIMARY==null )
+            initVariables();
+        
+        if( USE_AI_FOR_PRIMARY )            
+            return true;
+        
         Locale loc = getTextLocale();
 
         if (loc == null || loc.getLanguage() == null)
@@ -1015,23 +1143,41 @@ public class ScoredEssayIntnItem {
     {
         LogService.logIt("ScoredEssayIntnItem.submitForAiScoring() START submittedForAiScoring="+ submittedForAiScoring);
 
-        if( submittedForAiScoring )
+        if( submittedForAiScoring && ((AiEssayScoringUtils.getAiEssayScoringUseScore2() && !ue.getEssayScoreStatusType2().unsubmitted()) || (!AiEssayScoringUtils.getAiEssayScoringUseScore2() && !ue.getEssayScoreStatusType().unsubmitted()))  )
         {
-            LogService.logIt("ScoredEssayIntnItem.submitForAiScoring() Method called but Already submitted! Returning. ");
+            LogService.logIt("ScoredEssayIntnItem.submitForAiScoring() AAA.1 Method called but Already submitted! Returning. ");
             return false;
         }
-        if (!AiEssayScoringUtils.getAiEssayScoringOn())
-        {
-            LogService.logIt("ScoredEssayIntnItem.submitForAiScoring() Method called but AiEssayScoring is not on. Returning. ");
-            return false;
-        }
-        submittedForAiScoring = true;
-
         try
         {
-            if (ue.getEssay() == null || ue.getEssay().isBlank() || ue.getEssay().trim().length() < Constants.MIN_ESSAY_LENGTH_SCORING)
+            if (!AiEssayScoringUtils.getAiEssayScoringOn())
             {
-                LogService.logIt("ScoredEssayIntnItem.submitForAiScoring() Returning false. length=" + (ue.getEssay() == null ? "null" : ue.getEssay().length()));
+                LogService.logIt("ScoredEssayIntnItem.submitForAiScoring() BBB.1 Method called but AiEssayScoring is not on. Returning. ");
+                if( AiEssayScoringUtils.getAiEssayScoringUseScore2() )
+                    ue.setScoreStatusTypeId2(EssayScoreStatusType.FAILED_NOTENABLED.getEssayScoreStatusTypeId() );
+
+                else
+                    ue.setScoreStatusTypeId(EssayScoreStatusType.FAILED_NOTENABLED.getEssayScoreStatusTypeId() );
+                if( discernFacade==null )
+                    discernFacade=DiscernFacade.getInstance();
+                discernFacade.saveUnscoredEssay(ue, false );
+                return false;
+            }
+            submittedForAiScoring = true;
+
+            if (ue.getEssay()==null || ue.getEssay().isBlank() || ue.getEssay().trim().length()<Constants.MIN_TEXT_LENGTH_FOR_AI_SCORING)
+            {
+                LogService.logIt("ScoredEssayIntnItem.submitForAiScoring() CCC.1 Returning false. Too short. length=" + (ue.getEssay() == null ? "null" : ue.getEssay().length()));
+
+                if( AiEssayScoringUtils.getAiEssayScoringUseScore2() )
+                    ue.setScoreStatusTypeId2(EssayScoreStatusType.INVALID_TEXT_FOR_DISCERN.getEssayScoreStatusTypeId() );
+
+                else
+                    ue.setScoreStatusTypeId(EssayScoreStatusType.INVALID_TEXT_FOR_DISCERN.getEssayScoreStatusTypeId() );
+                if( discernFacade==null )
+                    discernFacade=DiscernFacade.getInstance();
+                discernFacade.saveUnscoredEssay(ue, false );
+
                 return false;
             }
 
@@ -1060,40 +1206,66 @@ public class ScoredEssayIntnItem {
                 if (usesDummyEssayPrompt() || essayPromptId <= 0)
                 {
                     forcePromptStr = question;
-                    if (forcePromptStr == null || forcePromptStr.isBlank())
+                    if (forcePromptStr==null || forcePromptStr.isBlank())
                     {
-                        LogService.logIt("ScoredEssayIntnItem.submitForAiScoring() BBB.1 Cannot call AI because forcePromptStr is empty but usesDummyPrompt()=" + usesDummyEssayPrompt() + ", and essayPromptId=" + essayPromptId + ", unscoredEssayId=" + unscoredEssayId);
+                        LogService.logIt("ScoredEssayIntnItem.submitForAiScoring() DDD.1 Cannot call AI because forcePromptStr is empty but usesDummyPrompt()=" + usesDummyEssayPrompt() + ", and essayPromptId=" + essayPromptId + ", unscoredEssayId=" + unscoredEssayId);
+                        if( AiEssayScoringUtils.getAiEssayScoringUseScore2() )
+                            ue.setScoreStatusTypeId2(EssayScoreStatusType.INVALID_TEXT_FOR_DISCERN.getEssayScoreStatusTypeId() );
+
+                        else
+                            ue.setScoreStatusTypeId(EssayScoreStatusType.INVALID_TEXT_FOR_DISCERN.getEssayScoreStatusTypeId() );
+                        if( discernFacade==null )
+                            discernFacade=DiscernFacade.getInstance();
+                        discernFacade.saveUnscoredEssay(ue, false );
                         return false;
                     }
                 }
 
-                
                 AiEssayScoringThread aiest = new AiEssayScoringThread(ue, forceRescore, true, forcePromptStr, idealResponse);
 
                 // ok to do via Thread (primary).
                 if (!AiEssayScoringUtils.getAiEssayScoringUseScore2())
                 {
-                    LogService.logIt("ScoredEssayIntnItem.submitForAiScoring() CCC.1 Thread. unscoredEssayId=" + unscoredEssayId);
+                    LogService.logIt("ScoredEssayIntnItem.submitForAiScoring() EEE.1 Thread. unscoredEssayId=" + unscoredEssayId);
                     new Thread(aiest).start();
                     return true;
                 } // Do inline for Score2. This way, the score 2 values will be available when score1 is ready and can be used in the results.
-                
+
                 // Score 2 should always be inline.
                 else
                 {
-                    LogService.logIt("ScoredEssayIntnItem.submitForAiScoring() CCC.2 Inline. unscoredEssayId=" + unscoredEssayId);
+                    LogService.logIt("ScoredEssayIntnItem.submitForAiScoring() EEE.2 Inline. unscoredEssayId=" + unscoredEssayId);
                     return aiest.performEssayScore();
                 }
             }
         } catch (Exception e)
         {
-            LogService.logIt(e, "ScoredEssayIntnItem.submitForAiScoring() " + toString());
+            // LogService.logIt(e, "ScoredEssayIntnItem.submitForAiScoring() " + toString());
+            LogService.logIt(e, "ScoredEssayIntnItem.submitForAiScoring() XXX.1 " + toString());
+            if( AiEssayScoringUtils.getAiEssayScoringUseScore2() )
+                ue.setScoreStatusTypeId2(EssayScoreStatusType.FAILED.getEssayScoreStatusTypeId() );
+
+            else
+                ue.setScoreStatusTypeId(EssayScoreStatusType.FAILED.getEssayScoreStatusTypeId() );
+            if( discernFacade==null )
+                discernFacade=DiscernFacade.getInstance();
+            try
+            {
+                discernFacade.saveUnscoredEssay(ue, false );
+            }
+            catch( Exception ee )
+            {
+                LogService.logIt( e, "ScoredEssayIntnItem.submitForAiScoring() YYY.1 Handling exception and setting status. testEventId=" + testEventId + ", unscoredEssayId=" + unscoredEssayId);
+            }
         }
         return false;
     }
 
     private void checkDiscernForNewScores(UnscoredEssay ue) throws Exception
     {
+        if( USE_AI_FOR_PRIMARY )
+            return;
+
         if (usesDummyEssayPrompt())
         {
             ue.setScoreDate(new Date());
@@ -1104,9 +1276,6 @@ public class ScoredEssayIntnItem {
             return;
         }
 
-        if( USE_AI_FOR_PRIMARY )
-            return;
-        
         if (!DiscernUtils.isDiscernOn())
             return;
 
@@ -1118,7 +1287,7 @@ public class ScoredEssayIntnItem {
 
         discernUtils.checkForNewScore(ue);
 
-        if (ue.getScoreStatusTypeId() == EssayScoreStatusType.SCORECOMPLETE.getEssayScoreStatusTypeId() && ue.getTotalWords() > 0 && ue.getComputedScore() > 0)
+        if (ue.getScoreStatusTypeId()==EssayScoreStatusType.SCORECOMPLETE.getEssayScoreStatusTypeId() && ue.getTotalWords() > 0 && ue.getComputedScore() > 0)
         {
             float maxScore = 100;
 
@@ -1289,11 +1458,22 @@ public class ScoredEssayIntnItem {
     {
         return itemLevelAiScoringOk || (essayPromptId>0 && !usesDummyEssayPrompt());
     }
-    
+
+    boolean hasValidTextForAi(String essayWithoutQuestion)
+    {
+        String s = essayWithoutQuestion!=null && !essayWithoutQuestion.isBlank() ? essayWithoutQuestion : essayStr;
+
+        return s!=null && !s.isBlank() && s.length()>=Constants.MIN_TEXT_LENGTH_FOR_AI_SCORING;
+    }
+
+
     boolean hasValidTextForDiscern(String essayWithoutQuestion)
     {
-        String s = essayWithoutQuestion != null && !essayWithoutQuestion.isBlank() ? essayWithoutQuestion : essayStr;
+        String s = essayWithoutQuestion!=null && !essayWithoutQuestion.isBlank() ? essayWithoutQuestion : essayStr;
 
+        if( s==null || s.length()<Constants.MIN_TEXT_LENGTH_FOR_AI_SCORING )
+            return false;
+        
         return DiscernUtils.hasValidTextForDiscern(s);
     }
 
@@ -1303,7 +1483,7 @@ public class ScoredEssayIntnItem {
         return "ScoredEssayIntnItem{" + "machineScore=" + machineScore + ", confidence=" + confidence + ", minWords=" + minWords + ", promptId=" + essayPromptId + ", equivWords=" + equivWords + ", hasValidScore=" + hasValidScore + ", testEventId=" + testEventId + ", nodeSeqId=" + nodeSeqId + ", subnodeSeqId=" + subnodeSeqId + ", pendingExternalScores=" + pendingExternalScores + ", essayStr=" + essayStr + '}';
     }
 
-    
+
     public boolean usesDummyEssayPrompt()
     {
         return essayPromptId==DUMMY_ESSAY_PROMPT_ID;
@@ -1403,5 +1583,12 @@ public class ScoredEssayIntnItem {
     {
         return confidence2;
     }
+
+    public boolean getHasValidAiComputedScore()
+    {
+        return hasValidAiComputedScore;
+    }
+
+
 
 }

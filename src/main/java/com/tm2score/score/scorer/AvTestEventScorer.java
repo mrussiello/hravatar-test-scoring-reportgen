@@ -34,7 +34,6 @@ import com.tm2score.sim.OverallRawScoreCalcType;
 import com.tm2score.sim.OverallScaledScoreCalcType;
 import com.tm2score.user.UserFacade;
 import com.tm2score.voicevibes.VoiceVibesStatusType;
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -294,13 +293,15 @@ public class AvTestEventScorer extends StandardTestEventScorer implements TestEv
                 
                 // Already ready for scoring.
                 if( !iir.isReadyForScoring() ) // || iir.needsSpeechTranslation( simLocale ) )
+                {
                     notReadyCount++;
+                }
             } 
             
             if( notReadyCount>0 )
-	              LogService.logIt( "AvTestEventScorer.finalizeItemResponsesForScoring() notReadyCount=" + notReadyCount );
+	        LogService.logIt( "AvTestEventScorer.finalizeItemResponsesForScoring() notReadyCount=" + notReadyCount + ", testEventId=" + te.getTestEventId() );
             
-            if( notReadyCount == 0 )
+            if( notReadyCount==0 )
                 return;
 
             boolean forceVibesOff = reportRules!=null && reportRules.getReportRuleAsBoolean("voicevibesoff");

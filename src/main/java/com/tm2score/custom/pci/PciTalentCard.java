@@ -95,7 +95,7 @@ public class PciTalentCard extends BasePciReportTemplate implements ReportTempla
             List<TestEventScore> scoreSet4 = getTesList(TalentCardText.SCALESET4, false);
             
             
-            LogService.logIt( "PciTalentCard.addTalentCardSection() found " + valueScores.size() + " value scores." );
+            // LogService.logIt( "PciTalentCard.addTalentCardSection() found " + valueScores.size() + " value scores." );
             TestEventScore topValue = valueScores.size()>0 ? valueScores.get(0) : null;
             TestEventScore secondValue = valueScores.size()>1 ? valueScores.get(1) : null;
 

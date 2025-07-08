@@ -19,6 +19,7 @@ import com.tm2score.global.I18nUtils;
 import com.tm2score.global.RuntimeConstants;
 import com.tm2score.interview.InterviewQuestion;
 import com.tm2score.json.JsonUtils;
+import com.tm2score.score.CaveatScore;
 import com.tm2score.service.LogService;
 import com.tm2score.sim.InterviewQuestionBreadthType;
 import com.tm2score.sim.SimJUtils;
@@ -1036,6 +1037,19 @@ public class ReportData
         ReportUtils.swapTopicNames( equivTopicNameMap, topicCaveatListIn );
     }
     
+    public void swapTopicNamesForLangForCaveatScores(List<CaveatScore> topicCsl )
+    {
+        if( topicCsl==null || topicCsl.isEmpty() || equivSimJUtils==null || simJUtils==null )
+            return;
+        
+        // reate the swap map if needed. 
+        if( equivTopicNameMap==null )
+            createEquivTopicNameMap();
+        
+        ReportUtils.swapTopicNamesInCaveatScores( equivTopicNameMap, topicCsl );
+        
+    }
+    
     private synchronized void createEquivTopicNameMap()
     {
         if( equivTopicNameMap!=null )
@@ -1047,7 +1061,26 @@ public class ReportData
             return;        
     }
     
+
+    public List<CaveatScore> getCaveatScoreList( TestEventScore tes )
+    {
+        //if( tes.getCaveatScoreList().isEmpty() || equivSimJUtils==null || simJUtils==null )
+        //    return tes.getCaveatScoreList();
+        // Too hard. Just leaving Caveats in foreign language.
+        // if( 1==1 )
+        return tes.getCaveatScoreList();
+    }
+    public List<CaveatScore> getTopicCaveatScoreList( TestEventScore tes )
+    {
+        return tes.getTopicCaveatScoreList();
+    }
+    public List<CaveatScore> getNonTopicCaveatScoreList( TestEventScore tes )
+    {
+        return tes.getNonTopicCaveatScoreList();
+    }
+
     
+    /*
     public List<String> getCaveatList( TestEventScore tes )
     {
         if( tes.getCaveatList().isEmpty() || equivSimJUtils==null || simJUtils==null )
@@ -1059,6 +1092,7 @@ public class ReportData
         // if( 1==1 )
         return tes.getCaveatList();
     }
+    */
     
     public List<InterviewQuestion> getInterviewQuestionList( TestEventScore tes, int max )
     {

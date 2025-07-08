@@ -13,12 +13,14 @@ import com.tm2score.sim.SimCompetencyClass;
 import com.tm2builder.sim.xml.SimJ;
 import com.tm2score.entity.event.TestEvent;
 import com.tm2score.essay.AiEssayScoringUtils;
-import com.tm2score.essay.EssayMetaScoreType;
+import com.tm2score.score.CaveatScoreType;
 import com.tm2score.global.Constants;
 import com.tm2score.global.I18nUtils;
 import com.tm2score.report.ReportUtils;
+import com.tm2score.score.CaveatScore;
 import com.tm2score.score.SimletScore;
 import com.tm2score.score.TextAndTitle;
+import com.tm2score.service.LogService;
 import com.tm2score.sim.IncludeItemScoresType;
 import com.tm2score.util.HtmlUtils;
 import com.tm2score.util.StringUtils;
@@ -42,6 +44,7 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
      *
      */
     float transCompareScore = -1;
+    float completeScore;
     float machineScore;
     float confidence;
     // int equivWords;
@@ -56,9 +59,10 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
 
     boolean pendingExternalScores = false;
 
-    String caveatStr = null;
+    List<CaveatScore> caveatList2;
+    // String caveatStr = null;
 
-    ScoredEssayIntnItem dei;
+    // ScoredEssayIntnItem dei;
 
     int webPlagCheckOk = 0;
 
@@ -110,7 +114,9 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
         IactnItemResp iir;
 
         int scrCt = 0;
+        float tCompleteScr = 0;
         float tMachScr = 0;
+        int tMachScrCt = 0;
         float tConf = 0;
         float tClarity = 0;
         int tClarityCt = 0;
@@ -118,6 +124,8 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
         int tArgumentCt = 0;
         float tMechanics = 0;
         int tMechanicsCt = 0;
+        float tIdeal = 0;
+        int tIdealCt = 0;
 
         float tTransCompareScr = 0;
         int transCompareScrCt = 0;
@@ -134,11 +142,11 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
 
         for (SimJ.Intn.Intnitem intItemObj : intnObj.getIntnitem())
         {
-            // Only look at Text Boxes that have a Prompt ID Assigned.
-            if (intItemObj.getFormat() != G2ChoiceFormatType.TEXT_BOX.getG2ChoiceFormatTypeId() || intItemObj.getScoreparam1() <= 0)
+            // Only look at Text Boxes
+            if (intItemObj.getFormat()!=G2ChoiceFormatType.TEXT_BOX.getG2ChoiceFormatTypeId() ) // || intItemObj.getScoreparam1() <= 0)
                 continue;
 
-            // LogService.logIt( "ScoredEssayIactnResp.scoring intn.item AAA " + intnObj.getSeq()+ "-" + intItemObj.getSeq() + ", prompt=" + ((int)intItemObj.getScoreparam1()) );
+            // LogService.logIt( "ScoredEssayIactnResp.scoring intn.item AAA.1 " + intnObj.getSeq()+ "-" + intItemObj.getSeq() + ", prompt=" + ((int)intItemObj.getScoreparam1()) );
             // use this only to get the response value.
             iir = IactnRespFactory.getIactnItemResp(this, intItemObj, intnResultObjO, testEvent); // new IactnItemResp( this, intItemObj, intnResultObj );
 
@@ -173,34 +181,48 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
                 pendingExternalScores = true;
 
             if (!seii.getHasValidScore())
+            {
+                LogService.logIt( "ScoredEssayIactnResp.scoring intn.item AAA.1 Essay does not have a valid score. Skipping. " + seii.toString() );
                 continue;
+            }
 
-            scrCt++;
-            tMachScr += seii.getMachineScore();
-            tConf += seii.getConfidence();
-
+            scrCt++;            
+            tCompleteScr = seii.getMachineScore();
+            
+            if( seii.getHasValidAiComputedScore() )
+            {
+                tMachScr += seii.getMachineScore();
+                tConf += seii.getConfidence();
+                tMachScrCt++;
+            }
+            
             Map<Integer, Float> essayMetaScoreMap = seii.getEssayMetaScoreMap();
 
             // only use these values if have enough confidence
             if (essayMetaScoreMap != null
                     && AiEssayScoringUtils.getAiEssayScoringOn()
-                    && ((AiEssayScoringUtils.getAiEssayScoringUseScore2() && seii.getConfidence2()>ScoredEssayIntnItem.MIN_CONFIDENCE_AI)
-                    || (!AiEssayScoringUtils.getAiEssayScoringUseScore2() && seii.getConfidence()>ScoredEssayIntnItem.MIN_CONFIDENCE_AI)))
+                    && ((AiEssayScoringUtils.getAiEssayScoringUseScore2() && seii.getConfidence2()>Constants.MIN_CONFIDENCE_AI)
+                    || (!AiEssayScoringUtils.getAiEssayScoringUseScore2() && seii.getConfidence()>Constants.MIN_CONFIDENCE_AI)))
             {
-                if (essayMetaScoreMap.containsKey(EssayMetaScoreType.CLARITY.getEssayMetaScoreTypeId()) && essayMetaScoreMap.get(EssayMetaScoreType.CLARITY.getEssayMetaScoreTypeId())>0)
+                if (essayMetaScoreMap.containsKey(CaveatScoreType.CLARITY.getCaveatScoreTypeId()) && essayMetaScoreMap.get(CaveatScoreType.CLARITY.getCaveatScoreTypeId())>0)
                 {
-                    tClarity += essayMetaScoreMap.get(EssayMetaScoreType.CLARITY.getEssayMetaScoreTypeId());
+                    tClarity += essayMetaScoreMap.get(CaveatScoreType.CLARITY.getCaveatScoreTypeId());
                     tClarityCt++;
                 }
-                if (essayMetaScoreMap.containsKey(EssayMetaScoreType.ARGUMENT.getEssayMetaScoreTypeId()) && essayMetaScoreMap.get(EssayMetaScoreType.ARGUMENT.getEssayMetaScoreTypeId())>0)
+                if (essayMetaScoreMap.containsKey(CaveatScoreType.ARGUMENT.getCaveatScoreTypeId()) && essayMetaScoreMap.get(CaveatScoreType.ARGUMENT.getCaveatScoreTypeId())>0)
                 {
-                    tArgument += essayMetaScoreMap.get(EssayMetaScoreType.ARGUMENT.getEssayMetaScoreTypeId());
+                    tArgument += essayMetaScoreMap.get(CaveatScoreType.ARGUMENT.getCaveatScoreTypeId());
                     tArgumentCt++;
                 }
-                if (essayMetaScoreMap.containsKey(EssayMetaScoreType.MECHANICS.getEssayMetaScoreTypeId()) && essayMetaScoreMap.get(EssayMetaScoreType.MECHANICS.getEssayMetaScoreTypeId())>0 )
+                if (essayMetaScoreMap.containsKey(CaveatScoreType.MECHANICS.getCaveatScoreTypeId()) && essayMetaScoreMap.get(CaveatScoreType.MECHANICS.getCaveatScoreTypeId())>0 )
                 {
-                    tMechanics += essayMetaScoreMap.get(EssayMetaScoreType.MECHANICS.getEssayMetaScoreTypeId());
+                    tMechanics += essayMetaScoreMap.get(CaveatScoreType.MECHANICS.getCaveatScoreTypeId());
                     tMechanicsCt++;
+                }
+                if (essayMetaScoreMap.containsKey(CaveatScoreType.IDEAL.getCaveatScoreTypeId()) && essayMetaScoreMap.get(CaveatScoreType.IDEAL.getCaveatScoreTypeId())>0 )
+                {
+                    tIdeal += essayMetaScoreMap.get(CaveatScoreType.IDEAL.getCaveatScoreTypeId());
+                    tIdealCt++;
                 }
             }
 
@@ -233,36 +255,44 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
 
         if (!pendingExternalScores && scrCt>0)
         {
-            // LogService.logIt( "ScoredEssayIactnResp. scrCt=" + scrCt + ", tMachScr=" + tMachScr + ", tConf=" + tConf );
-
-            machineScore = tMachScr / ((float) scrCt);
-            confidence = tConf / ((float) scrCt);
+            LogService.logIt( "ScoredEssayIactnResp.calculateScore() BBB.1A " + intnObj.getSeq() + ", scrCt=" + scrCt + ", completeScore=" + completeScore + ", tMachScr=" + tMachScr + ", tConf=" + tConf + ", totalWords=" + totalWords );
+            completeScore = tCompleteScr/((float) scrCt);          
+            // LogService.logIt( "ScoredEssayIactnResp.calculateScore() BBB.1B " + intnObj.getSeq() + ", scrCt=" + scrCt + ", completeScore=" + completeScore + ", tMachScr=" + tMachScr + ", tConf=" + tConf + ", totalWords=" + totalWords );
+            
+            machineScore = tMachScrCt>0 ? tMachScr/((float) tMachScrCt) : 0;
+            confidence = tMachScrCt>0 ? tConf/((float) tMachScrCt) : 0;
             hasValidScore = true;
 
             if (transCompareScrCt > 0)
                 transCompareScore = tTransCompareScr / ((float) transCompareScrCt);
 
-            points = transCompareScore >= 0 && transCompareScrCt > 0 ? maxPoints * transCompareScore : maxPoints * machineScore / 100;
+            points = transCompareScore>=0 && transCompareScrCt>0 ? maxPoints*transCompareScore : maxPoints*completeScore/100;
 
-            if (tClarityCt > 1)
+            LogService.logIt( "ScoredEssayIactnResp.calculateScore() BBB.1C points=" + points + ", maxPoints=" + maxPoints + ", seq=" + intnObj.getSeq() + ", scrCt=" + scrCt + ", completeScore=" + completeScore + ", tMachScr=" + tMachScr + ", tConf=" + tConf + ", totalWords=" + totalWords );
+            
+            if (tClarityCt>1)
                 tClarity = tClarity / ((float) tClarityCt);
 
-            if (tArgumentCt > 1)
+            if (tArgumentCt>1)
                 tArgument = tArgument / ((float) tArgumentCt);
 
-            if (tMechanicsCt > 1)
+            if (tMechanicsCt>1)
                 tMechanics = tMechanics / ((float) tMechanicsCt);
 
-            metaScores = new float[15];
+            if (tIdealCt>1)
+                tIdeal = tIdeal / ((float) tIdealCt);
+
+            
+            metaScores = new float[16];
 
             // spell Errors and other Errors are represented here as errors per 100 words.
-            if (totalWords > 0)
+            if (totalWords>0)
             {
-                spellErrors = 100 * spellErrors / totalWords;
-                otherErrors = 100 * otherErrors / totalWords;
+                spellErrors =100 * spellErrors/totalWords;
+                otherErrors =100 * otherErrors/totalWords;
             }
 
-            wpm = totalWords > 0 ? wpm / ((float) totalWords) : 0;
+            wpm = totalWords>0 ? wpm / ((float) totalWords) : 0;
 
             metaScores[2] = machineScore;
             metaScores[3] = confidence;
@@ -277,42 +307,48 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
             metaScores[12] = tClarity;
             metaScores[13] = tArgument;
             metaScores[14] = tMechanics;
+            metaScores[15] = tIdeal;
 
-            // LogService.logIt( "ScoredEssayIactnResp. scrCt=" + scrCt + ", spellErrors=" + spellErrors + ", otherErrors=" + otherErrors + ", machineScore=" + machineScore + ", totalWords=" + totalWords + ", transCompareScore=" + transCompareScore + ", points=" + points + ", wpm=" + wpm );
+            caveatList2=new ArrayList<>();
+            // LogService.logIt( "ScoredEssayIactnResp.calculateScore() BBB.2 scrCt=" + scrCt + ", spellErrors=" + spellErrors + ", otherErrors=" + otherErrors + ", machineScore=" + machineScore + ", totalWords=" + totalWords + ", transCompareScore=" + transCompareScore + ", points=" + points + ", wpm=" + wpm );
             if (plagiarized == 1)
             {
                 // forcedRiskFactorsList = new ArrayList<>();
-                // forcedRiskFactorsList.add( );
-                caveatStr = "[" + Constants.ESSAY_PLAGIARIZED + "]";
+                // forcedRiskFactorsList.add( );        
+                caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.PLAGIARIZED.getCaveatScoreTypeId(), 1, 0, null, this.getSimLocale()));
+                // caveatStr = "[" + Constants.ESSAY_PLAGIARIZED + "]";
             }
 
-            if (wpm > 0)
+            if (wpm>0)
             {
+                caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.WPM.getCaveatScoreTypeId(), wpm, 0, null, this.getSimLocale()));
+
                 // already there.
-                if (caveatStr != null && caveatStr.contains("[" + Constants.ESSAY_WPM + "]"))
-                {
-                } else if (caveatStr != null && !caveatStr.isBlank())
-                    caveatStr += "[" + Constants.ESSAY_WPM + "]" + wpm;
+                //if (caveatStr != null && caveatStr.contains("[" + Constants.ESSAY_WPM + "]"))
+                //{
+                //} else if (caveatStr != null && !caveatStr.isBlank())
+                //    caveatStr += "[" + Constants.ESSAY_WPM + "]" + wpm;
 
-                else
-                    caveatStr = "[" + Constants.ESSAY_WPM + "]" + wpm;
-
+                //else
+                //    caveatStr = "[" + Constants.ESSAY_WPM + "]" + wpm;
             }
 
             if (highWpm > 0)
             {
+                caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.WPM_HI.getCaveatScoreTypeId(), highWpm, 0, null, getSimLocale()));
+                
                 // already there.
-                if (caveatStr != null && caveatStr.contains("[" + Constants.ESSAY_HIGH_WPM + "]"))
-                {
-                } else if (caveatStr != null && !caveatStr.isBlank())
-                    caveatStr += "[" + Constants.ESSAY_HIGH_WPM + "]" + highWpm;
+                //if (caveatStr != null && caveatStr.contains("[" + Constants.ESSAY_HIGH_WPM + "]"))
+                //{
+                //} else if (caveatStr != null && !caveatStr.isBlank())
+                //    caveatStr += "[" + Constants.ESSAY_HIGH_WPM + "]" + highWpm;
 
-                else
-                    caveatStr = "[" + Constants.ESSAY_HIGH_WPM + "]" + highWpm;
+                //else
+                //    caveatStr = "[" + Constants.ESSAY_HIGH_WPM + "]" + highWpm;
 
             }
 
-            // LogService.logIt( "ScoredEssayIactnResp. final machineScore for item. total words=" + totalWords + ", machine score=" + machineScore + ", final confidence=" + confidence + ", final points=" + points );
+            // LogService.logIt( "ScoredEssayIactnResp.calculateScore() BBB.3 final machineScore for item. total words=" + totalWords + ", machine score=" + machineScore + ", final confidence=" + confidence + ", final points=" + points );
         }
     }
 
@@ -677,11 +713,23 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
         return 0;
     }
 
+    /*
     @Override
     public String getCaveatText()
     {
         return caveatStr;
     }
+    */
+    
+    @Override
+    public List<CaveatScore> getCaveatScoreList()
+    {
+        if( caveatList2==null )
+            caveatList2 = new ArrayList<>();
+        
+        return caveatList2;
+    }
+    
 
     @Override
     public InterviewQuestion getScoreTextInterviewQuestion()

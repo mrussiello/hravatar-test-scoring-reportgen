@@ -25,6 +25,8 @@ import com.tm2score.ct5.Ct5ItemType;
 import com.tm2score.global.I18nUtils;
 import com.tm2score.global.NumberUtils;
 import com.tm2score.ivr.IvrStringUtils;
+import com.tm2score.score.CaveatScore;
+import com.tm2score.score.CaveatScoreType;
 import com.tm2score.score.MergableScoreObject;
 import com.tm2score.score.ScoreUtils;
 import com.tm2score.score.ScoredItemParadigmType;
@@ -115,8 +117,6 @@ public class IactnItemResp implements ScorableResponse
                 LogService.logIt(e, "IactnItemResp() decoding Text1()seq=" + ii.getSeq() + ", content" + ii.getContent()+ ", text1=" + ii.getText1() );
             }
         }
-
-
     }
 
     @Override
@@ -2130,7 +2130,7 @@ public class IactnItemResp implements ScorableResponse
      * Returns null - unless the scorableresponse has a textScoreParam1 of [SCORETEXTCAVEAT]value sentence  -  where value sentence is a sentence that should be appended to
      * the scoretext for this competency in any report.
      * @return
-     */
+     *
     @Override
     public String getCaveatText()
     {
@@ -2139,6 +2139,30 @@ public class IactnItemResp implements ScorableResponse
 
         return StringUtils.getBracketedArtifactFromString( intnItemObj.getTextscoreparam1() , Constants.SCORETEXTCAVEAT );
     }
+    */
+    
+    @Override
+    public List<CaveatScore> getCaveatScoreList()
+    {
+        List<CaveatScore> out = new ArrayList<>();
+                
+        String s =  StringUtils.getBracketedArtifactFromString( intnItemObj.getTextscoreparam1() , Constants.SCORETEXTCAVEAT );
+        if( s!=null && !s.isBlank() )
+        {
+            Locale loc;
+            if( intnItemObj.getLangcode()!=null && !intnItemObj.getLangcode().isBlank() )
+                loc = I18nUtils.getLocaleFromCompositeStr( intnItemObj.getLangcode() );
+            else
+                loc = this.iactnResp.getSimLocale();
+            
+            CaveatScore cs = new CaveatScore( 0, CaveatScoreType.SCORE_TEXT.getCaveatScoreTypeId(), 0, 0, s, loc );
+            out.add( cs );
+        }
+        
+        return out;
+    }
+
+    
 
     @Override
     public InterviewQuestion getScoreTextInterviewQuestion()

@@ -54,6 +54,7 @@ import com.tm2score.score.ComboSimCompetencyScoreUtils;
 import com.tm2score.score.MergableScoreObject;
 import com.tm2score.score.MergableScoreObjectCombiner;
 import com.tm2score.report.ReportRules;
+import com.tm2score.score.CaveatScore;
 import com.tm2score.score.iactnresp.ScorableResponse;
 import com.tm2score.score.ScoreManager;
 import com.tm2score.score.ScoreUtils;
@@ -2103,7 +2104,8 @@ public class BaseTestEventScorer
 
             tes.setTextbasedResponses( packTextBasedResponses( ttl ) );
 
-            tes.setReportAndScoringFlags( simLocale );
+            // This MUST come after we set the score2,score3, score4, etch values.
+            tes.setReportAndScoringFlags(simLocale, scs );
 
             tp = "";
 
@@ -2129,7 +2131,32 @@ public class BaseTestEventScorer
                     tes.setScoreText( scrTxt );
                 }
             }
+            
+            //if( Constants.USE_CAVEATS2 )
+            //{
+            if( scs.getCaveatList2()!=null )
+            {
+                for( CaveatScore cscr : scs.getCaveatList2() )
+                {
+                    if( cscr.getLocale()==null )
+                        cscr.setLocale( reportLocale );
+                }
+                Collections.sort( scs.getCaveatList2() );
 
+                int disp=1;
+                for( CaveatScore cscr : scs.getCaveatList2() )
+                {
+                    if( cscr.getHasValidInfo() )
+                    {
+                        cscr.setDisplayOrder(disp);
+                        tp += cscr.getBracketedStrWithKey();
+                    }
+                    disp++;
+                }
+            }
+            //}
+            
+            /*
             String cvs = "";
             for( String cv : scs.getCaveatList() )
             {
@@ -2151,9 +2178,10 @@ public class BaseTestEventScorer
 
                 cvs += cv; // URLDecoder.decode( cv, "UTF8" );
             }
-
             if( !cvs.isBlank() )
                 tp += "[" + Constants.CAVEATSKEY + "]" + cvs;
+            */
+            
 
             String categInfo = scs.getScoreCategoryInfoString( scoreColorSchemeType );
 

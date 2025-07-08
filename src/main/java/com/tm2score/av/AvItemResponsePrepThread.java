@@ -576,7 +576,7 @@ public class AvItemResponsePrepThread implements Runnable {
 
                 Tracker.addAvItemResponseStart();
 
-                if( iir.getVoiceVibesStatusType().isUnset() || iir.getEssayStatusType().isUnset() )
+                if( iir.getVoiceVibesStatusType().isUnset() || iir.getAvItemEssayStatusType().isUnset() )
                 {
                     setVibesAndEssayStatusTypes( iir, te, testAdminLocale, iir.getMediaLocale() );
                     //this.setVoiceVibesStatusType(iir, te, testAdminLocale, testContentLocale);
@@ -1651,7 +1651,7 @@ public class AvItemResponsePrepThread implements Runnable {
                 if( iir.getVoiceVibesStatusType().readyForDelete() )
                 {
                     if( voiceVibesUtils.getVoiceVibesCredentialsAreDemo( te.getOrg(), te ) )
-                        LogService.logIt( "AvItemResponsePrepThread.cleanUnscoredAvItemResponseRecords() skipped deltion of audio because of demo account. VoiceVibesId=" + iir.getVoiceVibesId() + ", avItemResponseId=" + iir.getAvItemResponseId() );
+                        LogService.logIt( "AvItemResponsePrepThread.cleanUnscoredAvItemResponseRecords() skipped deletion of audio because of demo account. VoiceVibesId=" + iir.getVoiceVibesId() + ", avItemResponseId=" + iir.getAvItemResponseId() );
                     else
                     {
                         voiceVibesUtils.deleteVoiceVibesRecording( te.getOrg(), te, iir );
@@ -1807,7 +1807,7 @@ public class AvItemResponsePrepThread implements Runnable {
         if( iir==null )
             return;
         
-        boolean needsEssayStg = iir.getEssayScoreStatusTypeId()==AvItemEssayStatusType.NOT_SET.getEssayStatusTypeId();
+        boolean needsEssayStg = iir.getAvItemEssayStatusTypeId()==AvItemEssayStatusType.NOT_SET.getEssayStatusTypeId();
         
         boolean needsVibesStg = iir.getVoiceVibesStatusTypeId()==VoiceVibesStatusType.NOT_SET.getVoiceVibesStatusTypeId();
         
@@ -1911,6 +1911,11 @@ public class AvItemResponsePrepThread implements Runnable {
             }
         }
         
+        if( theIntn==null )
+        {
+            LogService.logIt( "AvItemResponsePrepThread.setVibesAndEssayStatusTypes() FFF.1 intn=" + (theIntn==null ? "null" : theIntn.getUniqueid()));
+        }
+        
         if( needsVibesStg )
         {
             if( iir.getUploadedUserFileId()> 0 )
@@ -1933,9 +1938,13 @@ public class AvItemResponsePrepThread implements Runnable {
         if( needsEssayStg )
         {
             if( theIntn != null && theIntn.getTextscoreparam1()!=null && IvrStringUtils.containsKey("[ESSAYPROMPT]", theIntn.getTextscoreparam1(), true ) )
-                iir.setEssayStatusTypeId( AvItemEssayStatusType.NOT_REQUESTED.getEssayStatusTypeId() );
+                iir.setAvItemEssayStatusTypeId( AvItemEssayStatusType.NOT_REQUESTED.getEssayStatusTypeId() );
+            
+            else if( theIntn!=null && theIntn.getCt5Int25()==1 )
+                iir.setAvItemEssayStatusTypeId( AvItemEssayStatusType.NOT_REQUESTED.getEssayStatusTypeId() );
+            
             else
-                iir.setEssayStatusTypeId( AvItemEssayStatusType.NOT_REQUIRED.getEssayStatusTypeId() );                          
+                iir.setAvItemEssayStatusTypeId( AvItemEssayStatusType.NOT_REQUIRED.getEssayStatusTypeId() );                          
         }
 
         

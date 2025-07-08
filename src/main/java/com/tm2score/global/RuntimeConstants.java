@@ -124,7 +124,7 @@ public class RuntimeConstants
         cache.put( "autoOrgAutoTestExpirationOk", true );
         cache.put( "autoOrgSubscriptionExpirationOk", true );
         cache.put( "autoOrgCreditsExpirationOk", true );
-
+        
         cache.put( "scoreDebugMode", false );
         cache.put( "reportDebugMode", false );
 
@@ -450,7 +450,7 @@ public class RuntimeConstants
         cache.put( "discernOn", true );
         
         cache.put( "ai-essay-scoring-ok", true );
-        cache.put( "ai-essay-scoring-use-score2", true );
+        cache.put( "ai-essay-scoring-use-score2", false );
 
         // ////////////////////////////////////////////////////////////////////////////
         // PlagTracker

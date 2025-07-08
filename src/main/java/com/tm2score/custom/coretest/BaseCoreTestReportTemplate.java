@@ -28,12 +28,10 @@ import com.tm2score.entity.event.TestEvent;
 import com.tm2score.entity.event.TestEventScore;
 import com.tm2score.entity.purchase.Product;
 import com.tm2score.event.ScoreCategoryType;
-import com.tm2score.event.TESNameComparator;
 import com.tm2score.event.TestEventScoreType;
 import com.tm2score.format.ScoreFormatUtils;
 import static com.tm2score.format.StandardReportSettings.MAX_CUSTLOGO_H;
 import com.tm2score.format.TableBackground;
-import com.tm2score.format.TestEventScoreWeightNameComparator;
 import com.tm2score.global.Constants;
 import com.tm2score.global.DisplayOrderComparator;
 import com.tm2score.global.I18nUtils;
@@ -43,6 +41,7 @@ import com.tm2score.interview.InterviewQuestion;
 import com.tm2score.report.ReportData;
 import com.tm2score.report.ReportTemplate;
 import com.tm2score.report.ReportUtils;
+import com.tm2score.score.CaveatScore;
 import com.tm2score.score.TextAndTitle;
 import com.tm2score.service.LogService;
 import com.tm2score.sim.EducType;
@@ -54,13 +53,13 @@ import com.tm2score.sim.TrainingType;
 import com.tm2score.util.MessageFactory;
 import com.tm2score.util.StringUtils;
 import java.io.ByteArrayOutputStream;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -1488,24 +1487,26 @@ public abstract class BaseCoreTestReportTemplate extends CTReportSettings implem
                 if( scoreText == null )
                     scoreText = "";
 
-                com.itextpdf.text.List cl = new com.itextpdf.text.List( com.itextpdf.text.List.UNORDERED, 12 );
+                //com.itextpdf.text.List cl = new com.itextpdf.text.List( com.itextpdf.text.List.UNORDERED, 12 );
                 Paragraph cHdr=null;
                 Paragraph cFtr=null;
                 float spcg = 8;
-                cl.setListSymbol( "\u2022");
+                //cl.setListSymbol( "\u2022");
 
                 Phrase cst = new Phrase( new Phrase( scoreText, getFontSmall() ) );
                 cst.setLeading( 10 );
+                
+                PdfPTable caveatScoreTable = getCaveatScoreTable( reportData.getCaveatScoreList(tes), getFontSmall() );
 
-                for( String ct : reportData.getCaveatList(tes) )
-                {
-                    if( ct.isEmpty() )
-                        continue;
+                //for( java.util.List<CaveatScore> ct : reportData.getCaveatScoreList(tes) )
+                //{
+                //    if( ct.isEmpty() )
+                //        continue;
 
-                    cl.add( new ListItem( new Paragraph( ct , getFontSmall() ) ) );
-                }
+                //    cl.add( new ListItem( new Paragraph( ct , getFontSmall() ) ) );
+                //}
 
-                if( cl.size()>0 )
+                if( caveatScoreTable!=null )
                 {
                     if( caveatHeaderKey != null && !caveatHeaderKey.isEmpty() )
                     {
@@ -1530,10 +1531,10 @@ public abstract class BaseCoreTestReportTemplate extends CTReportSettings implem
                 c.setColspan(2);
                 c.setPaddingTop( 10 );
                 c.addElement( cst );
-                if( cl.size()>0 )
+                if( caveatScoreTable!=null )
                 {
                     c.addElement( cHdr );
-                    c.addElement( cl );
+                    c.addElement( caveatScoreTable );
                     c.addElement( cFtr );
                 }
 

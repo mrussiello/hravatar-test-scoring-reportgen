@@ -21,6 +21,7 @@ import com.tm2score.event.ScoreFormatType;
 import com.tm2score.file.FileUploadFacade;
 import com.tm2score.file.MediaTempUrlSourceType;
 import com.tm2score.report.ReportUtils;
+import com.tm2score.score.CaveatScore;
 import com.tm2score.score.ScoreUtils;
 import com.tm2score.score.TextAndTitle;
 import com.tm2score.score.scorer.BaseTestEventScorer;
@@ -1388,8 +1389,7 @@ public class CT2GenericHtmlScoreFormatter extends BaseScoreFormatter implements 
         out[0]="";
         out[1] = tog;
         
-        List<String[]> cl = ReportUtils.getParsedTopicScores(tes.getCaveatList(), locale, tes.getSimCompetencyClassId() );
-
+        List<String[]> cl = ReportUtils.getParsedTopicScoresForCaveatScores(tes.getTopicCaveatScoreList(), locale, tes.getSimCompetencyClassId() );
         
         if( cl==null || cl.isEmpty() )
             return out;
@@ -1409,7 +1409,7 @@ public class CT2GenericHtmlScoreFormatter extends BaseScoreFormatter implements 
         
         String o = getRow( style, sb.toString(), false );
         
-        return new Object[] {o, new Boolean(tog) };                    
+        return new Object[] {o, tog};                    
     }
     
     
@@ -1467,7 +1467,7 @@ public class CT2GenericHtmlScoreFormatter extends BaseScoreFormatter implements 
                         showColorGraph = false;
                     }
 
-                    List<String> caveats = tes.getSimCompetencyClass().isScoredDataEntry() || tes.getSimCompetencyClass().isScoredTyping() ? tes.getCaveatList() : null;
+                    List<CaveatScore> caveats = tes.getSimCompetencyClass().isScoredDataEntry() || tes.getSimCompetencyClass().isScoredTyping() ? tes.getNonTopicCaveatScoreList() : null;
 
                     // LogService.logIt( "CT2GenericHtmlScoreFormatter.getContentRowForTestEventScore() tes.name=" + tes.getName() +", tes.getIncludeNumericScoreInResults()=" + tes.getIncludeNumericScoreInResults() + ", value=" + value + ", score=" + tes.getScore() + ", hasColor=" + tes.getScoreCategoryType().hasColor() );
                     // LogService.logIt( "CT2GenericHtmlScoreFormatter.getContentRowForTestEventScore() tes.name=" + tes.getName() + ", score=" + tes.getScore() + ", showColorGraph=" + showColorGraph + ", showStarIcon=" +  showStarIcon );
@@ -1497,10 +1497,10 @@ public class CT2GenericHtmlScoreFormatter extends BaseScoreFormatter implements 
                     if( caveats!=null && !caveats.isEmpty() )
                     {
                         LogService.logIt( "CT2GenericHtmlScoreFormatter.getContentRowForTestEventScore() Adding " + caveats.size() + " caveats." );
-                        sb.append( getRow( style,  caveats  ) );
+                        sb.append( this.getRowForCaveatScoreList(style,  caveats  ) );
                     }                    
                     
-                    return new Object[] {sb.toString(), new Boolean(tog) };
+                    return new Object[] {sb.toString(),tog };
     }
     
     

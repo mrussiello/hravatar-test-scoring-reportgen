@@ -24,6 +24,7 @@ import com.tm2score.event.ScoreCategoryType;
 import com.tm2score.report.ReportTemplate;
 import com.tm2score.global.STException;
 import com.tm2score.report.ReportUtils;
+import com.tm2score.score.CaveatScore;
 import com.tm2score.service.LogService;
 import com.tm2score.sim.SimCompetencyClass;
 import com.tm2score.sim.SimCompetencyVisibilityType;
@@ -515,14 +516,15 @@ public class CT2TestTakerFeedbackReport extends BaseCT2ReportTemplate implements
 
                 
                 //Phrase pg;
-                java.util.List<String[]> topicCaveatList = ReportUtils.getParsedTopicScores(reportData.getCaveatList(tes), reportData.getLocale(), tes.getSimCompetencyClassId() );
+                // java.util.List<String[]> topicCaveatList = ReportUtils.getParsedTopicScores(reportData.getCaveatList(tes), reportData.getLocale(), tes.getSimCompetencyClassId() );
+                java.util.List<CaveatScore> topicCaveatList = reportData.getTopicCaveatScoreList(tes);
 
                 csb = new StringBuilder();
                 cHdrStr =( caveatHeaderKey != null && !caveatHeaderKey.isEmpty() ? lmsg( caveatHeaderKey ) + "\n" : "" );
                 cFtrStr = ( caveatFooterKey != null && !caveatFooterKey.isEmpty() ? "\n" + lmsg( caveatFooterKey ) : "" );                
                 if( topicCaveatList.size()==1 )
                 {                                        
-                    String[] ct = topicCaveatList.get(0);
+                    String[] ct = ReportUtils.parseTopicCaveatScore(topicCaveatList.get(0), true, tes.getSimCompetencyClassId()); // topicCaveatList.get(0);
                     
                     csb.append( "\u2022 " + ct[1] + ": " + ct[2] ); 
                     

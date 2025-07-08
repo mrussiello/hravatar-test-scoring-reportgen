@@ -12,6 +12,7 @@ import com.tm2score.simlet.SimletItemType;
 import com.tm2score.interview.InterviewQuestion;
 import com.tm2builder.sim.xml.SimJ;
 import com.tm2score.entity.event.TestEvent;
+import com.tm2score.score.CaveatScore;
 import com.tm2score.score.MergableScoreObject;
 import com.tm2score.score.ScoredItemParadigmType;
 import com.tm2score.score.SimletCompetencyScore;
@@ -509,13 +510,19 @@ public class PrevIactnResp implements ScorableResponse
      * Returns null - unless the scorableresponse has a textScoreParam1 of [SCORETEXTCAVEAT]value sentence  -  where value sentence is a sentence that should be appended to
      * the scoretext for this competency in any report.
      * @return
-     */
+     *
     @Override
     public String getCaveatText()
     {
         return null; // this.iactnResp.getCaveatText();
     }
+    */
 
+    @Override
+    public List<CaveatScore> getCaveatScoreList()
+    {
+        return new ArrayList<>();
+    }    
 
     @Override
     public InterviewQuestion getScoreTextInterviewQuestion()

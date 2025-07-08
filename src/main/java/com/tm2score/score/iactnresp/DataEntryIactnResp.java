@@ -17,6 +17,7 @@ import com.tm2score.event.ResponseLevelType;
 import com.tm2score.global.Constants;
 import com.tm2score.global.I18nUtils;
 import com.tm2score.ivr.IvrStringUtils;
+import com.tm2score.score.CaveatScore;
 import com.tm2score.score.ScoredItemParadigmType;
 import com.tm2score.score.TextAndTitle;
 import com.tm2score.score.item.DataEntryItem;
@@ -193,7 +194,7 @@ public class DataEntryIactnResp extends IactnResp implements ScorableResponse
                     points = maxPoints;
             }
 
-            metaScores = new float[8];
+            metaScores = new float[16];
             metaScores[2] = ksh;                                   // averaged in competency score
             metaScores[3] = accuracyAdjustedKsh;                   // averaged in competency score
             metaScores[4] = accuracy;                              // averaged in competency scores
@@ -438,10 +439,18 @@ public class DataEntryIactnResp extends IactnResp implements ScorableResponse
     }
 
 
+    /*
     @Override
     public String getCaveatText()
     {
         return null;
+    }
+    */
+
+    @Override
+    public List<CaveatScore> getCaveatScoreList()
+    {
+        return new ArrayList<>();
     }
 
 

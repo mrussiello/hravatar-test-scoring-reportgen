@@ -17,6 +17,7 @@ import com.tm2score.event.ResponseLevelType;
 import com.tm2score.global.I18nUtils;
 import com.tm2score.googlecloud.Speech2TextResult;
 import com.tm2score.imo.xml.Clicflic;
+import com.tm2score.score.CaveatScore;
 import com.tm2score.score.MergableScoreObject;
 import com.tm2score.score.ScoredItemParadigmType;
 import com.tm2score.score.SimletScore;
@@ -103,8 +104,8 @@ public class BaseScoredAvIactnResp  extends IactnResp implements ScorableRespons
                     
             // EssayStatus type should be set by now so if not set, then it's a problem. 
             // this can only happen for old code
-            if( iir!=null && iir.getEssayStatusType().isUnset() && !iir.getAvItemType().supportsEssayScoring() )
-                iir.setEssayStatusTypeId( AvItemEssayStatusType.NOT_REQUIRED.getEssayStatusTypeId() );
+            if( iir!=null && iir.getAvItemEssayStatusType().isUnset() && !iir.getAvItemType().supportsEssayScoring() )
+                iir.setAvItemEssayStatusTypeId( AvItemEssayStatusType.NOT_REQUIRED.getEssayStatusTypeId() );
             // else if( iir.getEssayStatusType().isUnset() )
             //     iir.setEssayStatusTypeId( AvItemEssayStatusType.NOT_REQUIRED.getEssayStatusTypeId() );
             
@@ -201,7 +202,7 @@ public class BaseScoredAvIactnResp  extends IactnResp implements ScorableRespons
         if( !avItemResponse.isScoreCompleteOrError() )
             return true;
             
-        return !avItemResponse.getEssayStatusType().isNotRequired() && !avItemResponse.getEssayStatusType().isCompleteOrPermanentError();
+        return !avItemResponse.getAvItemEssayStatusType().isNotRequired() && !avItemResponse.getAvItemEssayStatusType().isCompleteOrPermanentError();
     }
     
     @Override
@@ -537,6 +538,7 @@ public class BaseScoredAvIactnResp  extends IactnResp implements ScorableRespons
          // nothing
          ir.setMetascore9( getMetaScore(9) );
          
+
          
          ir.setSimletItemTypeId( simletItemTypeId() );
 
@@ -662,5 +664,13 @@ public class BaseScoredAvIactnResp  extends IactnResp implements ScorableRespons
         }
     }
     
+    @Override
+    public List<CaveatScore> getCaveatScoreList()
+    {
+        if( this.avItemScorer!=null )
+            return this.avItemScorer.getCaveatScoreList();
+        
+        return new ArrayList<>();
+    }
     
 }

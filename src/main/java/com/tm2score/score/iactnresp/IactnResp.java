@@ -21,6 +21,7 @@ import com.tm2score.ct5.event.Ct5ResumeUtils;
 import com.tm2score.global.Constants;
 import com.tm2score.global.I18nUtils;
 import com.tm2score.ivr.IvrStringUtils;
+import com.tm2score.score.CaveatScore;
 import com.tm2score.score.MergableScoreObject;
 import com.tm2score.score.ScoreManager;
 import com.tm2score.score.ScoreUtils;
@@ -2192,7 +2193,7 @@ public class IactnResp implements ScorableResponse
      * Returns null - unless the scorableresponse has a textScoreParam1 of [SCORETEXTCAVEAT]value sentence  -  where value sentence is a sentence that should be appended to
      * the scoretext for this competency in any report.
      * @return
-     */
+     *
     @Override
     public String getCaveatText()
     {
@@ -2200,11 +2201,18 @@ public class IactnResp implements ScorableResponse
             return clickedIactnItemResp.getCaveatText();
 
         return null;
-
-
-        // return StringUtils.getBracketedArtifactFromString( intnObj.getTextscoreparam1() , Constants.SCORETEXTCAVEAT );
     }
+    */
 
+    @Override
+    public List<CaveatScore> getCaveatScoreList()
+    {
+        if( clickedIactnItemResp != null )
+            return clickedIactnItemResp.getCaveatScoreList();
+
+        return new ArrayList<>();
+    }
+    
 
     @Override
     public InterviewQuestion getScoreTextInterviewQuestion()

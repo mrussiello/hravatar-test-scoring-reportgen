@@ -4,8 +4,6 @@
  */
 package com.tm2score.format;
 
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfPCell;
 import com.tm2score.ai.MetaScoreType;
 import com.tm2score.battery.BatteryScoreType;
 import com.tm2score.battery.BatteryScoringUtils;
@@ -59,6 +57,7 @@ import com.tm2score.purchase.ProductType;
 import com.tm2score.report.ReportData;
 import com.tm2score.report.ReportUtils;
 import com.tm2score.report.ReportRules;
+import com.tm2score.score.CaveatScore;
 import com.tm2score.score.ScoreCategoryRange;
 import com.tm2score.score.TextAndTitle;
 import com.tm2score.service.LogService;
@@ -725,6 +724,7 @@ public class BaseScoreFormatter
          return "<tr " + style + "><td style=\"width:20px\"></td><td " + ( bold ? "style=\"font-weight:bold;vertical-align:top\"" : "style=\"font-weight:normal;vertical-align:top\"" ) + ">" + label + "</td><td " + ( bold ? "style=\"font-weight:bold\"" : "" ) + ">" + value + "</td><td colspan=\"4\" " + ( bold ? "style=\"font-weight:bold\"" : "" ) + ">" + value2 + "</td></tr>\n";
     }
 
+    /*
     protected String getRow( String style, List<String> caveats  )
     {
          if( caveats ==null || caveats.isEmpty() )
@@ -738,8 +738,26 @@ public class BaseScoreFormatter
         cavs += "</ul>\n";
         return "<tr " + style + "><td></td><td colspan=\"6\" style=\"font-weight:normal;vertical-align:top\"" + ">" + cavs + "</td></tr>\n";
     }
+    */
 
+    protected String getRowForCaveatScoreList( String style, List<CaveatScore> caveatScoreList  )
+    {
+         if( caveatScoreList ==null || caveatScoreList.isEmpty() )
+             return "";
 
+        String cavs = "<table cellpadding=\"2\" style=\"margin-left:0\">\n";
+
+        for( CaveatScore c : caveatScoreList )
+        {
+            cavs += c.getScoreTableRow() + "\n";
+            // cavs += "<li style=\"font-weight:normal;vertical-align:top\">" + c + "</li>\n";
+        }
+
+        cavs += "</table>\n";
+        return "<tr " + style + "><td></td><td colspan=\"6\" style=\"font-weight:normal;vertical-align:top\"" + ">" + cavs + "</td></tr>\n";
+    }
+
+    
     protected String getRowHeaderImage( String imgUrl, int maxWid )
     {
         if( maxWid<=0 )
@@ -1929,7 +1947,7 @@ NONE(0,"None"),    // When an ONET Soc is selected
                     tesList2.add( tes );
                 }
 
-                else if( typeId == 5 && scc.isKS() )
+                else if( typeId==5 && scc.isKS() )
                 {
                     tesList2.add( tes );
                 }
@@ -1985,19 +2003,19 @@ NONE(0,"None"),    // When an ONET Soc is selected
                     }
                 }
 
-                if( typeId == 3 )
+                if( typeId==3 )
                 {
                     key = "g.AIMSEmTtl";
                     ttext = this.getReportRuleAsString( "competencygrouptitle" + SimCompetencyGroupType.PERSONALITY.getSimCompetencyGroupTypeId() );
                 }
 
-                if( typeId == 4 )
+                if( typeId==4 )
                 {
                     key = "g.AbilitiesEmTtl";
                     ttext = this.getReportRuleAsString( "competencygrouptitle" + SimCompetencyGroupType.ABILITY.getSimCompetencyGroupTypeId() );
                 }
 
-                if( typeId == 5 )
+                if( typeId==5 )
                 {
                     key = "g.KsEmTitle";
                     ttext = this.getReportRuleAsString( "competencygrouptitle" + SimCompetencyGroupType.SKILLS.getSimCompetencyGroupTypeId() );
@@ -2028,8 +2046,11 @@ NONE(0,"None"),    // When an ONET Soc is selected
                 }
 
 
-                String title = ttext==null ? lmsg( key , null ) : ttext;
+                String title = ttext==null || ttext.isBlank() ? lmsg( key , null ) : ttext;
 
+                if( title!=null && (title.equals("[HIDE]") || title.equals("[HIDESUM]")) )
+                    title = "";
+                
                 sb.append( getRowTitle( rowStyleHdr, title, isIncludeSubcategoryNumeric() ? lmsg( "g.Score" ) : null, isIncludeSubcategoryNorms() ? lmsg( "g.Percentile" ) : null , this.isIncludeSubcategoryCategory() ? lmsg(this.useRatingAndColors() ? "g.Rating" : "g.MatchJob" ) : null ) );
 
                 String label;
@@ -2166,7 +2187,7 @@ NONE(0,"None"),    // When an ONET Soc is selected
         //if( getReportRuleAsBoolean( "cmptytopicsoff" ) )
         //    return out;
 
-        List<String[]> cl = ReportUtils.getParsedTopicScores(tes.getCaveatList(), locale, tes.getSimCompetencyClassId() );
+        List<String[]> cl = ReportUtils.getParsedTopicScoresForCaveatScores(tes.getTopicCaveatScoreList(), locale, tes.getSimCompetencyClassId() );
 
         if( cl==null || cl.isEmpty() )
             return out;
@@ -2227,16 +2248,16 @@ NONE(0,"None"),    // When an ONET Soc is selected
         //if( getReportRuleAsBoolean("hidecaveats") )
         //    return out;
 
-        List<String> cl2 = new ArrayList<>();
+        List<CaveatScore> cl2 = new ArrayList<>();
 
-        // LogService.logIt( "BaseScoreFormatter.getNonTopicCaveatScoresRow() AAA typeId=" + typeId + ", tes=" + tes.getName() + ", tes.cl.size=" + tes.getCaveatList().size() );
+        // LogService.logIt( "BaseScoreFormatter.getNonTopicCaveatScoresRow() AAA typeId=" + typeId + ", tes=" + tes.getName() + ", tes.cl.size=" + tes.getNonTopicCaveatScoreList().size() );
 
-        for( String ct : tes.getCaveatList() )
+        for( CaveatScore ct : tes.getNonTopicCaveatScoreList() )
         {
-            if( ct.isEmpty() )
+            if( !ct.getHasValidInfo())
                 continue;
 
-            if( ct.startsWith( Constants.TOPIC_KEY + "~" ) )
+            if( ct.getCaveatScoreType().getIsTopic() ) // Constants.TOPIC_KEY + "~" ) )
                 continue;
 
             cl2.add( ct );
@@ -2248,20 +2269,10 @@ NONE(0,"None"),    // When an ONET Soc is selected
         if( cl2.isEmpty() )
             return out;
 
-        StringBuilder sb = new StringBuilder();
-
-        sb.append( "<table cellpadding=\"1\" style=\"margin-left:20px\">\n" );
-
-        for( String ct : cl2 )
-            sb.append( "<tr><td>&#8226;</td><td>" + ct + "</td></tr>\n" );
-
-        sb.append( "</table>\n" );
-
         // tog = !tog;
-
         String style = tog ? rowStyle1 : rowStyle2;
 
-        String o = getRow( style, sb.toString(), false );
+        String o = getRowForCaveatScoreList( style, cl2  );
 
         return new Object[] {o, tog };
     }
@@ -2992,7 +3003,9 @@ NONE(0,"None"),    // When an ONET Soc is selected
         tog = true;
         out[0] = "";
         out[1] = tog;
+        return out;
 
+        /*
         try
         {
 
@@ -3103,6 +3116,7 @@ NONE(0,"None"),    // When an ONET Soc is selected
             LogService.logIt( e, "BaseScoreFormatter.getStandardImageCaptureSection() " );
             return out;
         }
+        */
     }
 
     
@@ -3187,7 +3201,7 @@ NONE(0,"None"),    // When an ONET Soc is selected
         if( getReport().getIncludeResume()<=0 || getReportRuleAsBoolean( "resumereportsoff") || getUser()==null || getUser().getResume()==null )
             return out;
 
-        LogService.logIt(  "BaseScoreFormatter.getStandardResumeSection() BBB.1 " );
+        // LogService.logIt(  "BaseScoreFormatter.getStandardResumeSection() BBB.1 " );
 
         Resume resume = getUser().getResume();
         resume.parseJsonStr();

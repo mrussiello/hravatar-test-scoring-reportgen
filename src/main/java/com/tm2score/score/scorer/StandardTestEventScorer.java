@@ -54,7 +54,7 @@ public class StandardTestEventScorer extends BaseTestEventScorer implements Test
             
             initTestEvent();
                  
-            // if( ScoreManager.DEBUG_SCORING )
+            if( ScoreManager.DEBUG_SCORING )
                LogService.logIt( "StandardTestEventScorer.score() te.stdHraScoring=" + te.getStdHraScoring() + ", validItemsCanHaveZeroMaxPoints=" + validItemsCanHaveZeroMaxPoints );
 
             // float ovrRawScr = 0;

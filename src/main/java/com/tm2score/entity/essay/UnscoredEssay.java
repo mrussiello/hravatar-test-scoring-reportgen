@@ -52,8 +52,19 @@ public class UnscoredEssay implements Serializable, Comparable<UnscoredEssay>
     @Column(name="unscoredessayid")
     private int unscoredEssayId;
 
+    /*
+     0 = Essay
+     1 = AV Transcript
+     
+    */
+    @Column(name="unscoredessaytypeid")
+    private int unscoredEssayTypeId;
+    
     @Column(name="testeventid")
     private long testEventId;
+
+    @Column(name="avitemresponseid")
+    private long avItemResponseId;
 
     @Column(name="scorestatustypeid")
     private int scoreStatusTypeId;
@@ -693,6 +704,26 @@ public class UnscoredEssay implements Serializable, Comparable<UnscoredEssay>
     public void setScoreStatusTypeId2(int scoreStatusTypeId2)
     {
         this.scoreStatusTypeId2 = scoreStatusTypeId2;
+    }
+
+    public int getUnscoredEssayTypeId()
+    {
+        return unscoredEssayTypeId;
+    }
+
+    public void setUnscoredEssayTypeId(int unscoredEssayTypeId)
+    {
+        this.unscoredEssayTypeId = unscoredEssayTypeId;
+    }
+
+    public long getAvItemResponseId()
+    {
+        return avItemResponseId;
+    }
+
+    public void setAvItemResponseId(long avItemResponseId)
+    {
+        this.avItemResponseId = avItemResponseId;
     }
 
 

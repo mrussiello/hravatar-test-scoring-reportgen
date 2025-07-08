@@ -9,7 +9,6 @@ import com.tm2score.entity.event.TestEvent;
 import com.tm2score.event.ScoreCategoryType;
 import com.tm2score.event.ScoreColorSchemeType;
 import com.tm2score.event.ScoreFormatType;
-import com.tm2score.global.Constants;
 import com.tm2score.global.I18nUtils;
 import com.tm2score.interview.InterviewQuestion;
 import com.tm2score.service.LogService;
@@ -22,11 +21,12 @@ import com.tm2builder.sim.xml.InterviewQuestionObj;
 import com.tm2builder.sim.xml.SimJ;
 import com.tm2builder.sim.xml.SimJ.Simcompetency;
 import com.tm2score.entity.profile.ProfileEntry;
-import com.tm2score.essay.EssayMetaScoreType;
+import com.tm2score.score.CaveatScoreType;
 import com.tm2score.global.DisplayOrderObject;
 import com.tm2score.global.NumberUtils;
 import com.tm2score.global.UserRankObject;
 import com.tm2score.report.ReportData;
+import com.tm2score.score.CaveatScore;
 import com.tm2score.score.MergableScoreObject;
 import com.tm2score.score.iactnresp.ScorableResponse;
 import com.tm2score.score.ScoreManager;
@@ -109,7 +109,8 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
 
     protected float maxPointsPerItem = 0;
 
-    protected List<String> caveatList;
+    // protected List<String> caveatList;
+    protected List<CaveatScore> caveatList2;
 
     protected List<String> forcedRiskFactorsList;
 
@@ -528,7 +529,10 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
             fractionOfPoints = 0;
             totalMaxPoints = 0;
             averagePoints = 0;
-            caveatList = new ArrayList<>();
+            
+            caveatList2 = new ArrayList<>();
+            // caveatList = new ArrayList<>();
+            
             forcedRiskFactorsList = new ArrayList<>();
             scoreTextInterviewQuestionList = new ArrayList<>();
             smltCompScrList = new ArrayList<>();
@@ -610,8 +614,10 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
                     if( slcs.getScaledScoreFloor()> scaledScoreFloor )
                         scaledScoreFloor = slcs.getScaledScoreFloor();
 
-                    caveatList.addAll( slcs.getCaveatList() );
-
+                    caveatList2.addAll( slcs.getCaveatList2() );
+                    
+                    // caveatList.addAll( slcs.getCaveatList() );
+                        
                     forcedRiskFactorsList.addAll(slcs.getForceRiskFactorsList() );
 
                     scoreTextInterviewQuestionList.addAll(slcs.getScoreTextInterviewQuestionList() );
@@ -904,7 +910,7 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
             if( getSimCompetencyClass().getProducesTopics() )
             {
                 // TO DO!
-                caveatList = new ArrayList<>();
+                // caveatList = new ArrayList<>();
 
                 topicMap = new TreeMap<>();
                 Map<String,int[]> tm;
@@ -1001,8 +1007,13 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
                         d2[0] = ((int) avg);
                     }
 
-                    caveatList.add( Constants.TOPIC_KEY + "~" + k + "~" + d2[0] + "~" + d2[1] + "~" + d2[2] );
+                    if( caveatList2==null )
+                        caveatList2=new ArrayList<>();
+
+                    caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.TOPIC_CORRECT.getCaveatScoreTypeId(), d2[0], d2[1], d2[2], k, this.getReportingLocale()));                    
+                    // caveatList.add( Constants.TOPIC_KEY + "~" + k + "~" + d2[0] + "~" + d2[1] + "~" + d2[2] );
                 }
+                
             }
 
 
@@ -1319,10 +1330,13 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
                 //if( ScoreManager.DEBUG_SCORING )
                 //    LogService.logIt( "SimCompetencyScore.calculateScore() " + this.getName() + ", metascores[2,3,4]=" + metaScores[2] + ","+ metaScores[3] + ","+ metaScores[4] );
 
-                caveatList = new ArrayList<>();
-                caveatList.add( MessageFactory.getStringMessage( locale , "g.WordPerMinX" , new String[]{ Integer.toString( Math.round( metaScores[2] ) )} ) );
-                caveatList.add( MessageFactory.getStringMessage( locale , "g.WordPerMinAccAdjX" , new String[]{ Integer.toString( Math.round( metaScores[3] ) )} ) );
-                caveatList.add( MessageFactory.getStringMessage( locale , "g.AccuracyX" , new String[]{ Integer.toString( Math.round( metaScores[4] ) )} ) );
+                caveatList2 = new ArrayList<>();
+                caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.WPM_TYPING.getCaveatScoreTypeId(), Math.round( metaScores[2] ), 0, null, locale));
+                caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.WPM_ACCURACY_ADJ.getCaveatScoreTypeId(), Math.round( metaScores[3] ), 0, null, locale));
+                caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.ACCURACY.getCaveatScoreTypeId(), Math.round( metaScores[4] ), 0, null, locale));
+                //caveatList.add( MessageFactory.getStringMessage( locale , "g.WordPerMinX" , new String[]{ Integer.toString( Math.round( metaScores[2] ) )} ) );
+                //caveatList.add( MessageFactory.getStringMessage( locale , "g.WordPerMinAccAdjX" , new String[]{ Integer.toString( Math.round( metaScores[3] ) )} ) );
+                ///caveatList.add( MessageFactory.getStringMessage( locale , "g.AccuracyX" , new String[]{ Integer.toString( Math.round( metaScores[4] ) )} ) );
             }
 
             else if( getSimCompetencyClass().equals( SimCompetencyClass.SCOREDDATAENTRY ) )
@@ -1333,136 +1347,110 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
                 //    LogService.logIt( "SimCompetencyScore.calculateScore() " + this.getName() + ", reportData=" + (reportData==null ? "null" : "not null") + ", metascores[2,3,4,5,6,7,8,9]=" + metaScores[2] + ","+ metaScores[3] + ","+ metaScores[4] + ", " + (metaScores.length>5 ? metaScores[5] : "NA" ) + ", " + (metaScores.length>6 ? metaScores[6] : "NA" ) + ", " + (metaScores.length>7 ? metaScores[7] : "NA" ) + ", " + (metaScores.length>8 ? metaScores[8] : "NA" ) + ", " + (metaScores.length>9 ? metaScores[9] : "NA" ) );
 
 
-                caveatList = new ArrayList<>();
+                caveatList2 = new ArrayList<>();
 
                 boolean fflag = reportData==null || !reportData.getReportRuleAsBoolean( "hidedataentryksph" );
                 if( fflag )
-                    caveatList.add( MessageFactory.getStringMessage( locale , "g.KeystrokesPerHourX" , new String[]{ Integer.toString( Math.round( metaScores[2] ) )} ) );
+                    caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.KSPH.getCaveatScoreTypeId(), Math.round(metaScores[2]), 0, null, locale));
+                    // caveatList.add( MessageFactory.getStringMessage( locale , "g.KeystrokesPerHourX" , new String[]{ Integer.toString( Math.round( metaScores[2] ) )} ) );
 
                 fflag = reportData==null || !reportData.getReportRuleAsBoolean( "hidedataentrygrosserrors" );
                 if( fflag )
-                    caveatList.add( MessageFactory.getStringMessage( locale , "g.GrossErrorsXOfY" , new String[]{ Integer.toString( Math.round( metaScores[5]) ), Integer.toString( Math.round( metaScores[6]))} ) );
+                    caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.ERRORS_GROSS_XY.getCaveatScoreTypeId(), Math.round( metaScores[5] ), Math.round( metaScores[6] ), null, locale));
+                    // caveatList.add( MessageFactory.getStringMessage( locale , "g.GrossErrorsXOfY" , new String[]{ Integer.toString( Math.round( metaScores[5]) ), Integer.toString( Math.round( metaScores[6]))} ) );
 
                 fflag = reportData==null || !reportData.getReportRuleAsBoolean( "hidedataentryaaksph" );
                 if( fflag )
-                    caveatList.add( MessageFactory.getStringMessage( locale , "g.KeystrokesPerHourAccAdjX" , new String[]{ Integer.toString( Math.round( metaScores[3] ) )} ) );
+                    caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.KSPH_ACCURACY_ADJ.getCaveatScoreTypeId(), Math.round( metaScores[3] ), 0, null, locale));
+                    // caveatList.add( MessageFactory.getStringMessage( locale , "g.KeystrokesPerHourAccAdjX" , new String[]{ Integer.toString( Math.round( metaScores[3] ) )} ) );
 
                 fflag = reportData==null || !reportData.getReportRuleAsBoolean( "hidedataentryaccuracy" );
                 if( fflag )
-                    caveatList.add( MessageFactory.getStringMessage( locale , "g.AccuracyX" , new String[]{ Integer.toString( Math.round( metaScores[4] ) )} ) );
+                    caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.ACCURACY.getCaveatScoreTypeId(), Math.round( metaScores[4] ), 0, null, locale));
+                    // caveatList.add( MessageFactory.getStringMessage( locale , "g.AccuracyX" , new String[]{ Integer.toString( Math.round( metaScores[4] ) )} ) );
 
                 fflag = reportData!=null && reportData.getReportRuleAsBoolean( "showdataentryseconds" ) && metaScores.length>7 && metaScores[7]>0;
                 if( fflag )
-                    caveatList.add( MessageFactory.getStringMessage( locale , "g.AvgSecondsPerPageX" , new String[]{ Integer.toString( Math.round( metaScores[7] ) )} ) );
+                    caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.SECS_PER_PAGE.getCaveatScoreTypeId(), Math.round( metaScores[7] ), 0, null, locale));
+                //     caveatList.add( MessageFactory.getStringMessage( locale , "g.AvgSecondsPerPageX" , new String[]{ Integer.toString( Math.round( metaScores[7] ) )} ) );
 
                 // LogService.logIt( "SimCompetencyScore.calculateScore() Scored Data Entry Class. " + this.getName() + ", metascores[2,3,4,5]=" + metaScores[2] + ","+ metaScores[3] + ","+ metaScores[4] + ","+ metaScores[5] + "," +  metaScores[6] + ", caveatList.size=" + caveatList.size() );
             }
 
-
-            /* MOVED above to support use of topic map for competency scoring.
-            else if( getSimCompetencyClass().getProducesTopics() )
-            {
-                // TO DO!
-                caveatList = new ArrayList<>();
-
-                Map<String,int[]> topicMap = new TreeMap<>();
-                Map<String,int[]> tm = null;
-
-                int[] d1;
-                int[] d2;
-
-
-
-                for( SimletCompetencyScore scr : smltCompScrList )
-                {
-                    //map of topic name, int[]
-                    //    int[0] = number correct        ( for this item this means points )
-                    //    int[1] = number total this topic.  max points for competency
-                    //    int[2] = number of items that were partially correct.  ( 0 )
-                    //    int[3] = number of items total for this topic from this SimletCompetencyScore
-                    tm=scr.getTopicMap();
-
-                    if( tm ==null )
-                        continue;
-
-                    for( String k : tm.keySet() )
-                    {
-                        d1=tm.get(k);
-
-                        // no new items for this topic in simlet competency score
-                        if( d1==null )
-                            continue;
-
-                        // get existing values
-                        d2=topicMap.get(k);
-
-
-                         //* map of topic name, int[]
-                         //*    int[0] = number correct average value (if not a sum type) ( for this item this means points )
-                         //*    int[1] = number total this topic.  max points for competency
-                         //*    int[2] = number of items that were partially correct.  ( 0 )
-                         //*    int[3] = number of items total for this topic from this SimletCompetencyScore
-                         //*    int[4] = Flag to be used downstream. 0 means add items (default). 1 means average number correct using total number of items in int[3].
-                        if( d2==null )
-                            d2 = new int[5];
-
-                        // Add scores or number of correct
-                        d2[0] += d1[0];
-
-                        // Total.
-                        if( scr.getCompetencyScoreType().isAddTotalsForTopics() )
-                        {
-                            // Add totals or max points
-                            d2[1] += d1[1];
-                            d2[4] = 0;
-                        }
-                        else
-                        {
-                            // just use the steady max
-                            d2[1] = d1[1];
-
-                            // set flag
-                            d2[4] = 1;
-                        }
-
-                        // partially correct items questions
-                        d2[2] += d1[2];
-
-                        // Sum up total items.
-                        d2[3] += d1[3];
-
-                        topicMap.put( k, d2 );
-                    }
-                }
-
-                for( String k : topicMap.keySet() )
-                {
-                    d2 = topicMap.get(k);
-
-                    // Not all topics are sums, if they are average, then do the average here.
-                    if( d2[4]==1 && d2[3]>0 )
-                    {
-                        // total points / number of items = average per item.
-                        float avg = ((float) d2[0])/((float) d2[3]);
-
-                        d2[0] = ((int) avg);
-                    }
-
-                    caveatList.add( Constants.TOPIC_KEY + "~" + k + "~" + d2[0] + "~" + d2[1] + "~" + d2[2] );
-                }
-            }
-            */
-
             if( getSimCompetencyClass().equals( SimCompetencyClass.SCOREDAUDIO ) )
             {
                 // TO DO!
-                caveatList = new ArrayList<>();
+                caveatList2 = new ArrayList<>();
             }
 
             if( getSimCompetencyClass().equals( SimCompetencyClass.SCOREDAVUPLOAD ) )
             {
-                // TO DO!
-                caveatList = new ArrayList<>();
+                Locale locale = getReportingLocale();
+                
+                caveatList2=new ArrayList<>();
+
+                int plagiarizedCount = 0;
+                if( caveatList2==null )
+                    caveatList2=new ArrayList<>();
+
+                for( CaveatScore cav : caveatList2 )
+                {
+                    if( cav!=null && cav.getCaveatScoreType().equals( CaveatScoreType.PLAGIARIZED) )
+                        plagiarizedCount++;
+                }
+                
+                if( plagiarizedCount>0 )
+                {
+                    String temp;
+
+                    if( getTotalScorableItems()>1 )                        
+                    {
+                        temp = MessageFactory.getStringMessage( locale , "g.ScoredAvPlagiarizedXofY" , new String[]{ Integer.toString( plagiarizedCount ), Integer.toString( (int)getTotalScorableItems() ) } );
+                        caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.PLAGIARIZED_XY.getCaveatScoreTypeId(), plagiarizedCount, (int)getTotalScorableItems(), null, locale));
+                    }
+                    
+                    else
+                    {
+                        temp = MessageFactory.getStringMessage( locale , "g.ScoredAvPlagiarized" , null );
+                        caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.PLAGIARIZED.getCaveatScoreTypeId(), 1, 0, null, locale));
+                    }
+
+                    // caveatList.add( temp );
+                    forcedRiskFactorsList.add( temp );
+                }
+                
+                
+                // If there is a machine score present
+                if( metaScores[6] > 0 )
+                {
+                    caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.OVERALL_AI.getCaveatScoreTypeId(), Math.round( metaScores[6] ), 0, null, locale));
+                    caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.OVERALL_CONF.getCaveatScoreTypeId(), Math.round( 100*metaScores[7] ), 0, null, locale));
+                }
+
+                if( metaScores.length>15 )
+                {
+                    if( metaScores[15]>0 )
+                        caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.IDEAL.getCaveatScoreTypeId(), Math.round( metaScores[15] ), 0, null, locale));
+                       // caveatList.add(MessageFactory.getStringMessage(locale , CaveatScoreType.IDEAL.getKeyX() , new String[]{ Integer.toString( Math.round( metaScores[15] ) )} ) );                            
+
+                    if( metaScores[12]>0 )
+                        caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.CLARITY.getCaveatScoreTypeId(), Math.round( metaScores[12] ), 0, null, locale));
+                        // caveatList.add(MessageFactory.getStringMessage(locale , CaveatScoreType.CLARITY.getKeyX() , new String[]{ Integer.toString( Math.round( metaScores[12] ) )} ) );
+
+                    if( metaScores[13]>0 )
+                        caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.ARGUMENT.getCaveatScoreTypeId(), Math.round( metaScores[13] ), 0, null, locale));
+                        // caveatList.add(MessageFactory.getStringMessage(locale , CaveatScoreType.ARGUMENT.getKeyX() , new String[]{ Integer.toString( Math.round( metaScores[13] ) )} ) );
+
+                    if( metaScores[14]>0 )
+                        caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.MECHANICS.getCaveatScoreTypeId(), Math.round( metaScores[14] ), 0, null, locale));
+                        // caveatList.add(MessageFactory.getStringMessage(locale , CaveatScoreType.MECHANICS.getKeyX() , new String[]{ Integer.toString( Math.round( metaScores[14] ) )} ) );                            
+                }
+
+                if( metaScores.length>2 && metaScores[2]>0 )
+                    caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.WORDS.getCaveatScoreTypeId(), Math.round( metaScores[2] ), 0, null, locale));
+                    // caveatList.add( MessageFactory.getStringMessage( locale , "g.EssayWordCountX" , new String[]{ Integer.toString( Math.round( metaScores[6] ) )} ) );
+                
+                
             }
 
             if( getSimCompetencyClass().equals( SimCompetencyClass.SCOREDESSAY ) )
@@ -1483,29 +1471,28 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
 
                 float highWpm = 0;
 
-                if( caveatList==null )
-                    caveatList=new ArrayList<>();
+                if( caveatList2==null )
+                    caveatList2=new ArrayList<>();
 
-                for( String cav : caveatList )
+                for( CaveatScore cav : caveatList2 )
                 {
-                    if( cav != null && cav.contains( "[" + Constants.ESSAY_PLAGIARIZED + "]" ))
+                    if( cav!=null && cav.getCaveatScoreType().equals( CaveatScoreType.PLAGIARIZED) )
                         plagiarizedCount++;
 
-                    if( cav!=null && cav.contains( "[" + Constants.ESSAY_HIGH_WPM + "]" ))
+                    if( cav!=null && cav.getCaveatScoreType().equals( CaveatScoreType.WPM_HI) ) //  cav.contains( "[" + Constants.ESSAY_HIGH_WPM + "]" ))
                     {
-                        // LogService.logIt( "SimCompetencyScore.calculateScore() GGG.1: caveat String=" + cav + ", testEventId=" + (this.testEvent==null ? "null" : this.testEvent.getTestEventId()) );
-                        String cv = StringUtils.getBracketedArtifactFromString(cav, Constants.ESSAY_HIGH_WPM);
-
-                        if( cv!=null && !cv.isBlank() )
-                            highWpm = Math.max(highWpm, Float.parseFloat(cv) );
+                        if( cav.getValue()>0 )
+                            highWpm = Math.max(highWpm, cav.getValue() );
                         else
-                            LogService.logIt( "SimCompetencyScore.calculateScore() NONFATAL: Caveatlist contains High WPM BUT no value after brackets! cv=" + cv + ", caveat String=" + cav + ", testEventId=" + (this.testEvent==null ? "null" : this.testEvent.getTestEventId()) );
+                            LogService.logIt( "SimCompetencyScore.calculateScore() NONFATAL: Caveatlist2 contains High WPM BUT no value cav.getValue()=" + cav.getValue() + ", caveat String=" + cav.toString() + ", testEventId=" + (this.testEvent==null ? "null" : this.testEvent.getTestEventId()) );
                     }
                 }
 
+                
                 // redo caveats
-                caveatList = new ArrayList<>();
+                caveatList2 = new ArrayList<>();
 
+                /*
                 if( plagiarizedCount > 0 )
                 {
                     String temp;
@@ -1519,32 +1506,69 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
 
                     forcedRiskFactorsList.add( temp );
                 }
+                */
+                
+                if( plagiarizedCount>0 )
+                {
+                    String temp;
+
+                    if( getTotalScorableItems()>1 )                        
+                    {
+                        temp = MessageFactory.getStringMessage( locale , "g.EssayPlagiarizedXofY" , new String[]{ Integer.toString( plagiarizedCount ), Integer.toString( (int)getTotalScorableItems() ) } );
+                        caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.PLAGIARIZED_XY.getCaveatScoreTypeId(), plagiarizedCount, (int)getTotalScorableItems(), null, locale));
+                    }
+                    
+                    else
+                    {
+                        temp = MessageFactory.getStringMessage( locale , "g.EssayPlagiarized" , null );
+                        caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.PLAGIARIZED.getCaveatScoreTypeId(), 1, 0, null, locale));
+                    }
+
+                    // caveatList.add( temp );
+                    forcedRiskFactorsList.add( temp );
+                }
 
                 // If no plagiarized or if some unplagiarized
-                if( plagiarizedCount <=0 || getTotalScorableItems()>plagiarizedCount )
+                if( plagiarizedCount<=0 || getTotalScorableItems()>plagiarizedCount )
                 {
                     // If there is a machine score present
                     if( metaScores[2] > 0 )
                     {
-                        caveatList.add( MessageFactory.getStringMessage( locale , "g.EssayMachineScoreX" , new String[]{ Integer.toString( Math.round( metaScores[2] ) )} ) );
-                        caveatList.add( MessageFactory.getStringMessage( locale , "g.EssayMachineConfidenceX" , new String[]{ Integer.toString( Math.round( 100*metaScores[3] ) )} ) );
+                        caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.OVERALL_AI.getCaveatScoreTypeId(), Math.round( metaScores[2] ), 0, null, locale));
+                        caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.OVERALL_CONF.getCaveatScoreTypeId(), Math.round( 100*metaScores[3] ), 0, null, locale));
+
+                        //caveatList.add( MessageFactory.getStringMessage( locale , "g.EssayMachineScoreX" , new String[]{ Integer.toString( Math.round( metaScores[2] ) )} ) );
+                        //caveatList.add( MessageFactory.getStringMessage( locale , "g.EssayMachineConfidenceX" , new String[]{ Integer.toString( Math.round( 100*metaScores[3] ) )} ) );
                     }
 
-                    if( metaScores.length>14 )
+                    if( metaScores.length>15 )
                     {
+                        if( metaScores[15]>0 )
+                            caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.IDEAL.getCaveatScoreTypeId(), Math.round( metaScores[15] ), 0, null, locale));
+                           // caveatList.add(MessageFactory.getStringMessage(locale , CaveatScoreType.IDEAL.getKeyX() , new String[]{ Integer.toString( Math.round( metaScores[15] ) )} ) );                            
+
                         if( metaScores[12]>0 )
-                            caveatList.add( MessageFactory.getStringMessage( locale , EssayMetaScoreType.CLARITY.getKeyX() , new String[]{ Integer.toString( Math.round( metaScores[12] ) )} ) );
+                            caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.CLARITY.getCaveatScoreTypeId(), Math.round( metaScores[12] ), 0, null, locale));
+                            // caveatList.add(MessageFactory.getStringMessage(locale , CaveatScoreType.CLARITY.getKeyX() , new String[]{ Integer.toString( Math.round( metaScores[12] ) )} ) );
+                        
                         if( metaScores[13]>0 )
-                            caveatList.add( MessageFactory.getStringMessage( locale , EssayMetaScoreType.ARGUMENT.getKeyX() , new String[]{ Integer.toString( Math.round( metaScores[13] ) )} ) );
+                            caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.ARGUMENT.getCaveatScoreTypeId(), Math.round( metaScores[13] ), 0, null, locale));
+                            // caveatList.add(MessageFactory.getStringMessage(locale , CaveatScoreType.ARGUMENT.getKeyX() , new String[]{ Integer.toString( Math.round( metaScores[13] ) )} ) );
+                        
                         if( metaScores[14]>0 )
-                            caveatList.add( MessageFactory.getStringMessage( locale , EssayMetaScoreType.MECHANICS.getKeyX() , new String[]{ Integer.toString( Math.round( metaScores[14] ) )} ) );                            
+                            caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.MECHANICS.getCaveatScoreTypeId(), Math.round( metaScores[14] ), 0, null, locale));
+                            // caveatList.add(MessageFactory.getStringMessage(locale , CaveatScoreType.MECHANICS.getKeyX() , new String[]{ Integer.toString( Math.round( metaScores[14] ) )} ) );                            
                     }
                     
-                    caveatList.add( MessageFactory.getStringMessage( locale , "g.EssaySpellErrorsPer100WordsX" , new String[]{ Integer.toString( Math.round( metaScores[4] ) )} ) );
-                    caveatList.add( MessageFactory.getStringMessage( locale , "g.EssayOtherErrorsPer100WordsX" , new String[]{ Integer.toString( Math.round( metaScores[5] ) )} ) );
+                    caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.SPELLING_ERRORS.getCaveatScoreTypeId(), Math.round( metaScores[4] ), 0, null, locale));
+                    // caveatList.add( MessageFactory.getStringMessage( locale , "g.EssaySpellErrorsPer100WordsX" , new String[]{ Integer.toString( Math.round( metaScores[4] ) )} ) );
+
+                    caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.OTHER_ERRORS.getCaveatScoreTypeId(), Math.round( metaScores[5] ), 0, null, locale));
+                    // caveatList.add( MessageFactory.getStringMessage( locale , "g.EssayOtherErrorsPer100WordsX" , new String[]{ Integer.toString( Math.round( metaScores[5] ) )} ) );
 
                     if( metaScores.length>6 && metaScores[6]>0 )
-                        caveatList.add( MessageFactory.getStringMessage( locale , "g.EssayWordCountX" , new String[]{ Integer.toString( Math.round( metaScores[6] ) )} ) );
+                        caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.WORDS.getCaveatScoreTypeId(), Math.round( metaScores[6] ), 0, null, locale));
+                        // caveatList.add( MessageFactory.getStringMessage( locale , "g.EssayWordCountX" , new String[]{ Integer.toString( Math.round( metaScores[6] ) )} ) );
 
                     // LogService.logIt( "SimCompetencyScore.calculateScore() Essay scoring. metaScores.length=" + metaScores.length +  ", metaScores[6]=" + metaScores[6] );
 
@@ -1552,23 +1576,25 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
 
                 if( wpm>0 )
                 {
-                    String temp = MessageFactory.getStringMessage( locale , "g.EssayAvgWpmX" , new String[]{ NumberUtils.getTwoDecimalFormattedAmount(wpm )} );
-                    caveatList.add( temp );
+                    caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.WPM.getCaveatScoreTypeId(), wpm, 0, null, locale));
+
+                    //String temp = MessageFactory.getStringMessage( locale , "g.EssayAvgWpmX" , new String[]{ NumberUtils.getTwoDecimalFormattedAmount(wpm )} );                    
+                    //caveatList.add( temp );
                 }
 
-                if( highWpm > 0 )
+                if( highWpm>0 )
                 {
+                    caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.WPM_HI.getCaveatScoreTypeId(), highWpm, 0, null, locale));
                     String temp = MessageFactory.getStringMessage( locale , "g.EssayHighWpmX" , new String[]{ NumberUtils.getTwoDecimalFormattedAmount(highWpm )} );
-
-                    caveatList.add( temp );
-
                     forcedRiskFactorsList.add( temp );
+                    //caveatList.add( temp );
                 }
 
                 // translateCompare score
                 if( metaScores.length>9 && metaScores[9]>0 )
                 {
-                    caveatList.add( MessageFactory.getStringMessage( locale , "g.EssayTransCompareScoreX" , new String[]{ Integer.toString( Math.round( 100*metaScores[9] ) )} ) );
+                    caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.TRANSLATE_COMPARE.getCaveatScoreTypeId(), Math.round( 100*metaScores[9] ), 0, null, locale));
+                    // caveatList.add( MessageFactory.getStringMessage( locale , "g.EssayTransCompareScoreX" , new String[]{ Integer.toString( Math.round( 100*metaScores[9] ) )} ) );
                 }
 
                 // LogService.logIt( "SimCompetencyScore.calculateScore() SCS.AA.10 ScoredEssay caveatList.size=" + caveatList.size() + ", wpm=" + wpm + ", highWpm=" + highWpm );
@@ -1576,14 +1602,19 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
 
             if( getSimCompetencyClass().equals( SimCompetencyClass.SCOREDCHAT ) )
             {
-                if( caveatList==null )
-                    caveatList = new ArrayList<>();
+                if( caveatList2==null )
+                    caveatList2 = new ArrayList<>();
 
                 Locale locale = getReportingLocale(); // I18nUtils.getLocaleFromCompositeStr( testEvent.getLocaleStr() );
-                caveatList.add( MessageFactory.getStringMessage( locale , "g.ChatAvgRespTimeSecsFull" , new String[]{ I18nUtils.getFormattedNumber(locale, metaScores[4], 2 )} ) );
-                caveatList.add( MessageFactory.getStringMessage( locale , "g.ChatRapportFull" , new String[]{ I18nUtils.getFormattedNumber(locale, metaScores[2], 1 )} ) );
-                caveatList.add( MessageFactory.getStringMessage( locale , "g.ChatNegExpressionsFull" , new String[]{ I18nUtils.getFormattedNumber(locale, metaScores[5], 1 )} ) );
-                caveatList.add( MessageFactory.getStringMessage( locale , "g.ChatSpellErrorsRateFull" , new String[]{ I18nUtils.getFormattedNumber(locale, metaScores[3], 2 )} ) );
+                caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.CHAT_RESP_TIME.getCaveatScoreTypeId(), metaScores[4], 0, null, locale));
+                caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.CHAT_RAPPORT.getCaveatScoreTypeId(), metaScores[2], 0, null, locale));
+                caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.CHAT_NEG_EXP.getCaveatScoreTypeId(), metaScores[5], 0, null, locale));
+                caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.CHAT_SPELL_GRAM_ERRORS.getCaveatScoreTypeId(), metaScores[3], 0, null, locale));
+
+                //caveatList.add( MessageFactory.getStringMessage( locale , "g.ChatAvgRespTimeSecsFull" , new String[]{ I18nUtils.getFormattedNumber(locale, metaScores[4], 2 )} ) );
+                //caveatList.add( MessageFactory.getStringMessage( locale , "g.ChatRapportFull" , new String[]{ I18nUtils.getFormattedNumber(locale, metaScores[2], 1 )} ) );
+                //caveatList.add( MessageFactory.getStringMessage( locale , "g.ChatNegExpressionsFull" , new String[]{ I18nUtils.getFormattedNumber(locale, metaScores[5], 1 )} ) );
+                //caveatList.add( MessageFactory.getStringMessage( locale , "g.ChatSpellErrorsRateFull" , new String[]{ I18nUtils.getFormattedNumber(locale, metaScores[3], 2 )} ) );
                 // LogService.logIt( "SimCompetencyScore.calculateScore() Scored Data Entry Class. " + this.getName() + ", metascores[2,3,4,5]=" + metaScores[2] + ","+ metaScores[3] + ","+ metaScores[4] + ","+ metaScores[5] + "," +  metaScores[6] + ", caveatList.size=" + caveatList.size() );
             }
 
@@ -1594,7 +1625,7 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
                 scaledScore = scaledScoreCeiling;
             }
 
-            if( scaledScoreFloor != 0 && scaledScore < scaledScoreFloor )
+            if( scaledScoreFloor!=0 && scaledScore<scaledScoreFloor )
             {
                 // LogService.logIt( "SimCompetencyScore.calculateScore() Applying scaledScoreFloor " + scaledScoreFloor + " to score of " + scaledScore );
                 scaledScore = scaledScoreFloor;
@@ -1934,25 +1965,6 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
 
         String t = "";
 
-        /*
-        if( caveatList != null )
-        {
-            for( String ct : caveatList )
-            {
-                if( ct == null || ct.isEmpty() )
-                    continue;
-
-                if( !t.isEmpty() )
-                    t += "\n";
-
-                t += "- " + ct + "\n";
-            }
-
-            if( !t.isEmpty() )
-                t += "\n";
-        }
-        */
-
         CategoryDistType cdt = CategoryDistType.getValue( simCompetencyObj.getCategorydisttype() );
 
         if( (cdt==null || cdt.getLinear() ) &&  simCompetencyObj.getHighcliffmin()> 0 && simCompetencyObj.getHighclifflevel()>0 && scaledScore >= simCompetencyObj.getHighcliffmin() )
@@ -2049,13 +2061,24 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
         this.scoreColorSchemeTypeId = scoreColorSchemeTypeId;
     }
 
-    public List<String> getCaveatList() {
-        return caveatList;
+    //public List<String> getCaveatList() {
+    //    return caveatList;
+    //}
+
+    //public void setCaveatList( List<String> cl ) {
+    //    caveatList = cl;
+    //}
+
+    public List<CaveatScore> getCaveatList2()
+    {
+        return caveatList2;
     }
 
-    public void setCaveatList( List<String> cl ) {
-        caveatList = cl;
+    public void setCaveatList2(List<CaveatScore> caveatList2)
+    {
+        this.caveatList2 = caveatList2;
     }
+    
 
     public float getTotalCorrect() {
         return totalCorrect;

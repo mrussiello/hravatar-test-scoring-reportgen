@@ -13,6 +13,8 @@ public class Constants
     public static String[] NUMERIC_1_TO_5_TICKVALS = new String[] {"1","2","3","4","5"};
         
     
+    // public final static boolean USE_CAVEATS2 = true;
+    
     public final static int YES = 1;
 
     public final static String DELIMITER = "@#*@";
@@ -77,6 +79,8 @@ public class Constants
     public static String CEFRLEVEL = "CEFRLEVEL";
     public static String CEFRLEVELTEXT = "CEFRLEVELTEXT";
     public static String CAVEATSKEY = "CAVEATS";
+    public static String CAVEAT2_KEY = "CAVEAT2";
+
     public static String STD_RISKFACTORSKEY = "STDRISKFACTORS";
     public static String DETAILINTROKEY = "DETAILINTRO";
     
@@ -110,7 +114,7 @@ public class Constants
     
     // public static int MIN_WORDS_4_INSIGHT = 600;
 
-    public static int MIN_ESSAY_LENGTH_SCORING = 100;
+    public static int MIN_TEXT_LENGTH_FOR_AI_SCORING = 100;
 
     
     /**
@@ -176,4 +180,6 @@ public class Constants
     public static final String CSVPOSTTESTCONTACTSTR="CSVPOSTTESTCONTACTSTR";
     
     public static final float MIN_METASCORE_CONFIDENCE = 0.4f;
+    public static float MIN_CONFIDENCE_AI = 0.5F;
+    public static float MIN_CONFIDENCE_DISCERN = 0.1F;
 }

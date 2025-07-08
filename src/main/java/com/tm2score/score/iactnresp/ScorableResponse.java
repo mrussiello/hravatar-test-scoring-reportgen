@@ -6,6 +6,7 @@ package com.tm2score.score.iactnresp;
 
 import com.tm2score.entity.event.ItemResponse;
 import com.tm2score.interview.InterviewQuestion;
+import com.tm2score.score.CaveatScore;
 import com.tm2score.score.MergableScoreObject;
 import com.tm2score.score.SimletCompetencyScore;
 import com.tm2score.score.TextAndTitle;
@@ -57,7 +58,9 @@ public interface ScorableResponse
      * the scoretext for this competency in any report.
      * @return
      */
-    String getCaveatText();
+    // String getCaveatText();
+    
+    List<CaveatScore> getCaveatScoreList();
 
 
     /**

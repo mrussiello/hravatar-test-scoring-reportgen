@@ -109,8 +109,8 @@ public class ComboSimCompetencyScore {
             scs.totalMaxPoints = 0;
             scs.maxPointsPerItem=0;
             
-            if( scs.getCaveatList() == null )
-                scs.setCaveatList( new ArrayList<>() );
+            if( scs.getCaveatList2() == null )
+                scs.setCaveatList2( new ArrayList<>() );
             
             scs.metaScores = new float[16];
             

@@ -216,11 +216,16 @@ public class DiscernUtils {
             return false;
         
         // Remove non-Ascii characters (Discern does this).
-        t = t.replaceAll( "[^\\x00-\\x7F]", "" );
+        String tt = t.replaceAll( "[^\\x00-\\x7F]", "" );
         
-        t = XmlUtils.stripNonValidXMLCharacters(t);
+        tt = XmlUtils.stripNonValidXMLCharacters(tt);
 
-        return t!=null && !t.isBlank();
+        if( t!=null && tt.length()!=t.length() )
+        {
+            LogService.logIt( "DiscernUtils.hasValidTextForDiscern() new length=" + tt.length() + ", previous length=" + t.length() );
+        }
+        
+        return tt!=null && !tt.isBlank();
     }
     
 

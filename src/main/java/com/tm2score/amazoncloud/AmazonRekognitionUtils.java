@@ -151,7 +151,7 @@ public class AmazonRekognitionUtils {
             
             if( oVal==0 && roll!=null )
             {
-                LogService.logIt( "AmazonRekognitionUtils.getSingleFaceDetails() Using roll=" + roll + " for oVal, uploadedUserFileId=" + (arii.uuf==null ? "null" : arii.uuf.getUploadedUserFileId()) );
+                // LogService.logIt( "AmazonRekognitionUtils.getSingleFaceDetails() Using roll=" + roll + " for oVal, uploadedUserFileId=" + (arii.uuf==null ? "null" : arii.uuf.getUploadedUserFileId()) );
                 
                 // Roll is -180 to +180
                 if( roll>=-224 && roll<-135 )

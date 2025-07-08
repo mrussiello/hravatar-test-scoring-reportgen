@@ -30,6 +30,7 @@ import com.tm2score.global.STException;
 import com.tm2score.proctor.ProctorUtils;
 import com.tm2score.report.ReportData;
 import com.tm2score.report.ReportUtils;
+import com.tm2score.score.CaveatScore;
 import com.tm2score.score.TextAndTitle;
 import com.tm2score.service.LogService;
 import com.tm2score.simlet.CompetencyScoreType;
@@ -1318,6 +1319,7 @@ public class CT2ReportSettings implements ReportSettings {
     
     
     
+    /*
     public PdfPTable getBasicIdentityImageCaptureTableTop( ReportData reportData, List<TestEventScore> tesl , float pageWidth ) throws Exception
     {   
         try
@@ -1388,8 +1390,9 @@ public class CT2ReportSettings implements ReportSettings {
             throw new STException( e );
         }        
     }
+    */
     
-    
+    /*
     public PdfPTable getBasicIdentityImageCaptureTableImages( ReportData reportData, List<TestEventScore> tesl , float pageWidth ) throws Exception
     {   
         try
@@ -1481,6 +1484,7 @@ public class CT2ReportSettings implements ReportSettings {
             throw new STException( e );
         }        
     }
+    */
     
     
     

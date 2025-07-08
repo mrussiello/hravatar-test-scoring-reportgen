@@ -11,8 +11,12 @@ import com.tm2score.global.ErrorTxtObject;
 import com.tm2score.global.RuntimeConstants;
 import com.tm2score.interview.InterviewQuestion;
 import com.tm2score.ivr.IvrStringUtils;
+import com.tm2score.report.ReportUtils;
+import com.tm2score.score.CaveatScore;
+import com.tm2score.score.CaveatScoreType;
 import com.tm2score.score.ScoreCategoryRange;
 import com.tm2score.score.TextAndTitle;
+import com.tm2score.score.simcompetency.SimCompetencyScore;
 import com.tm2score.service.EncryptUtils;
 import com.tm2score.service.LogService;
 import com.tm2score.sim.InterviewQuestionBreadthType;
@@ -354,16 +358,53 @@ public class TestEventScore implements Serializable, Comparable<TestEventScore>,
     private boolean tempBoolean1 = false;
 
 
-    public void setReportAndScoringFlags( Locale simLocale )
+    public void setReportAndScoringFlags( Locale simLocale, SimCompetencyScore simCompetencyScore)
     {
-        if( simLocale == null ||
-            simLocale.equals( Locale.US ) ||
-            simLocale.getLanguage().toLowerCase().equals( "en" ) )
+        
+        
+        //if( simLocale == null ||
+        //    simLocale.equals( Locale.US ) ||
+        //    simLocale.getLanguage().toLowerCase().equals( "en" ) )
+        //    return;
+
+        if( !getTestEventScoreType().equals( TestEventScoreType.COMPETENCY ) || (simCompetencyClassId!=SimCompetencyClass.SCOREDESSAY.getSimCompetencyClassId() && simCompetencyClassId!=SimCompetencyClass.SCOREDAUDIO.getSimCompetencyClassId() && simCompetencyClassId!=SimCompetencyClass.SCOREDAVUPLOAD.getSimCompetencyClassId()) )
+            return;
+        
+        // Essay with a valid AI score for this Essay Competency.
+        if( simCompetencyClassId==SimCompetencyClass.SCOREDESSAY.getSimCompetencyClassId() && score2>0 && score3>0 )
+            return;
+        
+        // Any Essay no Valid AI Score, but not plagiarized and has a score above the min.
+        if( simCompetencyClassId==SimCompetencyClass.SCOREDESSAY.getSimCompetencyClassId() && score>getScoreFormatType().getMinScoreToGiveTestTaker() )  //  && (simLocale == null || simLocale.equals( Locale.US ) || simLocale.getLanguage().toLowerCase().equals( "en" ))
+        {
+            boolean plag = false;
+            if( simCompetencyScore!=null )
+            {
+                for( CaveatScore cs : simCompetencyScore.getCaveatList2() )
+                {
+                    if( cs.getCaveatScoreType().equals( CaveatScoreType.PLAGIARIZED) || cs.getCaveatScoreType().equals( CaveatScoreType.PLAGIARIZED_XY) )
+                    {
+                        plag = true;
+                        break;
+                    }
+                }
+            }
+            if( !plag )
+                return;
+        }
+
+        // We have a valid AI score for this AV competency.
+        if( simCompetencyClassId==SimCompetencyClass.SCOREDAVUPLOAD.getSimCompetencyClassId() && score6>0 && score7>0 )
             return;
 
-        if( !getTestEventScoreType().equals( TestEventScoreType.COMPETENCY ) || ( simCompetencyClassId != SimCompetencyClass.SCOREDESSAY.getSimCompetencyClassId() && simCompetencyClassId != SimCompetencyClass.SCOREDAUDIO.getSimCompetencyClassId() && simCompetencyClassId != SimCompetencyClass.SCOREDAVUPLOAD.getSimCompetencyClassId() ) )
+        // if this ScoredAv competency uses correct/incorrect items (AvItemType 112 or 122)
+        if( simCompetencyClassId==SimCompetencyClass.SCOREDAVUPLOAD.getSimCompetencyClassId() && simCompetencyScore!=null && !simCompetencyScore.getCompetencyScoreType().isScoredAvUpload())
             return;
 
+        // We have a valid VIBES score for this AV competency. Currently NOT used in Score under any circumstances.
+        if( simCompetencyClassId==SimCompetencyClass.SCOREDAVUPLOAD.getSimCompetencyClassId() && 1==2 )
+            return;
+                
         // Scored Essay not English, hide it!
         hideNumericScore=1;
     }
@@ -522,9 +563,65 @@ public class TestEventScore implements Serializable, Comparable<TestEventScore>,
         this.fractionUsed = f;
     }
     
+    public List<CaveatScore> getCaveatScoreList()
+    {
+        return getCaveatScoreList(false, false );
+    }
+    public List<CaveatScore> getTopicCaveatScoreList()
+    {
+        return getCaveatScoreList(true, false );
+    }
+    public List<CaveatScore> getNonTopicCaveatScoreList()
+    {
+        return getCaveatScoreList(false, true );
+    }
 
+
+    private List<CaveatScore> getCaveatScoreList(boolean topicsOnly, boolean nonTopicsOnly )
+    {
+        List<CaveatScore> out = new ArrayList<>();
+
+        if( textParam1 == null || textParam1.isEmpty() )
+            return out;
+
+        int ct = 1;
+
+        String csb = StringUtils.getBracketedArtifactFromString( textParam1 , Constants.CAVEAT2_KEY + ct );
+        CaveatScore cs ;
+        
+        while( csb!=null && !csb.isBlank() && ct<30 )
+        {            
+            cs = new CaveatScore(out.size()+1, csb,null);
+            if( cs.getHasValidInfo() )
+            {
+                if( (topicsOnly && cs.getIsTopic()) || (nonTopicsOnly && !cs.getIsTopic()) || (!topicsOnly && !nonTopicsOnly) )
+                    out.add( cs );
+            }
+            ct++;
+            csb = StringUtils.getBracketedArtifactFromString( textParam1 , Constants.CAVEAT2_KEY + ct );
+        } 
+        
+        // Check for legacy and convert if needed.
+        if( out.isEmpty() && textParam1.contains(Constants.CAVEATSKEY) )
+        {
+            String cl = StringUtils.getBracketedArtifactFromString( textParam1 , Constants.CAVEATSKEY );
+            if( cl == null || cl.isEmpty() )
+                return out;
+
+            // Topic
+            if( (cl.contains("TOPIC") || cl.contains( "NOTOPIC")) && (topicsOnly || (!topicsOnly && !nonTopicsOnly)) )
+                out.addAll( ReportUtils.getTopicCaveatScoreListFromLegacyCaveatStr(cl) );
+            
+            //Not a Topic
+            else if( nonTopicsOnly || (!topicsOnly && !nonTopicsOnly) )
+                out.addAll( ReportUtils.getLegacyCaveatScoreListFromLegacyCaveatStr(cl));
+        }
+
+        return out;
+    }
     
 
+    /*
     public List<String> getCaveatList()
     {
         List<String> out = new ArrayList<>();
@@ -555,6 +652,7 @@ public class TestEventScore implements Serializable, Comparable<TestEventScore>,
 
         return out;
     }
+    */
 
     public List<ScoreCategoryRange> getScoreCatInfoList()
     {

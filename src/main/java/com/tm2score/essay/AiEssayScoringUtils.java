@@ -83,13 +83,13 @@ public class AiEssayScoringUtils {
                 return false;
             }
 
-            if( !forceRescore && !USE_SCORE_2 && unscoredEssay.getScoreDate()!=null && (unscoredEssay.getComputedScore()!=0 || unscoredEssay.getComputedConfidence()!=0) )                    
+            if( !forceRescore && !USE_SCORE_2 && unscoredEssay.getScoreDate()!=null && unscoredEssay.getComputedScore()!=0 )                    
             {
                 LogService.logIt("AiRequestUtils.doEssayScoringCall() UnscoredEssay has already been scored by AI and forceRescore is false. unscoredEssayId=" + unscoredEssay.getUnscoredEssayId() );
                 return false;
             }
 
-            if( !forceRescore && USE_SCORE_2 && unscoredEssay.getScoreDate2()!=null && (unscoredEssay.getComputedScore2()!=0 || unscoredEssay.getComputedConfidence2()!=0) )                    
+            if( !forceRescore && USE_SCORE_2 && unscoredEssay.getScoreDate2()!=null && unscoredEssay.getComputedScore2()!=0 )                    
             {
                 LogService.logIt("AiRequestUtils.doEssayScoringCall() UnscoredEssay has already been scored by AI and forceRescore is false. unscoredEssayId=" + unscoredEssay.getUnscoredEssayId() );
                 return false;

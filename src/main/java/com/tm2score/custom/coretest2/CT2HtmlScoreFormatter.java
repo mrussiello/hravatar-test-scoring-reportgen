@@ -25,6 +25,8 @@ import com.tm2score.file.FileUploadFacade;
 import com.tm2score.file.MediaTempUrlSourceType;
 import com.tm2score.purchase.ProductType;
 import com.tm2score.report.ReportUtils;
+import com.tm2score.score.CaveatScore;
+import com.tm2score.score.CaveatScoreType;
 import com.tm2score.score.ScoreUtils;
 import com.tm2score.score.TextAndTitle;
 import com.tm2score.score.scorer.BaseTestEventScorer;
@@ -943,7 +945,7 @@ public class CT2HtmlScoreFormatter extends BaseScoreFormatter implements ScoreFo
         // boolean useScoreTextAsNumScore = getReportRuleAsBoolean( "cmptyscrtxtasnum" );
 
 
-        // boolean showCaveats = !getReportRuleAsBoolean( "hidecaveats" ) && !getReportRuleAsBoolean( "cmptymetasoff" ) && !getReportRuleAsBoolean("hidecompetencydetail");
+        boolean showCaveats = !getReportRuleAsBoolean( "hidecaveats" ) && !getReportRuleAsBoolean( "cmptymetasoff" ) && !getReportRuleAsBoolean("hidecompetencydetail");
         boolean showTopics = !getReportRuleAsBoolean( "cmptytopicsoff" ) && !getReportRuleAsBoolean("hidecompetencydetail");
 
         boolean useSolidBarGraphs = showColorGraph && getReportRuleAsString( "competencycoloriconasgraph" )!=null && !getReportRuleAsString( "competencycoloriconasgraph" ).equals( "0");
@@ -1209,12 +1211,12 @@ public class CT2HtmlScoreFormatter extends BaseScoreFormatter implements ScoreFo
                         sb.append( (String)tdd[0] );
                         tog = (Boolean)tdd[1];
 
-                        //if( showCaveats )
-                        //{
-                        //    tdd = getNonTopicCaveatScoresRow( tes, typeId, tog );
-                        //    sb.append( (String)tdd[0] );
-                        //    tog = (Boolean)tdd[1];
-                        //}
+                        if( showCaveats )
+                        {
+                            tdd = getNonTopicCaveatScoresRow( tes, typeId, tog );
+                            sb.append( (String)tdd[0] );
+                            tog = (Boolean)tdd[1];
+                        }
 
                         if( showTopics && typeId==5 )
                         {
@@ -1628,6 +1630,7 @@ public class CT2HtmlScoreFormatter extends BaseScoreFormatter implements ScoreFo
             showColorGraph = false;
         }
 
+        /*
         List<String> caveats = null;
 
         if( showCaveats && ( tes.getSimCompetencyClass().isScoredDataEntry() || tes.getSimCompetencyClass().isScoredTyping()  || tes.getSimCompetencyClass().isScoredChat() ) )
@@ -1635,7 +1638,6 @@ public class CT2HtmlScoreFormatter extends BaseScoreFormatter implements ScoreFo
             // caveats = tes.getCaveatList();
 
             caveats = new ArrayList<>();
-
             for( String ct : tes.getCaveatList() )
             {
                 if( ct.isEmpty() )
@@ -1647,13 +1649,59 @@ public class CT2HtmlScoreFormatter extends BaseScoreFormatter implements ScoreFo
                 caveats.add( ct );
             }
         }
+        */
 
+        List<CaveatScore> caveatScoreList = null;
+        // List<String> caveats = null;
+
+        if( showCaveats && ( tes.getSimCompetencyClass().isScoredDataEntry() || tes.getSimCompetencyClass().isScoredTyping()  || tes.getSimCompetencyClass().isScoredChat() ) )
+        {
+            // caveats = tes.getCaveatList();
+
+            caveatScoreList = new ArrayList<>();
+            for( CaveatScore ct : tes.getNonTopicCaveatScoreList() )
+            {
+                if( !ct.getHasValidInfo())
+                    continue;
+
+                if( ct.getCaveatScoreType().getIsTopic() )
+                    continue;
+
+                ct.setLocale(locale);
+                caveatScoreList.add( ct );
+            }
+            
+            /*
+            if( tes.getCaveatScoreList().isEmpty() )
+            {
+                caveats = new ArrayList<>();
+                for( String ct : tes.getCaveatList() )
+                {
+                    if( ct.isEmpty() )
+                        continue;
+                    if( ct.startsWith( Constants.TOPIC_KEY + "~" ) )
+                        continue;
+                    caveats.add( ct );
+                }
+                if( caveats.isEmpty() )
+                    caveats=null;                
+            }
+            */
+        }
+        
+        
         if( tes.getUsesPercentCorrectScoring() )
         {
-            if( caveats==null )
-                caveats = new ArrayList<>();
+            //if( caveats!=null )
+            //    caveats.add( lmsg("g.CompetencyUsesPercentCorrectScoring") );
+            
+            //else
+            //{
+            if( caveatScoreList==null )
+                caveatScoreList = new ArrayList<>();
 
-            caveats.add( lmsg("g.CompetencyUsesPercentCorrectScoring") );
+            caveatScoreList.add( new CaveatScore( 0, CaveatScoreType.SCORE_TEXT.getCaveatScoreTypeId(), lmsg("g.CompetencyUsesPercentCorrectScoring"), locale ) );
+            //}            
         }
 
         // LogService.logIt( "CT2HtmlScoreFormatter.getContentRowForTestEventScore() tes.name=" + tes.getName() + ", hasCefr=" + hasCefr +", tes.getIncludeNumericScoreInResults()=" + tes.getIncludeNumericScoreInResults() + ", value=" + value + ", score=" + tes.getScore() + ", hasColor=" + tes.getScoreCategoryType().hasColor() );
@@ -1697,12 +1745,16 @@ public class CT2HtmlScoreFormatter extends BaseScoreFormatter implements ScoreFo
 
         }
 
-        if( caveats!=null && !caveats.isEmpty() )
+        //if( caveats!=null )
+        //{
+        //    sb.append(getRow(style, caveats ) );
+        //}
+        
+        if( caveatScoreList!=null && !caveatScoreList.isEmpty() )
         {
             // LogService.logIt( "CT2HtmlScoreFormatter.getContentRowForTestEventScore() Adding " + caveats.size() + " caveats." );
-            sb.append( getRow( style,  caveats  ) );
+            sb.append(getRowForCaveatScoreList(style,  caveatScoreList ) );
         }
-
 
         return new Object[] {sb.toString(), tog };
     }

@@ -23,6 +23,7 @@ import com.tm2score.profile.ProfileUtils;
 import com.tm2score.report.ReportData;
 import com.tm2score.report.ReportTemplate;
 import com.tm2score.report.ReportUtils;
+import com.tm2score.score.CaveatScore;
 import com.tm2score.score.TextAndTitle;
 import com.tm2score.service.LogService;
 import com.tm2score.sim.NonCompetencyItemType;
@@ -31,7 +32,6 @@ import com.tm2score.sim.SimCompetencyVisibilityType;
 import com.tm2score.util.MessageFactory;
 import com.tm2score.util.StringUtils;
 import java.io.ByteArrayOutputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -1254,9 +1254,16 @@ public abstract class BaseReportTemplate extends StandardReportSettings implemen
                 Phrase cst = new Phrase( new Phrase( scoreText, fontSmall ) );
                 cst.setLeading( 10 );
 
-                for( String ct : reportData.getCaveatList(tes) )
+                String ct;
+                
+                java.util.List<CaveatScore> csl = reportData.getCaveatScoreList(tes);
+                
+                for( CaveatScore cs : csl )
                 {
-                    if( ct.isEmpty() )
+                    cs.setLocale( reportData.getLocale());
+                    ct = cs.getIsTopic() ? cs.getSingleStringOutputForTopic(tes.getSimCompetencyClassId(), csl.size()==1) : cs.getSingleStringOutput();
+                    
+                    if( ct==null || ct.isBlank() )
                         continue;
 
                     cl.add( new ListItem( new Paragraph( ct , fontSmall ) ) );

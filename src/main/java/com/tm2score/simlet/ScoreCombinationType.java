@@ -69,7 +69,7 @@ public enum ScoreCombinationType
             if( val!=0 || !equals( AVG_NONZERO ) )
                 count++;
 
-            LogService.logIt( "ScoreCombinationType.combineScores() Type=" + getName() + ", ADDING index=" + index + ", val=" + val + ", count=" + count + ", sr.hasValidScore()=" + sr.hasValidScore() + ", sr.hasMetaScore(index)=" + sr.hasMetaScore(index) + ", Sr=" + sr.toString() );
+            // LogService.logIt( "ScoreCombinationType.combineScores() Type=" + getName() + ", ADDING index=" + index + ", val=" + val + ", count=" + count + ", sr.hasValidScore()=" + sr.hasValidScore() + ", sr.hasMetaScore(index)=" + sr.hasMetaScore(index) + ", Sr=" + sr.toString() );
             
             if( equals( MIN_VALUE ) && val<f )
                 f=val;
@@ -83,7 +83,7 @@ public enum ScoreCombinationType
         if( (equals( MAX_VALUE ) || equals( MIN_VALUE )) && count>0 )
             return f;
 
-        LogService.logIt( "ScoreCombinationType.combineScores() FINAL count=" + count + ", total=" + total + " returning " + (count>0 ? total/count : 0) );
+        // LogService.logIt( "ScoreCombinationType.combineScores() FINAL count=" + count + ", total=" + total + " returning " + (count>0 ? total/count : 0) );
 
         return count>0 ? total/count : 0;
     }

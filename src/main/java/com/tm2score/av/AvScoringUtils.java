@@ -10,6 +10,7 @@ import com.tm2score.amazoncloud.AmazonRekognitionUtils;
 import com.tm2score.entity.event.AvItemResponse;
 import com.tm2score.entity.event.TestEvent;
 import com.tm2score.entity.file.UploadedUserFile;
+import com.tm2score.essay.AiEssayScoringUtils;
 import com.tm2score.file.ConversionStatusType;
 import com.tm2score.file.FileUploadFacade;
 import com.tm2score.global.RuntimeConstants;
@@ -101,8 +102,8 @@ public class AvScoringUtils {
             if( iir.getVoiceVibesStatusTypeId()==VoiceVibesStatusType.NOT_SET.getVoiceVibesStatusTypeId()  )
                 setVoiceVibesStatusType(iir, testAdminLocale, mediaLocale, forceVibesOff, simJ );
 
-            if( iir.getEssayStatusType().isUnset() )
-                setEssayStatusType(iir, testAdminLocale, mediaLocale, simJ );
+            if( iir.getAvItemEssayStatusType().isUnset() )
+                setAvItemEssayStatusType(iir, testAdminLocale, mediaLocale, simJ );
             
             // Not ready. 
             if( !iir.isReadyForScoring() )
@@ -131,7 +132,7 @@ public class AvScoringUtils {
     public void scoreItems(TestEvent te, List<AvItemResponse> avItemResponseList, Locale testAdminLocale, boolean englishTranslationsOff ) throws Exception 
     {
         if( avItemResponseList==null )
-            throw new Exception( "scoreItems() avItemResponseList is null. ");
+            throw new Exception( "AvScoringUtils.scoreItems() avItemResponseList is null. ");
 
         AvItemType ivrItemType;
         
@@ -536,13 +537,13 @@ public class AvScoringUtils {
     }
     
     
-    public static void setEssayStatusType( AvItemResponse iir, Locale testAdminLocale, Locale testContentLocale, SimJ simJ ) throws Exception
+    public static void setAvItemEssayStatusType( AvItemResponse iir, Locale testAdminLocale, Locale testContentLocale, SimJ simJ ) throws Exception
     {
         if( iir==null )
             return;
         
         // already set
-        if( !iir.getEssayStatusType().isUnset() )
+        if( !iir.getAvItemEssayStatusType().isUnset() )
             return;
         
         if( testContentLocale==null )
@@ -552,17 +553,17 @@ public class AvScoringUtils {
         
         if( !iir.getAvItemType().supportsEssayScoring() )
         {
-            iir.setEssayStatusTypeId(AvItemEssayStatusType.NOT_REQUIRED.getEssayStatusTypeId() );
+            iir.setAvItemEssayStatusTypeId(AvItemEssayStatusType.NOT_REQUIRED.getEssayStatusTypeId() );
             avEventFacade.saveAvItemResponse(iir);
             return;                        
         }
         
-        if( testContentLocale!=null && !testContentLocale.getLanguage().equalsIgnoreCase("en") )
-        {
-            iir.setEssayStatusTypeId(AvItemEssayStatusType.NOT_REQUIRED.getEssayStatusTypeId() );
-            avEventFacade.saveAvItemResponse(iir);
-            return;            
-        }
+        //if( testContentLocale!=null && !testContentLocale.getLanguage().equalsIgnoreCase("en") )
+        //{
+        //    iir.setAvItemEssayStatusTypeId(AvItemEssayStatusType.NOT_REQUIRED.getEssayStatusTypeId() );
+        //    avEventFacade.saveAvItemResponse(iir);
+        //    return;            
+        //}
                 
 
         SimJ.Intn theIntn = getSimIntn( simJ, iir );
@@ -571,14 +572,26 @@ public class AvScoringUtils {
         {
             if( !RuntimeConstants.getBooleanValue( "discernOn") )
             {
-                iir.setEssayStatusTypeId(AvItemEssayStatusType.ERROR.getEssayStatusTypeId() );
-                iir.appendNotes( "IvrTestEventScorer set EssayStatusType to errored because Discern is not on.");
+                iir.setAvItemEssayStatusTypeId(AvItemEssayStatusType.ERROR.getEssayStatusTypeId() );
+                iir.appendNotes( "AvScoringUtils.setAvItemEssayStatusType() set EssayStatusType to errored because Discern is not on.");
             }
             else
-                iir.setEssayStatusTypeId(AvItemEssayStatusType.NOT_REQUESTED.getEssayStatusTypeId() );
+                iir.setAvItemEssayStatusTypeId(AvItemEssayStatusType.NOT_REQUESTED.getEssayStatusTypeId() );
         }
+        
+        else if( theIntn!=null && theIntn.getCt5Int25()==1 )
+        {
+            if( !AiEssayScoringUtils.getAiEssayScoringOn() )
+            {
+                iir.setAvItemEssayStatusTypeId(AvItemEssayStatusType.ERROR.getEssayStatusTypeId() );
+                iir.appendNotes( "AvScoringUtils.setAvItemEssayStatusType() set EssayStatusType to errored because AI Scoring is not on.");
+            }
+            else
+                iir.setAvItemEssayStatusTypeId(AvItemEssayStatusType.NOT_REQUESTED.getEssayStatusTypeId() );
+        }
+            
         else
-            iir.setEssayStatusTypeId(AvItemEssayStatusType.NOT_REQUIRED.getEssayStatusTypeId() );
+            iir.setAvItemEssayStatusTypeId(AvItemEssayStatusType.NOT_REQUIRED.getEssayStatusTypeId() );
         
         avEventFacade.saveAvItemResponse(iir);
     }
