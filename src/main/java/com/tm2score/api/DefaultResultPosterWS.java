@@ -11,6 +11,7 @@ import com.tm2score.event.EventFacade;
 import com.tm2score.event.TestEventLogUtils;
 import com.tm2score.service.EmailUtils;
 import com.tm2score.service.LogService;
+import com.tm2score.util.Base64Encoder;
 import java.util.GregorianCalendar;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -18,6 +19,7 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
+import java.util.Map;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -25,7 +27,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *
  * @author Mike
  */
-public class DefaultResultPosterWS implements ResultPoster {
+public class DefaultResultPosterWS extends BaseResultPoster implements ResultPoster {
 
     TestKey testKey;
 
@@ -85,16 +87,31 @@ public class DefaultResultPosterWS implements ResultPoster {
                     includeScoreCodeFinal = 0;                    
             }
             
+            final Map<String,String> basicAuthCreds = getBasicAuthCredsFromReportFlags( testKey );
+            
             payload = asc.getAssessmentResultFromTestKey(arr, testKey, includeScoreCodeFinal, null, null, null );
 
             LogService.logIt( "DefaultResultPosterWS.postTestResults() have payload size=" + payload.length() + ", testKeyId=" + testKey.getTestKeyId() + ", url=" + url );
 
             Client client = ClientBuilder.newClient();
             
+            
+            
             WebTarget myResource = client.target( url );
 
             Invocation.Builder builder = myResource.request( new MediaType[] {MediaType.TEXT_XML_TYPE,MediaType.TEXT_PLAIN_TYPE,MediaType.TEXT_HTML_TYPE, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_XML_TYPE });
 
+            if( basicAuthCreds != null && basicAuthCreds.size()>= 2 )
+            {
+                String un = basicAuthCreds.get( "username" );
+                String pwd = basicAuthCreds.get( "password" );
+
+                String b6 = Base64Encoder.encodeString( un + ":" + pwd );
+                builder.header( "Authorization", "Basic " + b6  );
+
+                LogService.logIt( "DefaultResultPosterWS.postTestResults() Set basic Auth header: Basic " + b6);
+            }            
+            
             Entity ent = Entity.xml( arr );
 
             String response = builder.post( ent, String.class );

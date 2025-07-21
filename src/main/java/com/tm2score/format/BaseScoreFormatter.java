@@ -2432,6 +2432,11 @@ NONE(0,"None"),    // When an ONET Soc is selected
 
                 // sb.append( getRowSpacer( s0 ) );
 
+                String nm;
+                String txt;
+                String str1;
+                String summary;
+                
                 for( TextAndTitle tt : ttList )
                 {
                     tog = !tog;
@@ -2441,12 +2446,16 @@ NONE(0,"None"),    // When an ONET Soc is selected
 
                     //String txt = StringUtils.replaceStandardEntities( XMLUtils.decodeURIComponent(tt.getText()) );
 
-                    String nm  = StringUtils.getHasHtml( tt.getTitle() ) ? tt.getTitle() : StringUtils.replaceStandardEntities( tt.getTitle() );
+                    nm  = StringUtils.getHasHtml( tt.getTitle() ) ? tt.getTitle() : StringUtils.replaceStandardEntities( tt.getTitle() );
+                    txt = StringUtils.getHasHtml( tt.getText() ) ? tt.getText() : StringUtils.replaceStandardEntities( tt.getText() );
+                    str1 = StringUtils.replaceStandardEntities( tt.getString1() );
+                    summary = StringUtils.replaceStandardEntities( tt.getString4() );
 
-                    String txt = StringUtils.getHasHtml( tt.getText() ) ? tt.getText() : StringUtils.replaceStandardEntities( tt.getText() );
-
-                    String str1 = StringUtils.replaceStandardEntities( tt.getString1() );
-
+                    if( summary!=null && !summary.isBlank() )
+                    {
+                        txt = "<div style=\"padding-bottom:8px\"><b>" + lmsg( "g.SummaryAI" ) + "</b>: " + summary + "</div><b>" + lmsg("g.FromCandidate") + ":</b> " + txt;
+                    }
+                    
                     if( str1!=null && !str1.isEmpty() )
                         txt += "<div style=\"padding-top:6px\">[" + lmsg( "g.MisSpelledWordsC" ) + " " + str1 + "]</div>";
 
@@ -3640,6 +3649,7 @@ NONE(0,"None"),    // When an ONET Soc is selected
 
             String playViewDownloadUrl;
             String thumbFn;
+            String summary;
 
             for( TextAndTitle tt : ttList )
             {
@@ -3655,6 +3665,12 @@ NONE(0,"None"),    // When an ONET Soc is selected
                 String nm  = StringUtils.replaceStandardEntities( UrlEncodingUtils.decodeKeepPlus(  tt.getTitle(), "UTF8" ) );
                 String txt = StringUtils.replaceStandardEntities( UrlEncodingUtils.decodeKeepPlus(  tt.getText(), "UTF8" ) );
 
+                summary = tt.getString4();
+                if( summary!=null && !summary.isBlank() )
+                {
+                    nm += "<br /><br /><b>" +  lmsg("g.SummaryAI") +  ":</b> " +  StringUtils.replaceStandardEntities( UrlEncodingUtils.decodeKeepPlus(  summary, "UTF8" ));
+                }
+                
                 if( fileUploadFacade==null )
                     fileUploadFacade = FileUploadFacade.getInstance();
 

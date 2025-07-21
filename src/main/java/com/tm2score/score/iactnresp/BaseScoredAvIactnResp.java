@@ -111,7 +111,7 @@ public class BaseScoredAvIactnResp  extends IactnResp implements ScorableRespons
             
             
             if( avItemScorer!=null && avItemScorer.getSelectedIntnItem( intnObj, avItemResponse) != null )
-                clickedIactnItemResp = IactnRespFactory.getIactnItemResp(this, this.avItemScorer.getSelectedIntnItem(intnObj, avItemResponse), null, testEvent );                        
+                clickedIactnItemResp = IactnRespFactory.getIactnItemResp(this, this.avItemScorer.getSelectedIntnItem(intnObj, avItemResponse), null, testEvent, 1);                        
         }
         catch( Exception e )
         {
@@ -165,8 +165,16 @@ public class BaseScoredAvIactnResp  extends IactnResp implements ScorableRespons
     @Override
     public TextAndTitle getItemScoreTextTitle(int includeItemScoreTypeId)
     {
-        if( avItemScorer!=null )
-            return this.avItemScorer.getItemScoreTextTitle(includeItemScoreTypeId, this);
+        if( avItemScorer!=null )        
+        {
+            TextAndTitle tt = this.avItemScorer.getItemScoreTextTitle(includeItemScoreTypeId, this);
+            if( tt!=null )
+            {
+                tt.setOrder( this.intnResultObjO.getSq()*100 );
+                tt.setSequenceId(intnResultObjO.getSq()*100);
+            }
+            return tt;
+        }
         
         return null;
     }
@@ -612,7 +620,20 @@ public class BaseScoredAvIactnResp  extends IactnResp implements ScorableRespons
         // LogService.logIt("BaseScoredAvIactnRespgetTextAndTitleList() uniqueId=" + intnObj.getUniqueid() + ", " + (avItemScorer==null ? "null" : (avItemScorer.getTextAndTitleList()!=null) )  );        
         
         if( avItemScorer!=null && avItemScorer.getTextAndTitleList()!=null )
-            return avItemScorer.getTextAndTitleList();
+        {            
+            List<TextAndTitle> out = avItemScorer.getTextAndTitleList();
+            if( out!=null )
+            {
+                int orderIndex = 1;
+                for( TextAndTitle tt : out )
+                {
+                    // tt.setOrder( intnResultObjO.getSq()*100 + orderIndex );
+                    tt.setSequenceId( intnResultObjO.getSq()*100 + orderIndex );
+                    orderIndex++;
+                }
+                return out;
+            }            
+        }
 
         return new ArrayList<>();
     }

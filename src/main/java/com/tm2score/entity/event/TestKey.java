@@ -647,7 +647,7 @@ public class TestKey implements Serializable, ErrorTxtObject {
 
         String delim = ";";
 
-        if (s.indexOf(";") < 0 && s.indexOf(":") > 0)
+        if (!s.contains(";") && s.indexOf(":") > 0)
             delim = ":";
 
         String[] sa = s.split(delim);

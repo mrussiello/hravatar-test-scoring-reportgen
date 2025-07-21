@@ -20,6 +20,12 @@ public class IntnHist {
     {
         this.intn = clip;
     }
+
+    @Override
+    public String toString()
+    {
+        return "IntnHist{" + "unique=" + intn.getU() + ", ns=" + intn.getNs() + ", seq=" + intn.getSq() + ", value=" + intn.getValue() + '}';
+    }
     
     
     public int getClickCount()

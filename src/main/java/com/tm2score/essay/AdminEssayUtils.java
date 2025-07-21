@@ -72,7 +72,7 @@ public class AdminEssayUtils extends FacesUtils {
     {
         try
         {
-            DiscernFacade discernFacade = DiscernFacade.getInstance();
+            EssayFacade discernFacade = EssayFacade.getInstance();
 
             List<UnscoredEssay> essays = discernFacade.getUnscoredEssaysForStatsUpdate();
 
@@ -129,12 +129,12 @@ public class AdminEssayUtils extends FacesUtils {
             Map<String,Integer> sperrs1,sperrs2;
             Locale locale = I18nUtils.getLocaleFromCompositeStr( adminEssayBean.getLocaleStr() );
 
-            d1 = LocalEssayScoringUtils.getWritingAnalysis(adminEssayBean.getStr1(), locale, null, null );            
+            d1 = LocalEssayScoringUtils.getWritingAnalysis(adminEssayBean.getStr1(), locale, null, null, true );            
             int[] count1 = (int[]) d1[0];
             sperrs1 = (Map<String,Integer>) d1[1];
             boolean valid1 = LocalEssayScoringUtils.isValidWriting(adminEssayBean.getStr1(), locale, null, null );
 
-            d2 = LocalEssayScoringUtils.getWritingAnalysis(adminEssayBean.getStr2(), locale, null, null );
+            d2 = LocalEssayScoringUtils.getWritingAnalysis(adminEssayBean.getStr2(), locale, null, null, true );
             int[] count2 = (int[]) d2[0];
             sperrs2 = (Map<String,Integer>) d2[1];
             

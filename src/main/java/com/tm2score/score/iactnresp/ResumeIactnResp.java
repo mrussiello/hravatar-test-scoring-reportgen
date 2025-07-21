@@ -146,7 +146,7 @@ public class ResumeIactnResp extends IactnResp implements ScorableResponse
             if( !keep )
                 continue;
 
-            iir =  IactnRespFactory.getIactnItemResp(this, intItemObj, intnResultObjO, testEvent );
+            iir =  IactnRespFactory.getIactnItemResp(this, intItemObj, intnResultObjO, testEvent, 1 );
 
             iir.init( simletScore, te );
 
@@ -558,13 +558,16 @@ public class ResumeIactnResp extends IactnResp implements ScorableResponse
         List<IactnItemResp> out = new ArrayList<>();
         IactnItemResp iir;
 
+        int orderIndex=2;
         // look for an interaction item designated as the question.
         for( SimJ.Intn.Intnitem iitm : intnObj.getIntnitem() )
         {
             if( iitm.getFormat()==G2ChoiceFormatType.TEXT_BOX.getG2ChoiceFormatTypeId() )
             {
-                iir = IactnRespFactory.getIactnItemResp(this, iitm, intnResultObjO, testEvent ); // new IactnItemResp( this, iitm, intnResultObj );
+                iir = IactnRespFactory.getIactnItemResp(this, iitm, intnResultObjO, testEvent, orderIndex ); // new IactnItemResp( this, iitm, intnResultObj );
                 out.add( iir );
+                
+                orderIndex++;
             }
         }
 
@@ -604,7 +607,7 @@ public class ResumeIactnResp extends IactnResp implements ScorableResponse
         
         for( IactnItemResp iir : iactnItemRespLst )
         {
-            if( iir.getIsUploadedFile() )
+            if( iir.getIsAnyUploadedFile() )
             {
                 // LogService.logIt( "ResumeIactnResp.getTextAndTitleList() FFF.1 IactnItemResp is UploadedFile type. " + iir.toString() );
                 return iir.upldUsrFileId;
@@ -650,7 +653,7 @@ public class ResumeIactnResp extends IactnResp implements ScorableResponse
         }                  
         
         // LogService.logIt( "ResumeIactnResp.getTestRespList() title=" + title );
-        out.add(new TextAndTitle( t, title, false, getUploadedUserFileId(), this.testEvent==null ? this.getCt5ItemId() : testEvent.getNextTextTitleSequenceId(), null, idt + "-" + itemid, null ) );
+        out.add(new TextAndTitle( t, title, false, getUploadedUserFileId(), intnResultObjO.getSq()*100, null, idt + "-" + itemid, null ) );
 
         return out;
     }

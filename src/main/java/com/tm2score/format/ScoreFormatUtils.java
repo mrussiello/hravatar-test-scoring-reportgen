@@ -270,7 +270,7 @@ public class ScoreFormatUtils
 
         STStringTokenizer st = new STStringTokenizer( inStr, Constants.DELIMITER );
 
-        String ttl,text,flgs,string1,string2,string3;
+        String ttl,text,flgs,string1,string2,string3,string4;
         
         // Have to add back the original delim. which was removed above.
         boolean hasString1 = ( st.countDelims() + 1) % 4 == 0;
@@ -296,6 +296,7 @@ public class ScoreFormatUtils
             string1 = hasString1 && st.hasMoreTokens() ? st.nextToken() : null;
             string2 = null;
             string3 = null;
+            string4=null;
             if( string1!=null && !string1.isEmpty() )
             {
                 try
@@ -312,6 +313,8 @@ public class ScoreFormatUtils
                             string2 = ds[1];
                         if( ds.length>2 )
                             string3 = ds[2];
+                        if( ds.length>3 )
+                            string4 = ds[3];
                     }
                     //LogService.logIt( "TestResultUtils.getTextBasedResponseList() parsed string1=" + string1 );
                 }
@@ -322,7 +325,7 @@ public class ScoreFormatUtils
             }            
 
             
-            tt = new TextAndTitle( text, ttl, false, 0, 0, string1, string2, string3 );
+            tt = new TextAndTitle( text, ttl, false, 0, 0, string1, string2, string3, string4 );
             // tt = new TextAndTitle( XMLUtils.decodeURIComponentNoErrors(text),XMLUtils.decodeURIComponentNoErrors( ttl ), false, 0, string1 );
 
             tt.setFlags(flgs);

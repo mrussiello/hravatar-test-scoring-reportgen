@@ -56,6 +56,11 @@ public class BaseAiClient {
         catch( STException e )
         {
             throw e;
+        }        
+        catch( IOException e )
+        {
+            LogService.logIt( "BaseAiClient.sendApiPost() " + e.toString() + " url=" + url + ", payload=" + payload );
+            throw new STException(e);
         }
         catch( Exception e )
         {
@@ -104,23 +109,6 @@ public class BaseAiClient {
                 post.setHeader( "Authorization", "Basic " + b6  );
                 // LogService.logIt( "BaseAiClient.sendApiPostCore() Set basic Auth header: Basic " + b6);
             }
-
-            /*
-            if( 1==2 && paramMap!=null && !paramMap.isEmpty() )
-            {
-                List<NameValuePair> params = new ArrayList<>();
-
-                for( String key : paramMap.keySet() )
-                {
-                    if( paramMap.get(key) != null && !paramMap.get(key).isEmpty() )
-                        params.add(new BasicNameValuePair(key, paramMap.get(key)));
-                }
-
-                post.addHeader( "Content-Type", "application/x-www-form-urlencoded; charset=utf-8" );
-                post.setEntity(new UrlEncodedFormEntity(params, Charset.forName("UTF-8")));
-            }
-            */
-
 
             // LogService.logIt( "BaseAiClient.sendApiPostCore() Executing Request" );
             String s = client.execute( post, (ClassicHttpResponse response) -> {

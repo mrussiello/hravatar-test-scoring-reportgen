@@ -5,6 +5,7 @@
 package com.tm2score.entity.essay;
 
 import com.tm2score.essay.EssayScoreStatusType;
+import com.tm2score.essay.UnscoredEssayType;
 import java.io.Serializable;
 import java.util.Date;
 import jakarta.persistence.Basic;
@@ -55,6 +56,7 @@ public class UnscoredEssay implements Serializable, Comparable<UnscoredEssay>
     /*
      0 = Essay
      1 = AV Transcript
+     2 = File Upload Parse
      
     */
     @Column(name="unscoredessaytypeid")
@@ -69,11 +71,14 @@ public class UnscoredEssay implements Serializable, Comparable<UnscoredEssay>
     @Column(name="scorestatustypeid")
     private int scoreStatusTypeId;
     
+    @Column(name="summarystatustypeid")
+    private int summaryStatusTypeId;
+    
     @Column(name="localestr")
     private String localeStr;
     
     @Column(name="nodesequenceid")
-    private int nodeSequenceId;
+    private long nodeSequenceId;
 
     @Column(name="subnodesequenceid")
     private int subnodeSequenceId;
@@ -191,7 +196,9 @@ public class UnscoredEssay implements Serializable, Comparable<UnscoredEssay>
     @Column(name="essay")
     private String essay;
 
-
+    @Column(name="summary")
+    private String summary;
+        
     @Column(name="translatedessay")
     private String translatedEssay;
     
@@ -215,6 +222,10 @@ public class UnscoredEssay implements Serializable, Comparable<UnscoredEssay>
     @Column(name="scoredate2")
     private Date scoreDate2;
     
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="summarydate")
+    private Date summaryDate;
+
 
     @Override
     public int compareTo(UnscoredEssay o) {
@@ -227,12 +238,20 @@ public class UnscoredEssay implements Serializable, Comparable<UnscoredEssay>
     }
 
     
+    public UnscoredEssayType getUnscoredEssayType()
+    {
+        return UnscoredEssayType.getValue( this.unscoredEssayTypeId );
+    }
+    
     /**
      * Returns a 0-100 score based on error rates.
      * @return 
      */
     public float getScoreFmErrorRates()   
     {
+        if( !getUnscoredEssayType().getSupportsSpellingGrammarAnalysis() )
+            return 0;
+        
         if( totalWords > 0 && hasSpellingGrammarStyle==1)
         {
             float totalErrsPerWd = ((float) grammarErrors + styleErrors + spellingErrors)/((float) totalWords );
@@ -262,6 +281,10 @@ public class UnscoredEssay implements Serializable, Comparable<UnscoredEssay>
     public EssayScoreStatusType getEssayScoreStatusType2()
     {
         return EssayScoreStatusType.getValue( scoreStatusTypeId2 );
+    }
+    public EssayScoreStatusType getEssaySummaryStatusType()
+    {
+        return EssayScoreStatusType.getValue( summaryStatusTypeId );
     }
     
     public Map<Integer,Float> getMetaScoreMap()
@@ -404,11 +427,11 @@ public class UnscoredEssay implements Serializable, Comparable<UnscoredEssay>
         this.testEventId = testEventId;
     }
 
-    public int getNodeSequenceId() {
+    public long getNodeSequenceId() {
         return nodeSequenceId;
     }
 
-    public void setNodeSequenceId(int nodeSequenceId) {
+    public void setNodeSequenceId(long nodeSequenceId) {
         this.nodeSequenceId = nodeSequenceId;
     }
 
@@ -724,6 +747,36 @@ public class UnscoredEssay implements Serializable, Comparable<UnscoredEssay>
     public void setAvItemResponseId(long avItemResponseId)
     {
         this.avItemResponseId = avItemResponseId;
+    }
+
+    public String getSummary()
+    {
+        return summary;
+    }
+
+    public void setSummary(String summary)
+    {
+        this.summary = summary;
+    }
+
+    public Date getSummaryDate()
+    {
+        return summaryDate;
+    }
+
+    public void setSummaryDate(Date summaryDate)
+    {
+        this.summaryDate = summaryDate;
+    }
+
+    public int getSummaryStatusTypeId()
+    {
+        return summaryStatusTypeId;
+    }
+
+    public void setSummaryStatusTypeId(int summaryStatusTypeId)
+    {
+        this.summaryStatusTypeId = summaryStatusTypeId;
     }
 
 

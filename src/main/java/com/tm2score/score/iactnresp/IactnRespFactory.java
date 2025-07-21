@@ -10,7 +10,9 @@ import com.tm2score.imo.xml.Clicflic;
 import com.tm2builder.sim.xml.SimJ;
 import com.tm2score.act.G2ChoiceFormatType;
 import com.tm2score.act.IframeItemType;
+import com.tm2score.ct5.Ct5ItemType;
 import com.tm2score.entity.event.TestEvent;
+import com.tm2score.service.LogService;
 import com.tm2score.sim.SimCompetencyClass;
 import com.tm2score.simlet.SimletItemType;
 
@@ -22,10 +24,11 @@ public class IactnRespFactory {
 
     public static IactnResp getIactnResp( Clicflic.History.Intn intRespObj, SimJ.Intn intn, SimJ simJ, TestEvent testEvent) throws Exception
     {
-        if( intn != null )
+        if( intn!=null )
         {
             SimletItemType sit = SimletItemType.getValue( intn.getScoretype() );
 
+            // LogService.logIt( "IactnRespFactory.getIactnResp() simletItemType=" + sit.getName() + ", intRespObj.uniqueId=" + intRespObj.getU()+ ", intn.getCt5Itemtypeid()=" + intn.getCt5Itemtypeid() );
             // Need to check for a AV Upload item that has a Simlet Item Type of points or Dichot.
             // Sim competency id is always at the intn level for this type of interaction.
             if( ( sit.isDichotomous() || sit.isPoints() ) && intn.getSimcompetencyid()>0 )
@@ -50,8 +53,16 @@ public class IactnRespFactory {
                 return new DataEntryIactnResp( intRespObj);
                         
             if( sit.equals( SimletItemType.AUTO_ESSAY ) )
+            {
+                if( intn.getCt5Itemtypeid()==Ct5ItemType.FILE_UPLOAD.getCt5ItemTypeId() && (intn.getCt5Int25()==1 || intn.getCt5Int25()==2 ) )
+                    return new FileUploadScoredEssayIactnResp( intRespObj, testEvent);
+                
                 return new ScoredEssayIactnResp( intRespObj, testEvent);
+            }
 
+            if( sit.equals( SimletItemType.MANUAL_UPLOAD ) && (intn.getCt5Int25()==1 || intn.getCt5Int25()==2 ) )
+                return new FileUploadScoredEssayIactnResp( intRespObj, testEvent);
+            
             //if( sit.equals( SimletItemType.AUTO_CHAT ) )
             //     return new ScoredChatIactnResp( intRespObj);
 
@@ -71,24 +82,24 @@ public class IactnRespFactory {
 
     
     
-    public static IactnItemResp getIactnItemResp( IactnResp iactnResp, SimJ.Intn.Intnitem intnItemObj, Clicflic.History.Intn intRespObj, TestEvent testEvent)
+    public static IactnItemResp getIactnItemResp( IactnResp iactnResp, SimJ.Intn.Intnitem intnItemObj, Clicflic.History.Intn intRespObj, TestEvent testEvent, int orderIndex)
     {
         if( intnItemObj != null && intnItemObj.getFormat()==G2ChoiceFormatType.PIN_IMAGE.getG2ChoiceFormatTypeId() )
-            return new PinImageIactnItemResp( iactnResp, intnItemObj, intRespObj);
+            return new PinImageIactnItemResp( iactnResp, intnItemObj, intRespObj, orderIndex);
 
         if( intnItemObj != null && intnItemObj.getFormat()==G2ChoiceFormatType.INTN_CLK_STRM.getG2ChoiceFormatTypeId() )
-            return new IntnClkStrmIactnItemResp( iactnResp, intnItemObj, intRespObj);
+            return new IntnClkStrmIactnItemResp( iactnResp, intnItemObj, intRespObj, orderIndex);
 
         // If it's an iFrame we need to use the IframItemTypeId in the descrip.        
         if( intnItemObj != null && intnItemObj.getFormat()==G2ChoiceFormatType.IFRAME.getG2ChoiceFormatTypeId() )
         {
             if( intnItemObj.getIframeitemtype()==IframeItemType.CHAT.getIframeItemTypeId() )
-                return new ScoredChatIactnItemResp( iactnResp, intnItemObj, intRespObj);
+                return new ScoredChatIactnItemResp( iactnResp, intnItemObj, intRespObj, orderIndex);
             else
-                return new IFrameIactnItemResp( iactnResp, intnItemObj, intRespObj);
+                return new IFrameIactnItemResp( iactnResp, intnItemObj, intRespObj, orderIndex);
         }
 
-        return new IactnItemResp( iactnResp, intnItemObj, intRespObj, testEvent);
+        return new IactnItemResp( iactnResp, intnItemObj, intRespObj, testEvent, orderIndex);
     }
 
 }

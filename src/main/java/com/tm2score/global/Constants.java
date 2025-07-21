@@ -115,6 +115,8 @@ public class Constants
     // public static int MIN_WORDS_4_INSIGHT = 600;
 
     public static int MIN_TEXT_LENGTH_FOR_AI_SCORING = 100;
+    public static int MIN_TEXT_LENGTH_FOR_AI_SUMMARY = 300;
+    public static String AI_SUMMARY_TEXTTITLE_KEY = "AISUMMARY";
 
     
     /**
@@ -122,6 +124,8 @@ public class Constants
      */
     public static String SPELLING_IGNORE_KEY = "SPELLIGNORE";
     public static String IDEAL_RESPONSE_KEY = "IDEALRESPONSE";
+    public static String AI_INSTRUCTIONS_KEY = "AIINSTRUCTIONS";
+    public static String AI_PROMPT_KEY = "AIPROMPT";
 
     
     public static String TOPIC_KEY = "TOPIC";

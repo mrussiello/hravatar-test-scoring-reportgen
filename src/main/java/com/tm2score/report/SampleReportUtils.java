@@ -360,7 +360,7 @@ public class SampleReportUtils {
             if( sb.length()>0 )
                 sb.append( Constants.DELIMITER );
 
-            sb.append( tt.getTitle() + Constants.DELIMITER + tt.getText() + Constants.DELIMITER + tt.getFlags() + Constants.DELIMITER + (tt.getString1()==null || tt.getString1().isBlank() ? "" : tt.getString1() ) + "~" + (tt.getString2()==null || tt.getString2().isBlank() ? "" : tt.getString2() ) + "~" + (tt.getString3()==null || tt.getString3().isBlank() ? "" : tt.getString3() ) );
+            sb.append( tt.getTitle() + Constants.DELIMITER + tt.getText() + Constants.DELIMITER + tt.getFlags() + Constants.DELIMITER + (tt.getString1()==null || tt.getString1().isBlank() ? "" : tt.getString1() ) + "~" + (tt.getString2()==null || tt.getString2().isBlank() ? "" : tt.getString2() ) + "~" + (tt.getString3()==null || tt.getString3().isBlank() ? "" : tt.getString3()) + "~" + (tt.getString4()!=null && !tt.getString4().isEmpty() ? tt.getString4() : "") );
             // sb.append( XMLUtils.encodeURIComponent( tt.getTitle() ) + Constants.DELIMITER + XMLUtils.encodeURIComponent( tt.getText() ) + Constants.DELIMITER + XMLUtils.encodeURIComponent( tt.getFlags() ) );
         }
 

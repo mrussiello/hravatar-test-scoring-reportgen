@@ -447,7 +447,7 @@ public class RuntimeConstants
         // ////////////////////////////////////////////////////////////////////////////
         // Discern (Essay Scoring)
         // ////////////////////////////////////////////////////////////////////////////
-        cache.put( "discernOn", true );
+        // cache.put( "discernOn", false );
         
         cache.put( "ai-essay-scoring-ok", true );
         cache.put( "ai-essay-scoring-use-score2", false );
@@ -669,7 +669,7 @@ public class RuntimeConstants
 
     private static void loadProperties( String propertiesFile )
     {
-        LogService.logIt( "RuntimeConstants.loadProperties() START " + propertiesFile );
+        // LogService.logIt( "RuntimeConstants.loadProperties() START " + propertiesFile );
         try
         {
             if( propertiesFile != null && !propertiesFile.isBlank() )
@@ -730,7 +730,7 @@ public class RuntimeConstants
                         // logIt( "Revised property from file: " + name + " : " + strValue );
                     }
                 }
-                LogService.logIt( "RuntimeConstants.loadProperties() Updated " + props.size() + " keys from " + propertiesFile );
+                // LogService.logIt( "RuntimeConstants.loadProperties() Updated " + props.size() + " keys from " + propertiesFile );
             }
         }
         catch( Exception e )

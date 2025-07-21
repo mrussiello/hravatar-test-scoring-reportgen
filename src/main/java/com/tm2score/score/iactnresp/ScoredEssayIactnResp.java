@@ -140,6 +140,7 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
 
         int maxPlagCheckRows = testEvent != null && testEvent.getOrg() != null ? ReportUtils.getReportFlagIntValue("essayscoremaxlookback", null, testEvent.getProduct(), testEvent.getSuborg(), testEvent.getOrg(), testEvent.getReport()) : 0;
 
+        int orderIndex=1;
         for (SimJ.Intn.Intnitem intItemObj : intnObj.getIntnitem())
         {
             // Only look at Text Boxes
@@ -148,8 +149,10 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
 
             // LogService.logIt( "ScoredEssayIactnResp.scoring intn.item AAA.1 " + intnObj.getSeq()+ "-" + intItemObj.getSeq() + ", prompt=" + ((int)intItemObj.getScoreparam1()) );
             // use this only to get the response value.
-            iir = IactnRespFactory.getIactnItemResp(this, intItemObj, intnResultObjO, testEvent); // new IactnItemResp( this, intItemObj, intnResultObj );
+            iir = IactnRespFactory.getIactnItemResp(this, intItemObj, intnResultObjO, testEvent, orderIndex ); // new IactnItemResp( this, intItemObj, intnResultObj );
 
+            orderIndex++;
+            
             String transCompare = null;
             if (intItemObj.getTextscoreparam1() != null && !intItemObj.getTextscoreparam1().isBlank())
                 transCompare = StringUtils.getBracketedArtifactFromString(intItemObj.getTextscoreparam1(), Constants.TRANSLATECOMPARE);
@@ -226,7 +229,7 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
                 }
             }
 
-            if (seii.getTransCompareScore() >= 0)
+            if (seii.getTransCompareScore()>=0)
             {
                 tTransCompareScr += seii.getTransCompareScore();
                 transCompareScrCt++;
@@ -296,17 +299,18 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
 
             metaScores[2] = machineScore;
             metaScores[3] = confidence;
-            metaScores[4] = spellErrors;
-            metaScores[5] = otherErrors;
-            metaScores[6] = totalWords;
+            metaScores[4] = intnObj.getCt5Int13()==1 ? 0 : spellErrors;
+            metaScores[5] = intnObj.getCt5Int13()==1 ? 0 : otherErrors;
+            metaScores[6] = intnObj.getCt5Int13()==1 ? 0 : totalWords;
+            metaScores[7] = intnObj.getCt5Int25()==1 || intnObj.getCt5Int25()==2 ? 1 : 0; // 1=indicates if AI Scoring, 2=ai and summary, 3=summary only
             metaScores[8] = plagiarized == 1 ? 1 : 0;
             metaScores[9] = transCompareScore;
-            metaScores[10] = wpm;
-            metaScores[11] = highWpm;
+            metaScores[10] = intnObj.getCt5Int13()==1 ? 0 : wpm;
+            metaScores[11] = intnObj.getCt5Int13()==1 ? 0 : highWpm;
 
             metaScores[12] = tClarity;
             metaScores[13] = tArgument;
-            metaScores[14] = tMechanics;
+            metaScores[14] = intnObj.getCt5Int13()==1 ? 0 : tMechanics;
             metaScores[15] = tIdeal;
 
             caveatList2=new ArrayList<>();
@@ -319,7 +323,7 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
                 // caveatStr = "[" + Constants.ESSAY_PLAGIARIZED + "]";
             }
 
-            if (wpm>0)
+            if (intnObj.getCt5Int13()<=0 && wpm>0)
             {
                 caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.WPM.getCaveatScoreTypeId(), wpm, 0, null, this.getSimLocale()));
 
@@ -333,7 +337,7 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
                 //    caveatStr = "[" + Constants.ESSAY_WPM + "]" + wpm;
             }
 
-            if (highWpm > 0)
+            if (intnObj.getCt5Int13()<=0 && highWpm > 0)
             {
                 caveatList2.add( new CaveatScore( caveatList2.size()+1, CaveatScoreType.WPM_HI.getCaveatScoreTypeId(), highWpm, 0, null, getSimLocale()));
                 
@@ -362,7 +366,6 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
 
     public String getTranslatedText(int snseq)
     {
-
         // LogService.logIt( "ScoredEssayIactnResp.getTranslatedText() snseq=" + snseq );
         if (items == null || items.isEmpty())
             return null;
@@ -411,13 +414,16 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
         List<IactnItemResp> out = new ArrayList<>();
         IactnItemResp iir;
 
+        int orderIndex=1;
+        
         // look for an interaction item designated as the question.
         for (SimJ.Intn.Intnitem iitm : intnObj.getIntnitem())
         {
-            if (iitm.getFormat() == G2ChoiceFormatType.TEXT_BOX.getG2ChoiceFormatTypeId() && iitm.getScoreparam1() > 0)
+            if (iitm.getFormat() == G2ChoiceFormatType.TEXT_BOX.getG2ChoiceFormatTypeId() ) // && iitm.getScoreparam1() > 0)
             {
-                iir = IactnRespFactory.getIactnItemResp(this, iitm, intnResultObjO, testEvent); // new IactnItemResp( this, iitm, intnResultObj );
+                iir = IactnRespFactory.getIactnItemResp(this, iitm, intnResultObjO, testEvent, orderIndex); // new IactnItemResp( this, iitm, intnResultObj );
                 out.add(iir);
+                orderIndex++;
             }
         }
 
@@ -430,7 +436,7 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
         // look for an interaction item designated as the question.
         for (SimJ.Intn.Intnitem iitm : intnObj.getIntnitem())
         {
-            if (iitm.getFormat() == G2ChoiceFormatType.TEXT_BOX.getG2ChoiceFormatTypeId() && iitm.getScoreparam1() > 0)
+            if (iitm.getFormat() == G2ChoiceFormatType.TEXT_BOX.getG2ChoiceFormatTypeId() ) //&& iitm.getScoreparam1() > 0)
             {
                 if (iitm.getQuestionid()!= null && !iitm.getQuestionid().isBlank())
                 {
@@ -472,6 +478,7 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
         String title;
         String text;
         String transtext;
+        String summary;
         IactnItemResp iir;
         // TextAndTitle ttl;
         String misSpellsStr;
@@ -479,18 +486,28 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
 
         String idt = getTextAndTitleIdentifier();
 
+        ScoredEssayIntnItem seii;
+        
+        int orderIndex = 1;
+        
         // look for an interaction item designated as the question.
         for (SimJ.Intn.Intnitem iitm : intnObj.getIntnitem())
         {
-            if (iitm.getFormat() == G2ChoiceFormatType.TEXT_BOX.getG2ChoiceFormatTypeId() && iitm.getScoreparam1() > 0)
+            if (iitm.getFormat() == G2ChoiceFormatType.TEXT_BOX.getG2ChoiceFormatTypeId() ) // && iitm.getScoreparam1() > 0)
             {
-                iir = IactnRespFactory.getIactnItemResp(this, iitm, intnResultObjO, testEvent); // new IactnItemResp( this, iitm, intnResultObj );
+                iir = IactnRespFactory.getIactnItemResp(this, iitm, intnResultObjO, testEvent, orderIndex ); // new IactnItemResp( this, iitm, intnResultObj );
 
+                orderIndex++;
+                
                 text = iir.getRespValue();
 
                 if (text == null || text.isEmpty())
                     continue;
 
+                seii = getScoredEssayIntnItem( iitm );
+                
+                summary = seii!=null ? seii.getSummaryText() : null;
+                
                 transtext = getTranslatedText(iitm.getSeq());
                 
                 // title = XMLUtils.decodeURIComponent( iitm.getTitle());
@@ -530,16 +547,35 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
                 misSpellsStr = msps == null ? null : getMisSpellsStr(msps);
 
                 String itemid = iitm.getExtitempartid();
-
                 if (itemid == null || itemid.isBlank())
                     itemid = Integer.toString(iitm.getSeq());
 
+                //if( seii!=null && seii.getHasValidSummary() )
+                //     out.add(new TextAndTitle(seii.getSummaryText(), Constants.AI_SUMMARY_TEXTTITLE_KEY, false, getSimCompetencyId(), testEvent==null ? this.getCt5ItemId() : testEvent.getNextTextTitleSequenceId(), null, idt + "-summary-" + "-" + itemid, null));                    
+                
                 // LogService.logIt( "ScoredEssayIactnResp.getTestRespList() title=" + title );
-                out.add(new TextAndTitle(text, title, false, getSimCompetencyId(), this.testEvent == null ? this.getCt5ItemId() : testEvent.getNextTextTitleSequenceId(), misSpellsStr, idt + "-" + itemid, transtext));
+                out.add(new TextAndTitle(text, title, false, getSimCompetencyId(), intnResultObjO.getSq()*100 + iir.orderIndex, misSpellsStr, idt + "-" + itemid, transtext, summary ));            
+                
+            
             }
-        }
+        }        
 
         return out;
+    }
+    
+    private ScoredEssayIntnItem getScoredEssayIntnItem( SimJ.Intn.Intnitem iitm )
+    {
+        if( this.items==null )
+        {
+            LogService.logIt( "ScoredEssayIactnResp.getScoredEssayIntnItem() items list is null or empty. ct5ItemPartId=" + iitm.getCt5Itempartid() );
+            return null;
+        }
+        for( ScoredEssayIntnItem seii : items )
+        {
+            if( seii.getSubnodeSeqId()==iitm.getSeq() || seii.getCt5ItemPartId()==iitm.getCt5Itempartid())
+                return seii;
+        }
+        return null;
     }
 
     private String getMisSpellsStr(Map<String, Integer> vals)
@@ -597,6 +633,10 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
 
         if (iist.isNone())
             return null;
+        
+        // These are picked up by the Intn Item responses if they are present.
+        if( this.getAllScorableIntItemResponses() !=null && !getAllScorableIntItemResponses().isEmpty() )
+            return null;
 
         String itemLevelId = getTextAndTitleIdentifier(); // UrlEncodingUtils.decodeKeepPlus( getExtItemId() );
         String title = itemLevelId;
@@ -608,8 +648,6 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
             title += "\n" + ques;
 
         String text = null;
-
-        
         
         if (iist.isIncludeNumericScore() || iist.isIncludeCorrect())
         {
@@ -642,14 +680,16 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
         
         }
 
-        if (text == null || text.isEmpty())
+        if (text==null || text.isEmpty())
             return null;
 
         text = StringUtils.replaceStr(text, "[", "{");
         title = StringUtils.replaceStr(title, "[", "{");
         itemLevelId = StringUtils.replaceStr(itemLevelId, "[", "{");
         ques = StringUtils.replaceStr(ques, "[", "{");
-        return new TextAndTitle(text, title, 0, itemLevelId, ques);
+        TextAndTitle tt = new TextAndTitle(text, title, intnResultObjO.getSq()*100, itemLevelId, ques);
+        tt.setOrder( this.intnResultObjO.getSq()*100 );
+        return tt;
     }
 
     /*

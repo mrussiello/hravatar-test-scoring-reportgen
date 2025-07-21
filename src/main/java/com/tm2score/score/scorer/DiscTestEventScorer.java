@@ -8,7 +8,6 @@ package com.tm2score.score.scorer;
 import com.tm2score.custom.disc.DiscReportUtils;
 import com.tm2score.entity.event.TestEventScore;
 import com.tm2score.event.EventFacade;
-import com.tm2score.event.TestEventScoreType;
 import com.tm2score.service.LogService;
 import java.util.List;
 
@@ -18,6 +17,12 @@ import java.util.List;
  */
 public class DiscTestEventScorer extends CT5DirectTestEventScorer implements TestEventScorer {
     
+    
+    /*
+      IMPORTANT = THIS scorer is NOT used currently. It was an experiment to make all scores DISC add up to 100. This made the average score 25 which just looks too low. 
+    
+       DISC is currently scored with the Ct5DirectTestEventScorer.
+    */
     
     @Override
     public int setCompetencyTestEventScores( int counter ) throws Exception

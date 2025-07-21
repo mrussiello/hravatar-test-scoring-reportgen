@@ -53,6 +53,11 @@ public class ReminderStarter implements Runnable {
             
             // clear cache
             UserFacade uf = UserFacade.getInstance();
+            if( uf==null )
+            {
+                LogService.logIt( "ReminderStarter.run() Unable to run because UserFacade is null. ");
+                return;
+            }
             uf.clearSharedCache();
             uf.clearSharedCacheDiscern();
             

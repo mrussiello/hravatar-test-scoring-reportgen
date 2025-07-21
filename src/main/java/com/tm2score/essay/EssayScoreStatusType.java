@@ -26,13 +26,23 @@ public enum EssayScoreStatusType
         this.name = n;
     }
 
+    public boolean getIsComplete()
+    {
+        return equals(SCORECOMPLETE);
+    }
+    
+    public boolean getIsCancelledOrHigher()
+    {
+        return essayScoreStatusTypeId>=CANCELLED.getEssayScoreStatusTypeId();
+    }
+    
 
     public boolean unsubmitted()
     {
         return equals( NOTSUBMITTED ) ;
     }
 
-    public boolean incomplete()
+    public boolean submitted()
     {
         return equals( SUBMITTED  );
     }

@@ -409,7 +409,7 @@ public class SimletCompetencyScore
         TextAndTitle itemScoreTextTitle;
 
         if( ScoreManager.DEBUG_SCORING )
-            LogService.logIt( "SimletCompetencyScore.calculateScore() AAA. totalScorableItems=" + totalScorableItems + ", Competency=" + competencyScoreObj.getName() + ", responses in irList=" + irList.size() );
+            LogService.logIt( "SimletCompetencyScore.calculateScore() AAA.1 START totalScorableItems=" + totalScorableItems + ", Competency=" + competencyScoreObj.getName() + ", responses in irList=" + irList.size() );
 
         // talley the items
         for( ScorableResponse sr : irList )
@@ -464,7 +464,7 @@ public class SimletCompetencyScore
             totalValidScorableItems++;
 
             if( ScoreManager.DEBUG_SCORING )
-               LogService.logIt( "SimletCompetencyScore.calculateScore() BBB.5 Using response for this competency.  totalValidScorableItems=" + totalValidScorableItems + ", irsUsedList=" + irsUsedList.size() );
+               LogService.logIt( "SimletCompetencyScore.calculateScore() BBB.5 Using response for this competency. itemScore=" + sr.itemScore() + ",  totalValidScorableItems=" + totalValidScorableItems + ", irsUsedList=" + irsUsedList.size() + ", comptencyScoreType=" + competencyScoreType.getName() );
 
             if( sr.getFloor()!= 0 && sr.getFloor()<scaledScoreFloor )
                 scaledScoreFloor = sr.getFloor();
@@ -555,14 +555,14 @@ public class SimletCompetencyScore
                 {
                     float[] mpa = sr.getMaxPointsArray();
 
-                    if( mpa != null )
+                    if( mpa!=null )
                         maxPoints += mpa[0];
 
                     totalScorableItems++;
                     totalScorableItemsCountAdjusted += sr.getTotalItemCountIncrementValue();
 
                     if( ScoreManager.DEBUG_SCORING )
-                        LogService.logIt( "SimletCompetencyScore.calculateScore() DDD.2 adding totalScoreItems " + sr.toString() + " maxPoints=" + maxPoints  + ", correct=" +sr.correct() + ", totalCorrect=" + totalCorrect + " out of totalScorableItems=" + totalScorableItems );
+                        LogService.logIt( "SimletCompetencyScore.calculateScore() DDD.2 adding totalScoreItems " + sr.toString() + " maxPoints=" + maxPoints  + ", correct=" +sr.correct() + ", totalCorrect=" + totalCorrect + " out of totalScorableItems=" + totalScorableItems + ", mpa!=null=" + (mpa!=null ? mpa[0] : "null" ) );
                 }
             }
 
@@ -694,7 +694,7 @@ public class SimletCompetencyScore
 
             // Scored Essay or Audio or chat
             else if( (( competencyScoreType.isScoredChat() && sr.getSimletItemType().isAutoChat() ) ||
-                      ( competencyScoreType.isScoredEssay() && sr.getSimletItemType().isAutoEssay() ) ||
+                      ( competencyScoreType.isScoredEssay() && (sr.getSimletItemType().isAutoEssay() || sr.getSimletItemType().isManualUpload())) ||
                       (competencyScoreType.isScoredVoiceSample()&& sr.getSimletItemType().isAutoAudio()) ||
                        ( competencyScoreType.isScoredAvUpload() && sr.getSimletItemType().isAutoAvUpload() ) ||
                       (competencyScoreType.isIdentityImageCapture()&& sr.getSimletItemType().isImageCapture())) &&
@@ -711,8 +711,8 @@ public class SimletCompetencyScore
                 addTopicResultsToMap( sr );
 
 
-                //if( ScoreManager.DEBUG_SCORING )
-                // LogService.logIt( "SimletCompetencyScore() Essay or media or chat adding " + sr.toString() + ", itemScore=" + sr.itemScore() +", totalPoints=" + totalPoints );
+                if( ScoreManager.DEBUG_SCORING )
+                    LogService.logIt( "SimletCompetencyScore() Essay or media or chat adding " + sr.toString() + ", itemScore=" + sr.itemScore() +", totalPoints=" + totalPoints );
 
                 // indicates we are using the number of answered items, rather than the gross total number of items in the simlet.
                 if( !useTotalItemsSimLevel && !useTotalItemsSimletCompetencyLevel )
@@ -735,10 +735,10 @@ public class SimletCompetencyScore
             {
                 itemScoreTextTitle = sr.getItemScoreTextTitle( includeItemScoreTypeId );
 
-                //if( ScoreManager.DEBUG_SCORING )
-                // LogService.logIt( "SimletCompetencyScore.calculateScore() sr=" + sr.getSimletNodeUniqueId() + ", ItemScoreTextTitle is " + (itemScoreTextTitle==null ? "null" : "not null " + itemScoreTextTitle.getTitle() )  );
+                if( ScoreManager.DEBUG_SCORING )
+                  LogService.logIt( "SimletCompetencyScore.calculateScore() simletComptency=" + this.competencyScoreObj.getName() + ", sr=" + sr.getSimletNodeUniqueId() + ", itemScoreTextAndTitleList=" + (itemScoreTextAndTitleList==null ? "null" : itemScoreTextAndTitleList.size()) + ", ItemScoreTextTitle is " + (itemScoreTextTitle==null ? "null" : "not null " + itemScoreTextTitle.getTitle() )  );
 
-                if( itemScoreTextTitle != null )
+                if( itemScoreTextTitle!=null )
                 {
                     if( itemScoreTextAndTitleList == null )
                         itemScoreTextAndTitleList = new ArrayList<>();
@@ -841,7 +841,7 @@ public class SimletCompetencyScore
 
         scaledScore = scoreFormatType.getUnweightedScaledScore(competencyScoreType, rawScore, 0, null );
 
-        if( ScoreManager.DEBUG_SCORING )
+        // if( ScoreManager.DEBUG_SCORING )
             LogService.logIt( "SimletCompetencyScore.calculateScore() FINAL " + competencyScoreObj.getName() + ", totalPoints=" + totalPoints + ", fractionPoints=" + this.fractionOfPoints + ", totalCorrect=" + this.totalCorrect + ", fractionCorrect=" + this.fractionCorrect + ",  totalScorableItems=" + totalScorableItems + ", averagePoints=" + averagePoints + ", scaledScoreFloor=" + scaledScoreFloor + ", scaledScoreCeiling=" + scaledScoreCeiling  );
 
         combineMetaScores( irsUsedList ); // irList );
@@ -1053,7 +1053,8 @@ public class SimletCompetencyScore
 
         metaScores[index] = ScoreCombinationType.getValue( scoreCombinationTypeId ).combineScores( irl , index );
 
-        // LogService.logIt( "SimletCompetencyScore.combineMetaScores() XXX.1 " + competencyScoreObj.getName() + ", combining for index=" + index + " irl.size()=" + irl.size() + ", value=" + metaScores[index] );
+        //if( index==7 )
+        //    LogService.logIt( "SimletCompetencyScore.combineMetaScores() XXX.1 " + competencyScoreObj.getName() + ", combining for index=" + index + " irl.size()=" + irl.size() + ", value=" + metaScores[index] );
 
     }
 
@@ -1153,7 +1154,7 @@ public class SimletCompetencyScore
                 LogService.logIt( "SimletCompetencyScore.getTextResponses() AAA " + this.toString() + ", " + ir.toString() + " ir.simletCompetencyId()=" + ir.simletCompetencyId() + " competencyScoreObj.getId()=" + competencyScoreObj.getId() );
 
             // same competency
-            if( ir.simletCompetencyId() != competencyScoreObj.getId() )
+            if( ir.simletCompetencyId()!=competencyScoreObj.getId() )
                 continue;
 
             if( ScoreManager.DEBUG_SCORING )
@@ -1170,7 +1171,8 @@ public class SimletCompetencyScore
 
             // if no non-competency question types and this is a non competency question ...
             // includeNonCompetencyQs is always false right now. would never get here since noncompetencyid is 0 if competencyid>0
-            if( ir instanceof IactnResp && !includeNonCompetencyQs && ((IactnResp)ir).intnObj.getNoncompetencyquestiontypeid() > 0 )
+            // MJR 7-15-2025, removed to support fileupload items that have ai summary but no other scoring.
+            if( 1==1 && ir instanceof IactnResp && !includeNonCompetencyQs && ((IactnResp)ir).intnObj.getNoncompetencyquestiontypeid()>0 )
                 continue;
 
             if( ScoreManager.DEBUG_SCORING )

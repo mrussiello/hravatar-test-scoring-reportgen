@@ -128,6 +128,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
@@ -1763,6 +1764,9 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             BaseColor graybg = new BaseColor(0xf4,0xf4,0xf4);
             boolean useGrayBg = true;
+            String summary;
+            
+            Paragraph titlePar;
 
             // For each competency
             for( TextAndTitle tt : ttl )
@@ -1905,11 +1909,23 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
                 useGrayBg = !useGrayBg;
 
+                summary = tt.getString4();
 
                 // This tells iText to always use the first row as a header on subsequent pages.
                 // t.setHeaderRows( 1 );
+                
+                titlePar = new Paragraph();
+                titlePar.add( new Chunk(tt.getTitle(),getFontSmall()));
+                
+                if( summary!=null && !summary.isBlank() )
+                {
+                    titlePar.add( new Chunk( "\n\n" + lmsg("g.SummaryAI") + ": ", getFontSmallBold()));
+                    titlePar.add( new Chunk(summary, getFontSmall()));                    
+                }
+                
+                // LogService.logIt( "BaseCt2ReportTemplate.addFilesUploads() " + lmsg("g.Summary") );
 
-                c = new PdfPCell( new Phrase(tt.getTitle(),getFontSmall() ) );
+                c = new PdfPCell( titlePar );
                 c.setBorder( top ? Rectangle.TOP | Rectangle.LEFT | Rectangle.BOTTOM : Rectangle.LEFT | Rectangle.BOTTOM );
                 c.setBackgroundColor(useGrayBg ? graybg : BaseColor.WHITE );
                 c.setBorderWidth( scoreBoxBorderWidth );
@@ -3247,6 +3263,8 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
          CefrScoreType cefrScoreType;
 
+         int bottomRowBottomPadding = 5;
+         
          while( iter.hasNext() )
          {
              tes = iter.next();
@@ -3303,10 +3321,12 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
              if( !iter.hasNext() && last && descrip==null)
                  c.setBorder( reportData.getIsLTR() ? Rectangle.LEFT | Rectangle.BOTTOM : Rectangle.RIGHT | Rectangle.BOTTOM );
-
              else
                 c.setBorder( reportData.getIsLTR() ?  Rectangle.LEFT : Rectangle.RIGHT );
 
+             if( !iter.hasNext() && descrip==null )
+                 c.setPaddingBottom(bottomRowBottomPadding);
+             
              c.setBorderColor( ct2Colors.scoreBoxBorderColor );
              c.setBorderWidth( scoreBoxBorderWidth );
              setRunDirection( c );
@@ -3354,6 +3374,9 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
                 boolean isBottomRow = !iter.hasNext() && last && descrip==null;
 
+                c.setBorderColor( ct2Colors.scoreBoxBorderColor );
+                c.setBorderWidth( scoreBoxBorderWidth );
+                
                 if( cols==2 )
                 {
                     if( isBottomRow )
@@ -3370,6 +3393,9 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                     c.setBorderWidth( scoreBoxBorderWidth );
                 }
 
+                if( !iter.hasNext() && descrip==null )
+                    c.setPaddingBottom(bottomRowBottomPadding);
+                
                 // Last row
                // if( !iter.hasNext() && last && descrip==null )
                // {
@@ -3399,6 +3425,10 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                         c.setBorder( Rectangle.BOTTOM );
                     else
                         c.setBorder( Rectangle.NO_BORDER );
+
+                    if( !iter.hasNext() && descrip==null )
+                        c.setPaddingBottom(bottomRowBottomPadding);
+
                     c.setBorderColor( ct2Colors.scoreBoxBorderColor );
                     c.setBorderWidth( scoreBoxBorderWidth );
                     setRunDirection( c );
@@ -3459,6 +3489,9 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                 else
                     c.setBorder( Rectangle.NO_BORDER );
 
+                if( !iter.hasNext() && descrip==null )
+                    c.setPaddingBottom(bottomRowBottomPadding);
+
                 c.setBorderColor( ct2Colors.scoreBoxBorderColor );
                 c.setBorderWidth( scoreBoxBorderWidth );
                 setRunDirection( c );
@@ -3482,10 +3515,15 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                     }
 
                     else if( !iter.hasNext() && last && descrip==null )
+                    {
                         c.setBorder( Rectangle.BOTTOM );
+                    }
                     else
                         c.setBorder( Rectangle.NO_BORDER );
 
+                    if( !iter.hasNext() && descrip==null )
+                        c.setPaddingBottom(bottomRowBottomPadding);
+                    
                     c.setBorderColor( ct2Colors.scoreBoxBorderColor );
                     c.setBorderWidth( scoreBoxBorderWidth );
                     setRunDirection( c );
@@ -3505,6 +3543,9 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                     c.setBorder( reportData.getIsLTR() ?  Rectangle.BOTTOM | Rectangle.RIGHT : Rectangle.BOTTOM | Rectangle.LEFT );
                 else
                     c.setBorder( reportData.getIsLTR() ?  Rectangle.RIGHT : Rectangle.LEFT );
+
+                if( !iter.hasNext() && descrip==null )
+                    c.setPaddingBottom(bottomRowBottomPadding);
 
                 c.setBorderColor( ct2Colors.scoreBoxBorderColor );
                 c.setBorderWidth( scoreBoxBorderWidth );
@@ -3530,10 +3571,16 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                     c.setHorizontalAlignment( Element.ALIGN_LEFT );
 
                     if( !iter.hasNext() && last )
+                    {
                         c.setBorder( Rectangle.LEFT | Rectangle.RIGHT | Rectangle.BOTTOM );
+                        //c.setPaddingBottom(bottomRowBottomPadding);
+                    }
 
                     else
                         c.setBorder( Rectangle.LEFT | Rectangle.RIGHT );
+
+                    if( !iter.hasNext() )
+                        c.setPaddingBottom(bottomRowBottomPadding);
 
                     c.setBorderColor( ct2Colors.scoreBoxBorderColor );
                     c.setBorderWidth( scoreBoxBorderWidth );
@@ -7108,6 +7155,29 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             boolean singleCol = forceSingleColumn || reportData.getReportRuleAsBoolean( "cmptydetailcolumn2off" );
 
+            
+            if( !singleCol && withInterview && !devel )
+            {
+                // LogService.logIt( "BaseCT2ReportTemplate.addAnyCompetenciesInfo() Checking for empty interview section. titleText=" + titleText  );
+                boolean hasInterviewQs = false;
+                List<InterviewQuestion> iqL;
+                for( TestEventScore tes : tesl )
+                {
+                    iqL = reportData.getInterviewQuestionList(tes, 1); //tes.getInterviewQuestionList( maxInt );
+                    if( !iqL.isEmpty() )
+                    {
+                        hasInterviewQs=true;
+                        break;
+                    }
+                }
+                if( !hasInterviewQs )
+                {
+                    LogService.logIt( "BaseCT2ReportTemplate.addAnyCompetenciesInfo() setting singleCol=" + singleCol + "  because there are no Interview Questions in the group. leftColumnTitle=" + leftColumnTitle + ", titleText=" + titleText  );
+                    singleCol=true;
+                }
+
+            }
+            
             // LogService.logIt( "BaseCT2ReportTemplate.addAnyCompetenciesInfo() singleCol=" + singleCol  );
 
             if( singleCol )
@@ -8535,10 +8605,12 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             String theText;
             String transText;
+            String summary;
 
             BaseColor graybg = new BaseColor(0xf4,0xf4,0xf4);
             boolean useGrayBg = true;
 
+            Paragraph textPar;
 
             // For each competency
             for( TextAndTitle tt : ttl )
@@ -8552,7 +8624,8 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                 theText = tt.getTitle();
                 if( StringUtils.getHasHtml(theText) )
                     theText = StringUtils.convertHtml2PlainText(theText, true );
-
+           
+                // this is the title (question)
                 c = new PdfPCell( new Phrase( theText, getFontSmall() ) );
                 c.setBackgroundColor( useGrayBg ? graybg : BaseColor.WHITE );
                 c.setBorder( Rectangle.LEFT | Rectangle.BOTTOM | Rectangle.RIGHT );
@@ -8565,11 +8638,18 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                 theText = tt.getText();
                 if( StringUtils.getHasHtml(theText) )
                     theText = StringUtils.convertHtml2PlainText(theText, true );
-
-
-
+                
                 misSpells = tt.getString1();
                 transText = tt.getString3();
+                summary = tt.getString4();
+                
+                textPar = new Paragraph();
+                if( summary !=null && !summary.isBlank() )
+                {
+                    textPar.add( new Chunk( lmsg("g.SummaryAI") + ": ", getFontSmallBold() ));
+                    textPar.add( new Chunk( summary + "\n\n", getFontSmall()));
+                    textPar.add( new Chunk( lmsg("g.FromCandidate") + ": ", getFontSmallBold() ) );
+                }                
 
                 if( misSpells!=null && !misSpells.isEmpty() )
                 {
@@ -8580,8 +8660,11 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                 {
                     theText += "\n\n[" + lmsg( "g.ReverseTranslatedC" ) + " " + transText + "]";
                 }
+                
+                textPar.add( new Chunk( theText, getFontSmall()) );
 
-                c = new PdfPCell( new Phrase( theText, getFontSmall() ) );
+                // c = new PdfPCell( new Phrase( theText, getFontSmall() ) );
+                c = new PdfPCell( textPar );
                 c.setBackgroundColor( useGrayBg ? graybg : BaseColor.WHITE );
                 c.setBorder( Rectangle.LEFT | Rectangle.BOTTOM | Rectangle.RIGHT );
                 c.setBorderWidth( 0.5f );
@@ -9707,7 +9790,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             // Locale rloc = reportData.getLocale();
             String theText;
-
+            
             for( TestEventScore tesx : tesl )
             {
                 iist = IncludeItemScoresType.getValue( tesx.getIntParam2() );
@@ -9762,7 +9845,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                     if( StringUtils.getHasHtml(theText) )
                         theText = StringUtils.convertHtml2PlainText(theText, true);
 
-                    c = new PdfPCell( new Phrase( tt.getTitle(), getFontSmall() ) );
+                    c = new PdfPCell( new Phrase( theText, getFontSmall() ) );
                     c.setBackgroundColor( BaseColor.WHITE );
                     c.setBorder( Rectangle.LEFT | Rectangle.BOTTOM | Rectangle.RIGHT );
                     c.setBorderWidth( 0.5f );
@@ -12257,7 +12340,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                 if( ulY >= MIN_HEIGHT_FOR_CONTINUED_TEXT )
                     addContinuedNextPage(ulY, null );
 
-                // LogService.logIt( "BaseCT2ReportTemplate.addTableToDocument() adding new page. "  );
+                // LogService.logIt( "BaseCT2ReportTemplate.addTableToDocument() BBB.1 ulY=" + ulY + ", onePageIfPossible=" + onePageIfPossible + ", tableHeight=" + tableHeight + ", heightAvailNewPage=" + heightAvailNewPage + ", adding new page. "  );
                 document.newPage();
 
                 ulY = pageHeight - headerHgt - 3*PAD;
@@ -12265,16 +12348,28 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
             }
 
             // If first row doesn't fit on this page
-            else if( firstRowHgt > ulY- footerHgt - 3*PAD - tableHeaderHeight ) // ulY < footerHgt + 8*PAD )
+            else if( firstRowHgt<=(heightAvailNewPage - 6*PAD) && firstRowHgt>ulY- footerHgt - 3*PAD - tableHeaderHeight ) // ulY < footerHgt + 8*PAD )
             {
                 if( ulY >= MIN_HEIGHT_FOR_CONTINUED_TEXT )
                     addContinuedNextPage(ulY, null );
 
-                // LogService.logIt( "BaseCT2ReportTemplate.addTableToDocument() adding new page. "  );
+                // LogService.logIt( "BaseCT2ReportTemplate.addTableToDocument() BBB.2 ulY=" + ulY + ", firstRowHgt=" + firstRowHgt + ", tableHeaderHeight=" + tableHeaderHeight + ", onePageIfPossible=" + onePageIfPossible + ", tableHeight=" + tableHeight + ", heightAvailNewPage=" + heightAvailNewPage + ", adding new page. "  );
                 document.newPage();
 
                 ulY = pageHeight - headerHgt - 3*PAD;
             }
+            
+            else if( ulY<(heightAvailNewPage/2 - 4*PAD) && firstRowHgt>ulY- footerHgt - 3*PAD - tableHeaderHeight ) // ulY < footerHgt + 8*PAD )
+            {
+                if( ulY >= MIN_HEIGHT_FOR_CONTINUED_TEXT )
+                    addContinuedNextPage(ulY, null );
+
+                // LogService.logIt( "BaseCT2ReportTemplate.addTableToDocument() BBB.2 ulY=" + ulY + ", firstRowHgt=" + firstRowHgt + ", tableHeaderHeight=" + tableHeaderHeight + ", onePageIfPossible=" + onePageIfPossible + ", tableHeight=" + tableHeight + ", heightAvailNewPage=" + heightAvailNewPage + ", adding new page. "  );
+                document.newPage();
+
+                ulY = pageHeight - headerHgt - 3*PAD;
+            }
+            
 
             //else if( 1==1 )
             //{

@@ -30,6 +30,7 @@ import com.tm2score.score.SimletCompetencyScore;
 import com.tm2score.score.SimletScore;
 import com.tm2score.score.TextAndTitle;
 import com.tm2score.sim.IncludeItemScoresType;
+import com.tm2score.util.HtmlUtils;
 import com.tm2score.util.StringUtils;
 import com.tm2score.util.UrlEncodingUtils;
 import com.tm2score.xml.IntnHist;
@@ -87,6 +88,8 @@ public class IactnResp implements ScorableResponse
      * metaScores[4] = item score 4
      * metaScores[5] = item score 5
      * metaScores[6] = item score 6
+     * ...
+     * metaScores[15]
      */
     protected float[] metaScores;
 
@@ -108,7 +111,7 @@ public class IactnResp implements ScorableResponse
     @Override
     public String toString()
     {
-        return "IactnResp{ " + ( intnObj == null ? " intn is null" :  intnObj.getName() + ", id=" + intnObj.getId() + ", nodeSeq=" + intnObj.getSeq() ) + ( intnResultObj==null ? " intnResultObj is null" : ", sel SubSeq=" + intnResultObj.getSnseq() ) + ", ct5ItemId=" + this.getCt5ItemId() + ", ct5ItemPartId=" + this.getCt5ItemPartId() + "}";
+        return "IactnResp{ " + ( intnObj == null ? " intn is null" :  StringUtils.getUrlDecodedValue(intnObj.getName()) + ", id=" + intnObj.getId() + ", nodeSeq=" + intnObj.getSeq() ) + ( intnResultObj==null ? " intnResultObj is null" : ", sel SubSeq=" + intnResultObj.getSnseq() ) + ", ct5ItemId=" + this.getCt5ItemId() + ", ct5ItemPartId=" + this.getCt5ItemPartId() + "}";
     }
 
 
@@ -160,7 +163,7 @@ public class IactnResp implements ScorableResponse
             // see if selected radio has a different competencyscoreid
             for( IactnItemResp ir : getSelectedIntnItems() )
             {
-                if( !ir.getG2ChoiceFormatType().getIsAnyRadio())
+                if( !ir.getG2ChoiceFormatType().getIsAnyRadio() && !ir.getG2ChoiceFormatType().getIsTextOrButton())
                     continue;
 
                 //LogService.logIt( "IactnResp.getUsesOrContributesPointsToSimletCompetency() itemId=" + this.intnObj.getUniqueid() + ", ir.intnItemObj.getCompetencyscoreid()=" + ir.intnItemObj.getCompetencyscoreid() + ", simletCompetencyId()=" + simletCompetencyId() + ", smltCs.competencyScoreObj.getId()=" + smltCs.competencyScoreObj.getId() + " smltCs=" + smltCs.competencyScoreObj.getName() );
@@ -315,7 +318,7 @@ public class IactnResp implements ScorableResponse
             iactnItemRespLst = new ArrayList<>();
 
             // Not an important interaction response then. Ignore.
-            if( intnObj == null  )
+            if( intnObj==null  )
             {
                 LogService.logIt( "IactnResp.init() could not find an interaction Object in SimDescriptor for seq=" + intnResultObj.getNdseq() );
                 return;
@@ -333,13 +336,19 @@ public class IactnResp implements ScorableResponse
             {
                 for( SimletScore ss : simletScoreList )
                 {
-                    if( ss.simletObj.getId() == intnObj.getSimletid() )
+                    if( ss.simletObj.getId()==intnObj.getSimletid() )
                     {
                         simletScore = ss;
 
                         if( intnObj.getCompetencyscoreid() > 0 )
+                        {
                             simletCompetencyScore = ss.getSimletCompetencyScore( intnObj.getCompetencyscoreid() );
+                            
+                            if( simletCompetencyScore==null )   
+                                LogService.logIt( "IactnResp.init() simletCompetencyScore is null. intnObj.getCompetencyscoreid()=" + intnObj.getCompetencyscoreid() + ", simletCompetencyScore=" + (simletCompetencyScore==null ? "null" : "not null") + ", intnObj.seq=" + intnObj.getSeq() + ", " + intnObj.getName() );
+                        }
 
+                        // LogService.logIt( "IactnResp.init() intnObj.getCompetencyscoreid()=" + intnObj.getCompetencyscoreid() + ", simletCompetencyScore=" + (simletCompetencyScore==null ? "null" : "not null") + ", intnObj.seq=" + intnObj.getSeq() + ", " + intnObj.getName() );
                         break;
                     }
                 }                
@@ -348,7 +357,7 @@ public class IactnResp implements ScorableResponse
 
             // This is possible since interaction could be from a sim template. However, in this case we will ignore it since Sim Templates do not
             // afford any capability to add metadata to interactions for use in scoring or reports..
-            if( simletScore == null )
+            if( simletScore==null )
             {
                 LogService.logIt( "IactnResp.init() could not find a SimletScore for this IactnResp looking for simletId=" + intnObj.getSimletid() + ", intnObj.seq=" + intnObj.getSeq() + ", " + intnObj.getName() );
                 return;
@@ -357,6 +366,8 @@ public class IactnResp implements ScorableResponse
             IactnItemResp iir;
 
             boolean keep;
+            
+            int orderIndex = 1;
 
             //boolean slctd;
 
@@ -403,7 +414,7 @@ public class IactnResp implements ScorableResponse
                     keep = true;
 
                 // Any choice that supports subnode-level and has a competencyscoreid
-                else if( getG2ChoiceFormatType( intItemObj.getFormat() ).supportsSubnodeLevelSimletAutoScoring() && intItemObj.getCompetencyscoreid() > 0 )
+                else if( getG2ChoiceFormatType( intItemObj.getFormat() ).supportsSubnodeLevelSimletAutoScoring() && intItemObj.getCompetencyscoreid()>0 )
                     keep = true;
 
                 // for non-competency interactions
@@ -419,18 +430,31 @@ public class IactnResp implements ScorableResponse
                     keep=true;
 
                 // if this is the clicked interaction item, always keep.
-                if( intnResultObj.getSnseq() == intItemObj.getSeq() )
+                if( intnResultObj.getSnseq()==intItemObj.getSeq() )
                     keep = true;
+                
+                //if( 1==2 && getSimletItemType().equals( SimletItemType.AUTO_ESSAY) && intItemObj.getFormat()==G2ChoiceFormatType.TEXT_BOX.getG2ChoiceFormatTypeId() )
+                //{
+                //    if( ScoreManager.DEBUG_SCORING )
+               //         LogService.logIt( "IactnResp.init() BBB.1C "  + this.intnObj.getName() + " " + this.intnObj.getSeq()  + " ignoring TextBox Intn Item while creating IntnItemList" );
+               //     keep=false;
+                //}
 
                 if( !keep )
+                {
+                    if( ScoreManager.DEBUG_SCORING )
+                       LogService.logIt( "IactnResp.init() BBB.0B keep=false. intn="  + StringUtils.getUrlDecodedValue(intnObj.getName()) + ", intnItemObj=" + intItemObj.getId() + ", seq=" + intItemObj.getSeq()  );
                     continue;
+                }
 
-                iir =  IactnRespFactory.getIactnItemResp(this, intItemObj, intnResultObjO, testEvent );
+                iir =  IactnRespFactory.getIactnItemResp(this, intItemObj, intnResultObjO, testEvent, orderIndex );
+
+                orderIndex++;
 
                 iir.init( simletScore, te );
 
                 if( ScoreManager.DEBUG_SCORING )
-                   LogService.logIt( "IactnResp.init() BBB.1 "  + this.intnObj.getName() + " " + this.intnObj.getSeq()  + " ADDING " + iir.toString() );
+                   LogService.logIt( "IactnResp.init() BBB.1 "  + StringUtils.getUrlDecodedValue(intnObj.getName()) + " " + this.intnObj.getSeq()  + " ADDING " + iir.toString() );
                 iactnItemRespLst.add( iir );
 
                 if( intnResultObj.getSnseq()>0 && intItemObj.getSeq()==intnResultObj.getSnseq() )
@@ -438,7 +462,7 @@ public class IactnResp implements ScorableResponse
             }
 
             if( ScoreManager.DEBUG_SCORING )
-                LogService.logIt( "IactnResp.init() BBB.2 "  + this.intnObj.getName() + " " + this.intnObj.getSeq()  + " iactnItemRespLst contains " + iactnItemRespLst.size() );
+                LogService.logIt( "IactnResp.init() BBB.2 "  + StringUtils.getUrlDecodedValue(intnObj.getName()) + " " + this.intnObj.getSeq()  + " iactnItemRespLst contains " + iactnItemRespLst.size() );
 
             // Setup the Radio Button Groups. Must have more than one.
             if( intnObj.getRadiobuttongroup()!=null && intnObj.getRadiobuttongroup().size()>1 )
@@ -447,10 +471,13 @@ public class IactnResp implements ScorableResponse
 
                 RadioButtonGroupResp rbgs;
 
+                
                 for( SimJ.Intn.Radiobuttongroup rbgo : intnObj.getRadiobuttongroup() )
                 {
-                    rbgs = new RadioButtonGroupResp( this, rbgo);
+                    rbgs = new RadioButtonGroupResp( this, rbgo, orderIndex);
 
+                    orderIndex++;
+                    
                     rbgs.init(te);
 
                     radBtnGrpScrList.add(rbgs);
@@ -503,11 +530,14 @@ public class IactnResp implements ScorableResponse
                     }
                 }
             }
+
+            if( ScoreManager.DEBUG_SCORING )
+                LogService.logIt( "IactnResp.init() XXX.1 Finished. Name=" +  StringUtils.getUrlDecodedValue( this.intnObj.getName()) + ", class=" + this.getClass().getName() + ", iactnItemRespLst.size()=" + iactnItemRespLst.size() );        
         }
 
         catch( Exception e )
         {
-            LogService.logIt( e, "IactnResp.init() " + toString() );
+            LogService.logIt( e, "IactnResp.init() ZZZ.1 " + toString() );
             throw e;
         }
     }
@@ -515,7 +545,10 @@ public class IactnResp implements ScorableResponse
 
     @Override
     public void calculateScore() throws Exception
-    {}
+    {
+        for( IactnItemResp ii  : iactnItemRespLst )
+            ii.calculateScore();
+    }
 
 
 
@@ -818,6 +851,10 @@ public class IactnResp implements ScorableResponse
 
         if( sit.isAutoEssay() )
             return true;
+        
+        // file upload with AI
+        if( sit.isManualUpload() && intnObj.getCt5Int25()>0 )
+            return true;
 
         if( sit.isImageCapture() )
             return true;
@@ -891,6 +928,13 @@ public class IactnResp implements ScorableResponse
     @Override
     public boolean isPendingExternalScore()
     {
+        for( IactnItemResp iir : this.iactnItemRespLst )
+        {
+            if( iir.isPendingExternalScore() )
+                return true;
+        }
+        
+        
         return false;
     }
 
@@ -1068,11 +1112,14 @@ public class IactnResp implements ScorableResponse
 
         List<TextAndTitle> out = new ArrayList<>();
 
-        // LogService.logIt( "IactnResp.getTextAndTitleList() starting. " + intnObj.getName() + " getSimletItemType().supportsManualScoringViaReport()=" + getSimletItemType().supportsManualScoringViaReport() + ", isNonComp=" + isNonComp );
+        // LogService.logIt( "IactnResp.getTextAndTitleList() AAA.1 starting. " + StringUtils.getUrlDecodedValue(intnObj.getName() ) + " getSimletItemType().supportsManualScoringViaReport()=" + getSimletItemType().supportsManualScoringViaReport() + ", isNonComp=" + isNonComp );
 
-        // must either have a non-competency type assigned or be a competency item that has an item type that supports manual scoring.
-        if( !isNonComp && ( intnObj.getCompetencyscoreid()<=0 || !getSimletItemType().supportsManualScoringViaReport() ) )
+        // must either have a non-competency type assigned, or be a competency item that has an item type that supports manual scoring.
+        if( !isNonComp && (intnObj.getCompetencyscoreid()<=0 || !getSimletItemType().supportsManualScoringViaReport() ) )
+        {
+            // LogService.logIt( "IactnResp.getTextAndTitleList() AAA.2 Skipping this IactnResp. " + StringUtils.getUrlDecodedValue(intnObj.getName() ) + " getSimletItemType().supportsManualScoringViaReport()=" + getSimletItemType().supportsManualScoringViaReport() + ", isNonComp=" + isNonComp );
             return out;
+        }
 
         // Store question item here.
         SimJ.Intn.Intnitem q = null;
@@ -1112,6 +1159,8 @@ public class IactnResp implements ScorableResponse
         // for each interaction item in response
         for( IactnItemResp iir : iactnItemRespLst )
         {
+            // LogService.logIt( "IactnResp.getTextAndTitleList() BBB.1 starting for iactnItemResp=" + StringUtils.getUrlDecodedValue( iir.intnItemObj.getId() ) + ", seq=" + iir.intnItemObj.getSeq() + ", iir.intnItemObj.getSmltiactnitmtypeid()=" + iir.intnItemObj.getSmltiactnitmtypeid() );
+            
             // skip intn items at radio button group level
             if( iir.g2ChoiceFormatType.getIsAnyRadio() && getHasMultipleRadioButtonGroups() )
                 continue;
@@ -1120,6 +1169,8 @@ public class IactnResp implements ScorableResponse
             if( iir.supportsSubnodeLevelSimletAutoScoring() && iir.isAutoScorable() && iir.intnItemObj.getSmltiactnitmtypeid()!=SimletSubnodeType.VALUE_FOR_REPORT.getSimletSubnodeTypeId() )
                 continue;
 
+            // LogService.logIt( "IactnResp.getTextAndTitleList() BBB.2 "  );
+            
             // If this is a value for the report.
             if( iir.intnItemObj.getSmltiactnitmtypeid()==SimletSubnodeType.VALUE_FOR_REPORT.getSimletSubnodeTypeId() )
             {
@@ -1134,6 +1185,9 @@ public class IactnResp implements ScorableResponse
                 // get the title
                 t = iir.getFieldTitleForReport( question );
 
+                //if( t!=null && iir.getIsFileUploadButton() && iir.summaryText!=null && !iir.summaryText.isBlank() )
+                //    t = HtmlUtils.removeAllHtmlTags(t) + "\n\n" + iir.summaryText;
+                
                 // if have any value and a title
                 if( v!= null && !v.isEmpty() )
                 {
@@ -1143,7 +1197,10 @@ public class IactnResp implements ScorableResponse
 
                     // if it has a field-level title, we should treat it as a valid pair
                     else
-                        out.add(new TextAndTitle( v , t, redFlag, upldFileId, testEvent==null ? this.getCt5ItemId() : testEvent.getNextTextTitleSequenceId(), null, idt ) );
+                    {
+                        // out.add(new TextAndTitle( v , t, redFlag, upldFileId, testEvent==null ? this.getCt5ItemId() : testEvent.getNextTextTitleSequenceId(), null, idt, null,  iir.getIsFileUploadButton() && iir.summaryText!=null && !iir.summaryText.isBlank() ? iir.summaryText : null ) );
+                        out.add(new TextAndTitle( v , t, redFlag, upldFileId, intnResultObjO.getSq()*100 + iir.orderIndex, null, idt, null,  iir.getIsFileUploadButton() && iir.summaryText!=null && !iir.summaryText.isBlank() ? iir.summaryText : null ) );
+                    }
                 }
             }
         }
@@ -1164,7 +1221,7 @@ public class IactnResp implements ScorableResponse
                 sb.append( val );
             }
 
-            out.add(new TextAndTitle( sb.toString() , question, redFlag, 0, testEvent==null ? this.getCt5ItemId() : testEvent.getNextTextTitleSequenceId(), null, idt ) );
+            out.add(new TextAndTitle( sb.toString() , question, redFlag, 0, intnResultObjO.getSq()*100, null, idt ) );
         }
 
         return out;
@@ -1845,7 +1902,10 @@ public class IactnResp implements ScorableResponse
                 ques = StringUtils.getUrlDecodedValue( iitm.getContent() );
 
                 if( ques!=null )
+                {
                     ques = StringUtils.truncateStringWithTrailer(ques, 256, true );
+                    // LogService.logIt( "IactnResp.getItemScoreTextTitle() CCC.1 Found questionStem: " + ques );
+                }
             }
         }
 
@@ -1887,9 +1947,9 @@ public class IactnResp implements ScorableResponse
 
             text = getSelectedExtPartItemIds();
 
-            // LogService.logIt( "IactnResp.getItemScoreTextTitle() BBB.1 Unique=" + intnObj.getUniqueid() + ", text=" + text );
+            LogService.logIt( "IactnResp.getItemScoreTextTitle() DDD.1 Unique=" + intnObj.getUniqueid() + ", text=" + (text==null ? "null" : text) );
 
-            if( text==null || text.isEmpty() )
+            if( text==null || text.isBlank() )
             {
                 List<IactnItemResp> iirl = getSelectedIntnItems();
 
@@ -1943,20 +2003,39 @@ public class IactnResp implements ScorableResponse
                     }
                     text = sb.toString();
                 }
+                
+                if( text==null || text.isBlank() )
+                {
+                    for( IactnItemResp iir : this.iactnItemRespLst )
+                    {
+                        if( iir.getIsFileUploadButton() )
+                        {
+                            text = "Upload";
+                            break;
+                        }
+                    }
+                }
+                
+                if( text==null )
+                    text="";
             }
 
             if( iist.isResponseCorrect() )
                 text += " (" + (correct() ? "Correct" : (getPartialCreditAssigned() ? "Partial" : "Incorrect" )) + ")";
         }
 
-        if( text == null || text.isEmpty() )
+        if( text==null || text.isEmpty() )
             return null;
 
+        LogService.logIt( "IactnResp.getItemScoreTextTitle() XXX.1 title=" + (title==null ? "null" : title) + ", text=" + text +", " + toString() );
+        
         text = StringUtils.replaceStr( text, "[", "{" );
         title = StringUtils.replaceStr(title, "[", "{" );
         itemLevelId = StringUtils.replaceStr(itemLevelId, "[", "{" );
         ques = StringUtils.replaceStr(ques, "[", "{" );
-        return new TextAndTitle( text, title, 0, itemLevelId, ques );
+        TextAndTitle tt = new TextAndTitle( text, title, intnResultObjO.getSq()*100, itemLevelId, ques );
+        tt.setOrder(intnResultObjO.getSq()*100);
+        return tt;
     }
 
 

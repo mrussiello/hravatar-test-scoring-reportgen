@@ -32,9 +32,9 @@ public class IntnClkStrmIactnItemResp extends IactnItemResp
     
     IntnClkStrmItem icsi = null;
     
-    public IntnClkStrmIactnItemResp( IactnResp ir, SimJ.Intn.Intnitem ii, Clicflic.History.Intn iro)
+    public IntnClkStrmIactnItemResp( IactnResp ir, SimJ.Intn.Intnitem ii, Clicflic.History.Intn iro, int orderIndex)
     {
-        super(ir, ii, iro, null);        
+        super(ir, ii, iro, null, orderIndex);        
     }
     
     
@@ -167,7 +167,9 @@ public class IntnClkStrmIactnItemResp extends IactnItemResp
         title = StringUtils.replaceStr(title, "[", "{" );
         itemLevelId = StringUtils.replaceStr(itemLevelId, "[", "{" );
         ques = StringUtils.replaceStr(ques, "[", "{" );                
-        return new TextAndTitle( text, title, 0, itemLevelId, ques );        
+        TextAndTitle tt = new TextAndTitle( text, title, intnResultObjO.getSq()*100 + orderIndex, itemLevelId, ques );        
+        tt.setOrder( intnResultObjO.getSq()*100 + orderIndex );
+        return tt;
     }
 
     

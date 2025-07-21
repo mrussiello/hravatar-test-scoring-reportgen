@@ -52,6 +52,11 @@ public enum SimletItemType
         return equals(AUTO_DATA_ENTRY );
     }
 
+    public boolean isManualUpload()
+    {
+        return equals( MANUAL_UPLOAD );
+    }
+
     public boolean isAutoEssay()
     {
         return equals( AUTO_ESSAY );
@@ -140,12 +145,12 @@ public enum SimletItemType
 
     public boolean hasScore7()
     {
-        return equals(AUTO_AV_UPLOAD ) || equals(AUTO_AUDIO)|| equals(AUTO_DATA_ENTRY);
+        return equals( AUTO_ESSAY ) || equals(AUTO_AV_UPLOAD ) || equals(AUTO_AUDIO)|| equals(AUTO_DATA_ENTRY);
     }
 
     public boolean hasScore8()
     {
-        return equals(AUTO_AV_UPLOAD ) || equals(AUTO_AUDIO);
+        return equals( AUTO_ESSAY ) || equals(AUTO_AV_UPLOAD ) || equals(AUTO_AUDIO);
     }
 
     public boolean hasScore9()
@@ -165,19 +170,19 @@ public enum SimletItemType
 
     public boolean hasScore12()
     {
-        return equals(AUTO_ESSAY);
+        return equals(AUTO_ESSAY) ||  equals(AUTO_AV_UPLOAD );
     }
     public boolean hasScore13()
     {
-        return equals(AUTO_ESSAY);
+        return equals(AUTO_ESSAY) ||  equals(AUTO_AV_UPLOAD );
     }
     public boolean hasScore14()
     {
-        return equals(AUTO_ESSAY);
+        return equals(AUTO_ESSAY) ||  equals(AUTO_AV_UPLOAD );
     }
     public boolean hasScore15()
     {
-        return false;
+        return  equals(AUTO_ESSAY) ||  equals(AUTO_AV_UPLOAD );
     }
 
     

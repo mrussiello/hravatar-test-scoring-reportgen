@@ -167,11 +167,8 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
         this.simCompetencyObj = sc;
 
         // LogService.logIt( "SimCompetencyScore() " + sc.getName() + ", interview questions: " + sc.getInterviewquestion().size() );
-
         this.testEvent = te;
-
         this.useTotalItems = useTotalItems;
-
         this.validItemsCanHaveZeroMaxPoints = validItemsCanHaveZeroMaxPoints;
     }
 
@@ -471,7 +468,7 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
         if( hasScoreableData || scaledScore>0 )
             return true;
 
-        if( textBasedResponseList != null && !textBasedResponseList.isEmpty() )
+        if( textBasedResponseList!=null && !textBasedResponseList.isEmpty() )
             return true;
 
         if( interviewQuestionList!=null && !interviewQuestionList.isEmpty() )
@@ -482,10 +479,10 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
 
     public boolean getHasUnscoredItems()
     {
-        if( this.getSimCompetencyClass().getCollectsSamples() && hasAnyScoreData() )
+        if( getSimCompetencyClass().getCollectsSamples() && hasAnyScoreData() )
             return true;
 
-        return textBasedResponseList != null && !textBasedResponseList.isEmpty();
+        return textBasedResponseList!=null && !textBasedResponseList.isEmpty();
     }
 
 
@@ -581,15 +578,15 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
             if( simCompetencyObj.getIncludeitemscorestype()>0 )
                 itemScoreTextAndTitleList = new ArrayList<>();
 
-            //if( ScoreManager.DEBUG_SCORING )
-            //   LogService.logIt( "SimCompetencyScore.calculateScore() SCS.AA.1 starting. testEvent.getSimletScoreList().size()=" + testEvent.getSimletScoreList().size() );
+            if( ScoreManager.DEBUG_SCORING )
+               LogService.logIt( "SimCompetencyScore.calculateScore() SCS.AA.1 starting. testEvent.getSimletScoreList().size()=" + testEvent.getSimletScoreList().size() );
 
             for( SimletScore ss : testEvent.getSimletScoreList() )
             {
                 slcs = ss.getCompetencyScoreForSimCompetencyId( simCompetencyObj.getId() );
 
                 // if this simlet measures this competency score.
-                if( slcs != null )
+                if( slcs!=null )
                 {
                     if( ScoreManager.DEBUG_SCORING )
                         LogService.logIt( "SimCompetencyScore.calculateScore() SCS.AA.2  Starting for SimletScore=" + ss.toString() + ", simletCompetencyScore present ? "  + (slcs!=null) );
@@ -738,7 +735,7 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
                 if( calculateAcrossAll )
                 {
                     if( ScoreManager.DEBUG_SCORING )
-                        LogService.logIt( "SimCompetencyScore.calculateScore() SCS.AA.8  Simlet " + scr.simletScore.simletObj.getName() +", competencyScoreType=" + scr.getCompetencyScoreType().getName() + ", scr.totalScorableItems=" + scr.getTotalScorableItems() );
+                        LogService.logIt( "SimCompetencyScore.calculateScore() SCS.AA.8  Simlet " + scr.simletScore.simletObj.getName() +", competencyScoreType=" + scr.getCompetencyScoreType().getName() + ", scr.totalScorableItems=" + scr.getTotalScorableItems() + ", scr.getMaxPoints()=" + scr.getMaxPoints() + ", validItemsCanHaveZeroMaxPoints=" + validItemsCanHaveZeroMaxPoints );
 
                     if( scr.getCompetencyScoreType().isDichotomous() )
                     {
@@ -898,7 +895,7 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
                 totalScorableItemsCountAdjusted = simCompetencyObj.getFrcmaxitems();
             }
 
-            if( simCompetencyObj.getScoreifnoresponses()!=1 && totalScorableItems <= 0 )
+            if( simCompetencyObj.getScoreifnoresponses()!=1 && totalScorableItems<=0 )
             {
                 LogService.logIt( "SimCompetencyScore.calculateScore() " + this.simCompetencyObj.getName() + " has zero scorable items. Setting to not-scoreable" );
                 hasScoreableData=false;
@@ -1895,45 +1892,8 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
         return hasScoreableData;
     }
 
-    /*
-    public String getTextBaseResponseString()
-    {
-        try
-        {
-            StringBuilder sb = new StringBuilder();
-
-            if( textBasedResponseList == null )
-                return sb.toString();
-
-            for( TextAndTitle tat : textBasedResponseList )
-            {
-                if( tat.isValidForReport() )
-                {
-                    if( sb.length()>0 )
-                        sb.append( Constants.DELIMITER );
-
-                    sb.append( tat.getTitle() + Constants.DELIMITER + tat.getText() );
-                    // sb.append( XMLUtils.encodeURIComponent( tat.getTitle()  ) + Constants.DELIMITER + XMLUtils.encodeURIComponent( tat.getText() )  );
-                }
-            }
-
-            return sb.toString();
-        }
-
-        catch( Exception e )
-        {
-            LogService.logIt( e, "SimCompetencyScore.getTextBaseResponseString() " + toString() );
-
-            return null;
-        }
-    }
-    */
-
-
     public void collectInterviewQuestions()
     {
-
-
         interviewQuestionList = new ArrayList<>();
 
         interviewQuestionList.addAll( scoreTextInterviewQuestionList );

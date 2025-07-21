@@ -31,8 +31,14 @@ public enum EssayPlagiarismCheckType
         this.maxRows = mr;
     }
 
-    public int getMaxRowsToCheck()
+    public int getMaxRowsToCheck(UnscoredEssayType unscoredEssayType)
     {
+        if( unscoredEssayType!=null && unscoredEssayType.getIsAvTranscript() )
+            return 0;
+        
+        if( unscoredEssayType!=null && unscoredEssayType.getIsUploadedFile())
+            return Math.min(maxRows, 2000);
+        
         return maxRows;
     }
 

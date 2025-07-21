@@ -36,9 +36,9 @@ import jakarta.persistence.Transient;
 @Entity
 @Table( name = "uploadeduserfile" )
 @NamedQueries( {
-    @NamedQuery( name = "UploadedUserFile.findTestEventIdAndNodeUniqueSubnode", query = "SELECT o FROM UploadedUserFile AS o WHERE o.testEventId=:testEventId AND o.nodeUniqueId=:nodeUniqueId AND o.subnodeSeq=:subnodeSeq AND o.uploadedUserFileTypeId<100" ),
+    @NamedQuery( name = "UploadedUserFile.findTestEventIdAndNodeUniqueSubnode", query = "SELECT o FROM UploadedUserFile AS o WHERE o.testEventId=:testEventId AND o.nodeUniqueId=:nodeUniqueId AND o.subnodeSeq=:subnodeSeq AND o.uploadedUserFileTypeId=:uploadedUserFileTypeId" ),
     @NamedQuery( name = "UploadedUserFile.findByUploadedUserFileId", query = "SELECT o FROM UploadedUserFile AS o WHERE o.uploadedUserFileId=:uploadedUserFileId" ),
-    @NamedQuery( name = "UploadedUserFile.findTestEventIdAndNodeSubnode", query = "SELECT o FROM UploadedUserFile AS o WHERE o.testEventId=:testEventId AND o.nodeSeq=:nodeSeq AND o.subnodeSeq=:subnodeSeq AND o.uploadedUserFileTypeId<100" ),
+    @NamedQuery( name = "UploadedUserFile.findTestEventIdAndNodeSubnode", query = "SELECT o FROM UploadedUserFile AS o WHERE o.testEventId=:testEventId AND o.nodeSeq=:nodeSeq AND o.subnodeSeq=:subnodeSeq AND o.uploadedUserFileTypeId=:uploadedUserFileTypeId" ),
     @NamedQuery( name = "UploadedUserFile.findTestEventId", query = "SELECT o FROM UploadedUserFile AS o WHERE o.testEventId=:testEventId AND o.uploadedUserFileTypeId<100" ),
     @NamedQuery( name = "UploadedUserFile.findTestEventIdAndType", query = "SELECT o FROM UploadedUserFile AS o WHERE o.testEventId=:testEventId AND o.uploadedUserFileTypeId=:uploadedUserFileTypeId" ),
     @NamedQuery( name = "UploadedUserFile.findTestKeyIdAndType", query = "SELECT o FROM UploadedUserFile AS o WHERE o.testKeyId=:testKeyId AND o.uploadedUserFileTypeId=:uploadedUserFileTypeId" ),
@@ -89,7 +89,6 @@ public class UploadedUserFile implements Serializable
     @Column( name = "avitemtypeid" )
     private int avItemTypeId;
 
-    
     @Column( name = "initialfilesize" )
     private int initialFileSize;
 

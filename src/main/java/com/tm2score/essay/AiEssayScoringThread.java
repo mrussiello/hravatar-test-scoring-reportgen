@@ -16,19 +16,32 @@ public class AiEssayScoringThread implements Runnable
     UnscoredEssay unscoredEssay;
     boolean forceRescore;
     boolean autoUpdate;
+    boolean omitGrammarMech;
     String forcePromptStr;
     String idealResponseStr;
+    String aiInstructionsStr;
+    
+    /*
+      0 = score, no summary
+      1 = score AND summary
+      2 = summary ONLY
+    */
+    int summaryCode;
     
     
-    public AiEssayScoringThread( UnscoredEssay ue, boolean forceRescore, boolean autoUpdate, String forcePromptStr, String idealResponseStr)
+    public AiEssayScoringThread( UnscoredEssay ue, boolean autoUpdate, boolean omitGrammarMech, boolean forceRescore, String forcePromptStr, String idealResponseStr, String aiInstructionsStr, int summaryCode)
     {
         this.unscoredEssay=ue;
+        this.omitGrammarMech=omitGrammarMech;
         this.forceRescore=forceRescore;
         this.autoUpdate=autoUpdate;
         this.forcePromptStr=forcePromptStr;
         this.idealResponseStr=idealResponseStr;
+        this.aiInstructionsStr=aiInstructionsStr;
+        this.summaryCode = summaryCode;
     }
 
+    
     @Override
     public void run()
     {
@@ -45,8 +58,36 @@ public class AiEssayScoringThread implements Runnable
     
     public boolean performEssayScore() throws Exception
     {
-        return AiEssayScoringUtils.computeAiEssayScore(unscoredEssay, autoUpdate, forceRescore, forcePromptStr, idealResponseStr);
+        try
+        {
+            // Need a summary.
+            if( summaryCode==1 || summaryCode==2 )
+            {
+                boolean resultOk = unscoredEssay.getSummary()!=null && !unscoredEssay.getSummary().isBlank();
+                
+                if( !resultOk || forceRescore )
+                    resultOk = AiEssayScoringUtils.computeAiEssaySummary(unscoredEssay, autoUpdate, forceRescore );
+                
+                // only need Summary.
+                if( summaryCode==2 )
+                    return resultOk;
+                
+                if( !resultOk )
+                    LogService.logIt( "AiEssayScoringThread.performEssayScore() Summary call was NOT OK.");
+            }
+
+            return AiEssayScoringUtils.computeAiEssayScore(unscoredEssay, autoUpdate, forceRescore, omitGrammarMech, forcePromptStr, idealResponseStr, aiInstructionsStr);
+        }
+        catch(Exception e )
+        {
+            LogService.logIt( e, "AiEssayScoringThread.performEssayScore() " + toString());
+            throw e;
+        }
     }
-    
-    
+
+    @Override
+    public String toString()
+    {
+        return "AiEssayScoringThread{" + "unscoredEssayId=" + (unscoredEssay==null ? "null" : unscoredEssay.getUnscoredEssayId()) + ", forceRescore=" + forceRescore + ", autoUpdate=" + autoUpdate + ", summaryCode=" + summaryCode + '}';
+    }
 }

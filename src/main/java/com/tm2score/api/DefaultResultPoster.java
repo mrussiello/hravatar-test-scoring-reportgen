@@ -34,7 +34,7 @@ import org.apache.hc.core5.http.io.entity.StringEntity;
  *
  * @author Mike
  */
-public class DefaultResultPoster implements ResultPoster {
+public class DefaultResultPoster extends BaseResultPoster implements ResultPoster {
 
     TestKey testKey;
 
@@ -98,7 +98,8 @@ public class DefaultResultPoster implements ResultPoster {
 
             // CloseableHttpResponse r = null;
 
-            Map<String,String> basicAuthCreds = testKey.getBasicAuthParmsForResultsPost();
+            final Map<String,String> basicAuthCreds = getBasicAuthCredsFromReportFlags( testKey );
+
             final String payload2 = payload;
 
             try (CloseableHttpClient client = HttpUtils.getHttpClient(30))

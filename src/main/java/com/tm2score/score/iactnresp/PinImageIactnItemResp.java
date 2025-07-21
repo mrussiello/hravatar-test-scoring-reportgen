@@ -22,9 +22,9 @@ public class PinImageIactnItemResp extends IactnItemResp
 {
     PinImageItem pinImageItem = null;
     
-    public PinImageIactnItemResp( IactnResp ir, SimJ.Intn.Intnitem ii, Clicflic.History.Intn iro)
+    public PinImageIactnItemResp( IactnResp ir, SimJ.Intn.Intnitem ii, Clicflic.History.Intn iro, int orderIndex)
     {
-        super(ir, ii, iro, null);        
+        super(ir, ii, iro, null, orderIndex);        
     }
     
     

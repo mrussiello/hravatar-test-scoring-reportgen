@@ -150,7 +150,41 @@ public class AiRequestUtils
         }
     }
 
-    public static JsonObject doEssayScoringCall( UnscoredEssay unscoredEssay, AiCallType aiCallType, boolean useScore2, boolean autoUpdate, String forcePromptStr, String idealResponseStr) throws Exception
+    public static JsonObject doEssaySummaryCall(UnscoredEssay unscoredEssay, AiCallType aiCallType, boolean autoUpdate, boolean forceRedo) throws Exception
+    {
+        try
+        {
+            if( unscoredEssay==null )
+                throw new Exception( "unscoredEssay is null" );
+
+            if( unscoredEssay.getUnscoredEssayId()<=0 )
+                throw new Exception( "UnscoredEssay.unscoredEssayId is invalid: " + unscoredEssay.getUnscoredEssayId() );
+            
+            if( (unscoredEssay.getEssay()==null || unscoredEssay.getEssay().isBlank()) ) 
+                throw new Exception( "UnscoredEssay does not have an Essay to score." );
+            
+            JsonObjectBuilder job = getBasePayloadJsonObjectBuilder(aiCallType, null );
+            
+            job.add("intparam1", unscoredEssay.getUnscoredEssayId() );
+            job.add("autoupdate", autoUpdate ? 1 : 0 );
+            if( forceRedo )
+                job.add( "forceredo", 1 );
+
+            JsonObject joReq = job.build();
+
+            AiRequestClient client = new AiRequestClient();
+            Tracker.addAiCall();                        
+            return client.getJsonObjectFromAiCallRequest(joReq, BaseAiClient.AI_CALL_TIMEOUT_LONG );
+        }
+        catch( Exception e )
+        {
+            Tracker.addAiCallError();
+            LogService.logIt(e, "AiRequestUtils.doEssaySummaryCall() aiCallType=" +  aiCallType.getName() +", unscoredEssayId=" + (unscoredEssay==null ? "null" : unscoredEssay.getUnscoredEssayId()+ ", userId=" + unscoredEssay.getUserId()) );
+            throw e;
+        }
+    }
+    
+    public static JsonObject doEssayScoringCall( UnscoredEssay unscoredEssay, AiCallType aiCallType, boolean useScore2, boolean autoUpdate, boolean forceRedo, boolean omitGrammarMech, String forcePromptStr, String idealResponseStr, String aiInstructionsStr) throws Exception
     {
         try
         {
@@ -172,12 +206,21 @@ public class AiRequestUtils
             if( useScore2 )
                 job.add("intparam2", 1 );                
             job.add("autoupdate", autoUpdate ? 1 : 0 );
+
+            if( forceRedo )
+                job.add( "forceredo", 1 );
             
+            if( omitGrammarMech )
+                job.add( "intparam3", 1 );
+                            
             if( forcePromptStr!=null && !forcePromptStr.isBlank() )
                 job.add( "strparam1", forcePromptStr );
 
             if( idealResponseStr!=null && !idealResponseStr.isBlank() )
                 job.add( "strparam2", idealResponseStr );
+            
+            if( aiInstructionsStr!=null && !aiInstructionsStr.isBlank() )
+                job.add( "strparam3", aiInstructionsStr );
             
             JsonObject joReq = job.build();
 

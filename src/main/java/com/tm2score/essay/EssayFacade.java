@@ -4,14 +4,11 @@
  */
 package com.tm2score.essay;
 
-import com.tm2score.entity.discern.Essay;
-import com.tm2score.entity.discern.EssayGrade;
 import com.tm2score.util.TextProcessingUtils;
 import com.tm2score.entity.essay.EssayPrompt;
 import com.tm2score.entity.essay.UnscoredEssay;
 import com.tm2score.global.STException;
 import com.tm2score.service.LogService;
-import com.tm2score.xml.XmlUtils;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -34,7 +31,7 @@ import javax.sql.DataSource;
  */
 @Stateless
 @PersistenceContext( name = "persistence/tm2", unitName = "tm2" )
-public class DiscernFacade
+public class EssayFacade
 {
     // private static EntityManagerFactory factory;
     // private static EntityManagerFactory discernFactory;
@@ -44,28 +41,29 @@ public class DiscernFacade
     @PersistenceContext( name = "persistence/tm2mirror", unitName = "tm2mirror" )
     EntityManager emmirror;
 
-    @PersistenceContext( name = "persistence/discern", unitName = "discern" )
-    EntityManager discern;
+    //@PersistenceContext( name = "persistence/discern", unitName = "discern" )
+    //EntityManager discern;
     
     public static int ESSAY_PLAG_CHECK_MAX_OFFSET = 2000;
     
 
-    public static DiscernFacade getInstance()
+    public static EssayFacade getInstance()
     {
         try
         {
-            return (DiscernFacade) InitialContext.doLookup( "java:module/DiscernFacade" );
+            return (EssayFacade) InitialContext.doLookup( "java:module/EssayFacade" );
         }
 
         catch( Exception e )
         {
-            LogService.logIt( e, "DiscernFacade.getInstance() " );
+            LogService.logIt( e, "EssayFacade.getInstance() " );
 
             return null;
         }
     }
 
     
+    /*
     public Essay saveDiscernEssay( Essay r ) throws Exception
     {
         // Context envCtx = (Context) new InitialContext().lookup( "java:comp/env" );
@@ -94,12 +92,13 @@ public class DiscernFacade
 
         catch( Exception e )
         {
-            LogService.logIt( e, "DiscernFacade.saveDiscernEssay() " + r.toString() );
+            LogService.logIt( e, "EssayFacade.saveDiscernEssay() " + r.toString() );
             throw new STException( e );
         }
 
         return r;
     }
+    */
     
     /*
     public EssayGrade saveDiscernEssayGrade( EssayGrade r ) throws Exception
@@ -127,7 +126,7 @@ public class DiscernFacade
 
         catch( Exception e )
         {
-            LogService.logIt( e, "DiscernFacade.saveDiscernEssayGrade() " + r.toString() );
+            LogService.logIt( e, "EssayFacade.saveDiscernEssayGrade() " + r.toString() );
             throw new STException( e );
         }
 
@@ -170,6 +169,7 @@ public class DiscernFacade
         }
     }
 
+    /*
     public void deleteDiscernEssayInfo( int discernEssayId ) throws Exception
     {
         // LogService.logIt("discernFacade.deleteDiscernEssayInfo() discernEssayId=" + discernEssayId );
@@ -201,27 +201,33 @@ public class DiscernFacade
 
         clearDbmsCache();       
     }
+    */
 
-    public void deleteCompletedUnscoredEssaysForTestEvent( long testEventId ) throws Exception
+    
+    public void deleteUnscoredEssaysForTestEvent( long testEventId ) throws Exception
     {
         // LogService.logIt("discernFacade.deleteCompletedUnscoredEssaysForTestEvent() testEventId=" + testEventId );
 
-        // Only delete scored essays so we are sure that discern is not doing anything with them.
-        List<UnscoredEssay> uel = this.getUnscoredEssays(testEventId, EssayScoreStatusType.SCORECOMPLETE.getEssayScoreStatusTypeId() );
-        
-        int count = 0;
-        
-        for( UnscoredEssay ue : uel )
-        {
-            if( ue.getDiscernEssayId()>0 )
-            {
-                deleteDiscernEssayInfo(  ue.getDiscernEssayId() );
-                count++;
-            }
-        }
-        
-        if( count<=0 )
+        if( testEventId<=0 )
             return;
+        
+        // Only delete scored essays so we are sure that discern is not doing anything with them.
+        
+        //List<UnscoredEssay> uel = getUnscoredEssays(testEventId, EssayScoreStatusType.SCORECOMPLETE.getEssayScoreStatusTypeId() );
+        
+        //int count = 0;
+        
+        //for( UnscoredEssay ue : uel )
+        //{
+        //    if( ue.getDiscernEssayId()>0 )
+        //    {
+       //         deleteDiscernEssayInfo(  ue.getDiscernEssayId() );
+        //        count++;
+        //    }
+        //}
+        
+        //if( count<=0 )
+        //    return;
         
         // First, get the TestEvents that need to be updated.
         DataSource pool = (DataSource) new InitialContext().lookup( "jdbc/tm2" );
@@ -239,13 +245,14 @@ public class DiscernFacade
 
         catch( Exception e )
         {
-            LogService.logIt( e, "discernFacade.deleteCompletedUnscoredEssaysForTestEvent() testEventId=" + testEventId +", sqlStr=" + sqlStr );
+            LogService.logIt( e, "discernFacade.deleteUnscoredEssaysForTestEvent() testEventId=" + testEventId +", sqlStr=" + sqlStr );
 
             throw e;
         }
         
         clearDbmsCache();        
     }
+    
     
     
     
@@ -258,12 +265,9 @@ public class DiscernFacade
 
             //EntityManager em = factory.createEntityManager();
             em.getEntityManagerFactory().getCache().evictAll();
+            emmirror.getEntityManagerFactory().getCache().evictAll();
             
-            //if( discernFactory==null )
-            //    discernFactory=DiscernPersistenceManager.getInstance().getEntityManagerFactory();
-
-            //em = discernFactory.createEntityManager();
-            discern.getEntityManagerFactory().getCache().evictAll();
+            // discern.getEntityManagerFactory().getCache().evictAll();
             
         }
 
@@ -294,7 +298,7 @@ public class DiscernFacade
 
         catch( Exception e )
         {
-            LogService.logIt( e, "DiscernFacade.getUnscoredEssay( " + unscoredEssayId + " )" );
+            LogService.logIt( e, "EssayFacade.getUnscoredEssay( " + unscoredEssayId + " )" );
 
             throw new STException( e );
         }
@@ -338,22 +342,13 @@ public class DiscernFacade
      * @param essayGradeId
      * @return
      * @throws Exception
-     */
+     *
     public Object[] checkForEssayScoreDirect( int discernEssayId, int discernEssayGradeId ) throws Exception
     {
         Object[] out = null;
        
         try
         {
-            //if( discernFactory == null )
-            //    discernFactory = DiscernPersistenceManager.getInstance().getEntityManagerFactory();
-
-            //EntityManager em = discernFactory.createEntityManager();
-
-            // LogService.logIt("discernFacade.checkForEssayScoreDirect() discernEssayGradeId=" + discernEssayId );
-
-            // EssayGrade eg = em.find( EssayGrade.class, discernEssayGradeId );
-            
             Query q = discern.createNamedQuery( discernEssayId>0 ?  "EssayGrade.findByEssayIdAndGraderType" : "EssayGrade.findByIdAndGraderType", EssayGrade.class );
             
             if( discernEssayId>0 )
@@ -398,11 +393,12 @@ public class DiscernFacade
 
         catch( Exception e )
         {
-            LogService.logIt( e, "DiscernFacade.checkForEssayScoreDirect( discernEssayId=" + discernEssayId + " ) " );
+            LogService.logIt( e, "EssayFacade.checkForEssayScoreDirect( discernEssayId=" + discernEssayId + " ) " );
             throw new STException( e );
         }
         
-    }    
+    } 
+    */
 
     
         
@@ -973,7 +969,7 @@ public class DiscernFacade
 
         catch( Exception e )
         {
-            LogService.logIt(e, "DiscernFacade.saveUnscoredEssay() " + r.toString() );
+            LogService.logIt(e, "EssayFacade.saveUnscoredEssay() " + r.toString() );
             // if( utx.isActive() )
                 // utx.rollback();
             throw new STException( e );
@@ -1048,7 +1044,4 @@ public class DiscernFacade
             throw new STException( e );
         }
     }
-
-
-
 }

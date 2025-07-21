@@ -42,6 +42,8 @@ public enum ScoreCombinationType
 
     public float combineScores( List<ScorableResponse> irl , int index )
     {
+        /// LogService.logIt( "ScoreCombinationType.combineScores() index=" + index );
+
         if( equals( NONE ) )
             return 0;
 
@@ -56,8 +58,7 @@ public enum ScoreCombinationType
             f=-999999f;
         
         for( ScorableResponse sr : irl )
-        {
-            
+        {            
             // LogService.logIt( "ScoreCombinationType.combineScores() index=" + index + ", sr.hasValidScore()=" + sr.hasValidScore() + ", sr.hasMetaScore(index)=" + sr.hasMetaScore(index) + ", Sr=" + sr.toString() );
             if( !sr.hasMetaScore(index) || !sr.hasValidScore() )
                 continue;

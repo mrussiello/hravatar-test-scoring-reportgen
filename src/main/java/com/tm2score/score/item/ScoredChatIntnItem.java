@@ -330,7 +330,7 @@ public class ScoredChatIntnItem
                 
                 // dl[0] = int[] vals
                 // dl[1] = MAP misspelled words and counts.
-                d1 = LocalEssayScoringUtils.getWritingAnalysis(resp, getTestLocale(), getIpCountry(), getWordsToIgnoreLc() );
+                d1 = LocalEssayScoringUtils.getWritingAnalysis(resp, getTestLocale(), getIpCountry(), getWordsToIgnoreLc(), true );
                 
                 // total errs [0]
                 // spelling [1]

@@ -13,8 +13,9 @@ import com.tm2score.entity.event.AvItemResponse;
 import com.tm2score.entity.event.TestEvent;
 import com.tm2score.entity.user.User;
 import com.tm2score.essay.AiEssayScoringUtils;
-import com.tm2score.essay.DiscernFacade;
+import com.tm2score.essay.EssayFacade;
 import com.tm2score.essay.LocalEssayScoringUtils;
+import com.tm2score.essay.UnscoredEssayType;
 import com.tm2score.global.Constants;
 import com.tm2score.googlecloud.Speech2TextResult;
 import com.tm2score.ivr.IvrStringUtils;
@@ -54,7 +55,9 @@ public class BaseAudioSampleAvItemScorer extends BaseAvItemScorer implements AvI
     
     int ct5ItemId;
     String questionText;
+    String aiPrompt;
     String idealResponse;
+    String aiInstructions;
     
     List<CaveatScore> caveatList2;
 
@@ -76,7 +79,7 @@ public class BaseAudioSampleAvItemScorer extends BaseAvItemScorer implements AvI
     
     
     @Override
-    public void scoreAvItem( SimJ.Intn intn, AvItemResponse iir ) throws Exception
+    public void scoreAvItem( SimJ.Intn intnObj, AvItemResponse iir ) throws Exception
     {
         if (AI_SCORING_ON==null)
             initVariables();
@@ -90,17 +93,21 @@ public class BaseAudioSampleAvItemScorer extends BaseAvItemScorer implements AvI
         if( iir.getMediaLocale()!=null )
             locale =  iir.getMediaLocale();
         
-        if( intn!=null )
+        if( intnObj!=null )
         {
-            if( intn.getCt5Int25()==1 )
+            if( intnObj.getCt5Int25()==1 )
                 itemLevelAiScoringOk=true;    
             
-            ct5ItemId = intn.getCt5Itemid();
+            ct5ItemId = intnObj.getCt5Itemid();
             
-            questionText = getQuestionText( intn);
+            questionText = getQuestionText(intnObj);
             
-            if( intn.getTextscoreparam1()!=null && !intn.getTextscoreparam1().isBlank() )
-                idealResponse = StringUtils.getBracketedArtifactFromString(intn.getTextscoreparam1(), Constants.IDEAL_RESPONSE_KEY );            
+            if( intnObj.getTextscoreparam1()!=null && !intnObj.getTextscoreparam1().isBlank() )
+            {
+                aiPrompt = StringUtils.getBracketedArtifactFromString(intnObj.getTextscoreparam1(), Constants.AI_PROMPT_KEY );
+                idealResponse = StringUtils.getBracketedArtifactFromString(intnObj.getTextscoreparam1(), Constants.IDEAL_RESPONSE_KEY );
+                aiInstructions = StringUtils.getBracketedArtifactFromString(intnObj.getTextscoreparam1(), Constants.AI_INSTRUCTIONS_KEY );
+            }            
         }
         
         textAndTitleList=new ArrayList<>();
@@ -158,7 +165,7 @@ public class BaseAudioSampleAvItemScorer extends BaseAvItemScorer implements AvI
                     {
                         if( !text.isBlank() )
                         {
-                            doEssayScore( text, iir, intn );
+                            doEssayScore(text, iir, intnObj );
                         
                             if( pendingExternalScores )
                                 return;
@@ -266,40 +273,7 @@ public class BaseAudioSampleAvItemScorer extends BaseAvItemScorer implements AvI
                 rawScore = featuresScore;
                 
             iir.setRawScore(rawScore );
-            
-            
-            /*
-            float weights = 0;
-            float rawScore = 0;
-            
-            // 0 - 100
-            if( featuresScore>0 )
-            {
-                rawScore += featuresScore * FEATURES_SCORE_WEIGHT;
-                weights+=FEATURES_SCORE_WEIGHT;
-            }
-
-            // 0 - 100
-            if( iir.getVoiceVibesOverallScoreHra()>0 )
-            {
-                rawScore += iir.getVoiceVibesOverallScoreHra() * VOICEVIBES_SCORE_WEIGHT;
-                weights+=VOICEVIBES_SCORE_WEIGHT;
-            }
-            
-            // iir.getEssayMachineScore() is 0-100
-            if( iir.getEssayStatusType().isComplete() && iir.getEssayMachineScore()>0 )
-            {
-                rawScore += iir.getEssayMachineScore() * ESSAY_SCORE_WEIGHT;
-                weights+=ESSAY_SCORE_WEIGHT;                
-            }
-            
-            if( weights>0 )
-                iir.setRawScore(rawScore/weights );  // 0 - 100f
-            else
-                iir.setRawScore( 0 );
-
-            */
-            
+                        
             // LogService.logIt( "BaseAudioSampleAvItemScorer.scoreIvrItem() avItemResponseId=" + iir.getAvItemResponseId() + " featuresScore=" + featuresScore + ", iir.getVoiceVibesOverallScoreHra()=" + iir.getVoiceVibesOverallScoreHra() + ", essayScore=" + iir.getEssayMachineScore() + ", rawScore=" + iir.getRawScore() );
                         
             iir.setScore( convertRawScoreToFinal(iir.getRawScore()) );
@@ -319,11 +293,11 @@ public class BaseAudioSampleAvItemScorer extends BaseAvItemScorer implements AvI
 
             // text += "[AUDIOPB]" + this.avItemResponse.getAvItemResponseId();
 
-            String q = AvIntnElementType.STEM1.getIntnStringElement( intn );
+            String q = AvIntnElementType.STEM1.getIntnStringElement(intnObj );
 
             if( (q==null || q.isEmpty()) &&  iir.getUploadedUserFileId()>0 )
             {
-                SimJ.Intn.Intnitem simJSub = getSimJSubnode( intn, iir.getItemSubSeq() );
+                SimJ.Intn.Intnitem simJSub = getSimJSubnode(intnObj, iir.getItemSubSeq() );
 
                 // if there is a title, use that as the question for reports.
                 if( simJSub!=null &&  simJSub.getTitle()!=null && !simJSub.getTitle().isBlank() )
@@ -340,7 +314,7 @@ public class BaseAudioSampleAvItemScorer extends BaseAvItemScorer implements AvI
             if( q==null || q.isEmpty() )
                 q = "";
       
-            String idt = this.getTextAndTitleIdentifier(null, intn );
+            String idt = this.getTextAndTitleIdentifier(null, intnObj );
             
             addTextAndTitle(new TextAndTitle( text , q, false, iir.getAvItemResponseId(), testEvent==null ? 0 : testEvent.getNextTextTitleSequenceId(), iir.getSpeechTextEnglish(), idt ) );
         }
@@ -364,7 +338,7 @@ public class BaseAudioSampleAvItemScorer extends BaseAvItemScorer implements AvI
     }    
     
     
-    private void doEssayScore( String text, AvItemResponse iir, SimJ.Intn intn ) throws Exception
+    private void doEssayScore( String text, AvItemResponse iir, SimJ.Intn intnObj ) throws Exception
     {
         int unscoredEssayId = 0;
         
@@ -386,7 +360,7 @@ public class BaseAudioSampleAvItemScorer extends BaseAvItemScorer implements AvI
             
             if( iir.getAvItemEssayStatusType().isComplete() && iir.getUnscoredEssayId()>0 )
             {
-                UnscoredEssay ue = DiscernFacade.getInstance().getUnscoredEssay( iir.getUnscoredEssayId() );
+                UnscoredEssay ue = EssayFacade.getInstance().getUnscoredEssay( iir.getUnscoredEssayId() );
                 
                 if( ue==null )
                     throw new Exception( "UnscoredEssay not found for ID=" + iir.getUnscoredEssayId() );
@@ -412,14 +386,15 @@ public class BaseAudioSampleAvItemScorer extends BaseAvItemScorer implements AvI
                 
             }
 
-            if( essayPromptInfo==null && intn.getTextscoreparam1()!=null && !intn.getTextscoreparam1().isBlank() )
-                essayPromptInfo = IvrStringUtils.getEssayScoreInfo(intn.getTextscoreparam1());
+            if( essayPromptInfo==null && intnObj.getTextscoreparam1()!=null && !intnObj.getTextscoreparam1().isBlank() )
+                essayPromptInfo = IvrStringUtils.getEssayScoreInfo(intnObj.getTextscoreparam1());
             
-            if( (essayPromptInfo==null || essayPromptInfo[0]<=0) && (questionText==null || questionText.isBlank()) )
-                throw new Exception( "No EssayPrompt or Question found in Intn.textScoreParam1=" + intn.getTextscoreparam1() );
+            if( (essayPromptInfo==null || essayPromptInfo[0]<=0) && (questionText==null || questionText.isBlank()) && (aiPrompt==null || aiPrompt.isBlank()) )
+                throw new Exception( "No EssayPrompt, Question, or AI Prompt found in Intn. Intn.textScoreParam1=" + intnObj.getTextscoreparam1() );
             
             
-            ScoredEssayIntnItem seii = new ScoredEssayIntnItem( iir.getTestEventId(), 
+            ScoredEssayIntnItem seii = new ScoredEssayIntnItem( UnscoredEssayType.AV_TRANSCRIPT.getUnscoredEssayTypeId(),
+                                                       iir.getTestEventId(), 
                                                                 user,
                                                                 locale, 
                                                                 teIpCountry,
@@ -429,13 +404,17 @@ public class BaseAudioSampleAvItemScorer extends BaseAvItemScorer implements AvI
                                                                 ct5ItemId,
                                                                 0,
                                                                 text, 
-                                                                questionText,
+                                                                aiPrompt==null || aiPrompt.isBlank() ? questionText : aiPrompt,
                                                                 idealResponse,
+                                                                aiInstructions,
+                                                                true, // omit grammar                    
+                                                                intnObj!=null && intnObj.getCt5Int24()==1,
                                                                 itemLevelAiScoringOk,
                                                                 essayPromptInfo==null ? 0 : essayPromptInfo[1], // minWds, 
                                                                 essayPromptInfo==null ? 0 : essayPromptInfo[2], // maxWords, 
                                                                 0, // cTime, 
-                                                                0, 
+                                                                0,
+                                                                0,
                                                                 this.getWordsToIgnoreLc() ); // webPlagCheckOk )
             
             seii.calculate();
@@ -572,7 +551,9 @@ public class BaseAudioSampleAvItemScorer extends BaseAvItemScorer implements AvI
         float[] errs = new float[16];
         
         for( int i=0;i<vals.length; i++ )
+        {
             errs[i] = Float.parseFloat( vals[i] );
+        }
             
         /*
         *   out[0] = total error rate (errors per word)  0-1
@@ -595,6 +576,8 @@ public class BaseAudioSampleAvItemScorer extends BaseAvItemScorer implements AvI
         metas[13] = errs[9];  // arg
         metas[14] = errs[10]; //mech
         metas[15] = errs[11]; // ideal
+        
+        // LogService.logIt( "BaseAudioSampleAvItemScorer.computeMetaScores() scoreStr=" + iir.getScoreStr() + ", metas[12]=" + metas[12] + ", metas[13]=" + metas[13] + ", metas[14]=" + metas[14] + ", metas[15]=" + metas[15] );
         
         return metas;
 

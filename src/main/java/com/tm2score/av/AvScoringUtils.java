@@ -570,7 +570,7 @@ public class AvScoringUtils {
 
         if( theIntn != null && theIntn.getTextscoreparam1()!=null &&  IvrStringUtils.containsKey("[ESSAYPROMPT]", theIntn.getTextscoreparam1(), true )  )
         {
-            if( !RuntimeConstants.getBooleanValue( "discernOn") )
+            if( !RuntimeConstants.getBooleanValue( "discernOn") && (!RuntimeConstants.getBooleanValue( "ai-essay-scoring-ok") || RuntimeConstants.getBooleanValue( "ai-essay-scoring-use-score2")) )
             {
                 iir.setAvItemEssayStatusTypeId(AvItemEssayStatusType.ERROR.getEssayStatusTypeId() );
                 iir.appendNotes( "AvScoringUtils.setAvItemEssayStatusType() set EssayStatusType to errored because Discern is not on.");

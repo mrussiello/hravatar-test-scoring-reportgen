@@ -51,7 +51,11 @@ public enum G2ChoiceFormatType
 
         this.key = key;
     }
-
+    
+    public boolean getIsTextOrButton()
+    {
+        return this.equals(BUTTON) || this.equals(TEXT);
+    }
 
     public boolean getIsAnyRadio()
     {
@@ -274,7 +278,7 @@ public enum G2ChoiceFormatType
     
     public boolean supportsSubnodeLevelSimletAutoScoring()
     {
-        return equals( COMBO ) || getIsTextBox() || getIsSliderThumb() || getIsActiveSwf() || getIsPinImage() || getIsIntnClickStream() || getIsIFrame() || getIsAnyCheckbox(); //  || getIsFileUpload();
+        return equals( COMBO ) || getIsTextBox() || getIsSliderThumb() || getIsActiveSwf() || getIsPinImage() || getIsIntnClickStream() || getIsIFrame() || getIsAnyCheckbox(); // || getIsFileUpload();
 
     }
 

@@ -442,7 +442,7 @@ public enum Ct5ItemType {
             if( sjii==null && getIsFileUpload() )
                 sjii = getFirstSimJIntnItem( sji, G2ChoiceFormatType.FILEUPLOADBTN, Ct5ItemPartType.WIDGET );
 
-            String encVals = "medcap_" + sji.getCt5Itemid() + "-" + (sjii==null ? "0" : sjii.getCt5Itempartid()) + ";" + ir.getUploadedUserFile().getInitialFileSize() + ";" + ir.getUploadedUserFile().getInitialMime();
+            String encVals = "medcap_" + sji.getCt5Itemid() + "-" + (sjii==null ? "0" : sjii.getCt5Itempartid()) + ";" + ir.getUploadedUserFile().getInitialFileSize() + ";" + ir.getUploadedUserFile().getInitialMime() + ";" + ir.getUploadedUserFile().getUploadedUserFileId();
             encVals = StringUtils.getUrlEncodedValue(encVals);
 
             sb.append( (sjii==null ? "0" : sjii.getCt5Itempartid()) + DELIM + encVals );

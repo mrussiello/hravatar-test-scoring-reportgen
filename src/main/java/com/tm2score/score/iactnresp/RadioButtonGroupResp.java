@@ -62,11 +62,14 @@ public class RadioButtonGroupResp  implements ScorableResponse
     float[] maxPointsArray;
 
     boolean validItemsCanHaveZeroMaxPoints = false;
+    
+    int orderIndex = 1;
 
-    public RadioButtonGroupResp( IactnResp ir, SimJ.Intn.Radiobuttongroup rbgo)
+    public RadioButtonGroupResp( IactnResp ir, SimJ.Intn.Radiobuttongroup rbgo, int orderIndex)
     {
         this.radioButtonGroupObj = rbgo;
         this.iactnResp = ir;
+        this.orderIndex=orderIndex;
 
         validItemsCanHaveZeroMaxPoints = ir.getValidItemsCanHaveZeroMaxPoints();
     }
@@ -810,7 +813,9 @@ public class RadioButtonGroupResp  implements ScorableResponse
         intnLevelQues = StringUtils.replaceStr(intnLevelQues, "[", "{" );
         intnItemLevelQues = StringUtils.replaceStr(intnItemLevelQues, "[", "{" );
                 
-        return new TextAndTitle( text, title, 0, itemLevelId, intnLevelQues, intnItemLevelQues );        
+        TextAndTitle tt = new TextAndTitle( text, title, iactnResp.intnResultObjO.getSq()*100 + orderIndex, itemLevelId, intnLevelQues, intnItemLevelQues ); 
+        tt.setOrder( iactnResp.intnResultObjO.getSq()*100 + orderIndex );
+        return tt;
     }
 
     

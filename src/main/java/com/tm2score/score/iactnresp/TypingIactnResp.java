@@ -104,6 +104,7 @@ public class TypingIactnResp extends IactnResp implements ScorableResponse
         float tAcc=0;
         
         allTypedText = new StringBuilder();
+        int orderIndex = 1;
 
         for( SimJ.Intn.Intnitem intItemObj : intnObj.getIntnitem() )
         {
@@ -113,8 +114,10 @@ public class TypingIactnResp extends IactnResp implements ScorableResponse
             if( intItemObj.getFormat() != G2ChoiceFormatType.TEXT_BOX.getG2ChoiceFormatTypeId() || intItemObj.getTextscoreparam1()==null || intItemObj.getTextscoreparam1().isEmpty() )
                 continue;
 
-            iir =  IactnRespFactory.getIactnItemResp(this, intItemObj, intnResultObjO, testEvent );  // new IactnItemResp( this, intItemObj, intnResultObj );
+            iir =  IactnRespFactory.getIactnItemResp(this, intItemObj, intnResultObjO, testEvent, orderIndex );  // new IactnItemResp( this, intItemObj, intnResultObj );
 
+            orderIndex++;
+            
             boolean wordsTypedLimitsKeyWords = intnObj.getCt5Int2()==1;
             dei = new TypingItem( intItemObj.getTextscoreparam1() , iir.getRespValue(), intnResultObj.getCtime(), wordsTypedLimitsKeyWords );
 
@@ -250,7 +253,9 @@ public class TypingIactnResp extends IactnResp implements ScorableResponse
         title = StringUtils.replaceStr(title, "[", "{" );
         itemLevelId = StringUtils.replaceStr(itemLevelId, "[", "{" );
         ques = StringUtils.replaceStr(ques, "[", "{" );                
-        return new TextAndTitle( text, title, 0, itemLevelId, ques );        
+        TextAndTitle tt = new TextAndTitle( text, title, intnResultObjO.getSq()*100, itemLevelId, ques );     
+        tt.setOrder( this.intnResultObjO.getSq()*100 );
+        return tt;
     }
     
     

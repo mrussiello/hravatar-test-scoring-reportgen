@@ -23,9 +23,9 @@ public class IFrameIactnItemResp extends IactnItemResp
 {
     // public static String POINTS_KEY = "[POINTS]";
 
-    public IFrameIactnItemResp( IactnResp ir, SimJ.Intn.Intnitem ii, Clicflic.History.Intn iro)
+    public IFrameIactnItemResp( IactnResp ir, SimJ.Intn.Intnitem ii, Clicflic.History.Intn iro, int orderIndex)
     {
-        super(ir, ii, iro, null);
+        super(ir, ii, iro, null, orderIndex);
     }
 
 

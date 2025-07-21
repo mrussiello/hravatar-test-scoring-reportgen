@@ -356,7 +356,7 @@ public class TestEventScore implements Serializable, Comparable<TestEventScore>,
 
     @Transient
     private boolean tempBoolean1 = false;
-
+    
 
     public void setReportAndScoringFlags( Locale simLocale, SimCompetencyScore simCompetencyScore)
     {
@@ -370,8 +370,8 @@ public class TestEventScore implements Serializable, Comparable<TestEventScore>,
         if( !getTestEventScoreType().equals( TestEventScoreType.COMPETENCY ) || (simCompetencyClassId!=SimCompetencyClass.SCOREDESSAY.getSimCompetencyClassId() && simCompetencyClassId!=SimCompetencyClass.SCOREDAUDIO.getSimCompetencyClassId() && simCompetencyClassId!=SimCompetencyClass.SCOREDAVUPLOAD.getSimCompetencyClassId()) )
             return;
         
-        // Essay with a valid AI score for this Essay Competency.
-        if( simCompetencyClassId==SimCompetencyClass.SCOREDESSAY.getSimCompetencyClassId() && score2>0 && score3>0 )
+        // Essay with a valid AI score for this Essay Competency or if uses AI Scoring and .
+        if( simCompetencyClassId==SimCompetencyClass.SCOREDESSAY.getSimCompetencyClassId() && ((score2>0 && score3>0) || (score7>0 && score3>0)) )
             return;
         
         // Any Essay no Valid AI Score, but not plagiarized and has a score above the min.
@@ -752,7 +752,7 @@ public class TestEventScore implements Serializable, Comparable<TestEventScore>,
             t = textbasedResponses.substring( i + ky.length() );
             
             // remove any following titles
-            if( t.indexOf(";;;")>=0 )
+            if( t.contains(";;;") )
                 t = t.substring(0, t.indexOf(";;;") );
         }
 
@@ -775,7 +775,7 @@ public class TestEventScore implements Serializable, Comparable<TestEventScore>,
         String t = txtBsdResp;
 
         // the relevant title (if any) should be removed by this point, but be sure to remove any following titles and content.
-        if( t.indexOf( ";;;" ) >= 0 )
+        if( t.contains(";;;") )
             t = t.substring(0, t.indexOf( ";;;" ) );
 
         if( t.length()==0 )
@@ -793,6 +793,7 @@ public class TestEventScore implements Serializable, Comparable<TestEventScore>,
         String string1;
         String string2;
         String string3;
+        String string4;
 
         while( st.hasMoreTokens() )
         {
@@ -811,7 +812,7 @@ public class TestEventScore implements Serializable, Comparable<TestEventScore>,
             uufid = 0;
             sequenceId=0;
 
-            if( r != null && r.indexOf( "uuf:" )>=0 )
+            if( r != null && r.contains("uuf:") )
             {
                 int idx = r.indexOf(",", r.indexOf( "uuf:" )+4 );
                 if( idx<0 )
@@ -819,7 +820,7 @@ public class TestEventScore implements Serializable, Comparable<TestEventScore>,
                 uufid = Long.parseLong( r.substring( r.indexOf( "uuf:" )+4, idx ) );
             }
             
-            if( r != null && r.indexOf( "seq:" )>=0 )
+            if( r != null && r.contains("seq:") )
             {
                 int idx = r.indexOf(",", r.indexOf( "seq:" )+4 );
                 if( idx<0 )
@@ -838,6 +839,7 @@ public class TestEventScore implements Serializable, Comparable<TestEventScore>,
             
             string2 = null;
             string3 = null;
+            string4 = null;
             if( string1!=null && !string1.isEmpty() )
             {
                 try
@@ -850,6 +852,8 @@ public class TestEventScore implements Serializable, Comparable<TestEventScore>,
                             string2 = ds[1];
                         if( ds.length>2 )
                             string3 = ds[2];
+                        if( ds.length>3 )
+                            string4 = ds[3];
                     }
                     //LogService.logIt( "TestResultUtils.getTextBasedResponseList() parsed string1=" + string1 );
                 }
@@ -861,7 +865,7 @@ public class TestEventScore implements Serializable, Comparable<TestEventScore>,
 
             // if( q != null && a != null && a.trim().length()>0)
             if( q != null && a != null )
-                out.add(new TextAndTitle( a, q, r!=null && r.indexOf( "red:1")>=0, uufid, sequenceId, string1, string2, string3 ) );
+                out.add(new TextAndTitle( a, q, r!=null && r.indexOf( "red:1")>=0, uufid, sequenceId, string1, string2, string3, string4 ) );
         }
 
         return out;
@@ -1179,8 +1183,8 @@ public class TestEventScore implements Serializable, Comparable<TestEventScore>,
 
     public void setTextbasedResponses(String t) {
 
-        if( t != null && t.trim().isEmpty() )
-            t = null;
+        if( t!=null && t.isBlank() )
+            t=null;
 
         this.textbasedResponses = t;
     }

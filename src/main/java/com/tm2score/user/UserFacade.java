@@ -62,11 +62,14 @@ public class UserFacade
         {
             return (UserFacade) InitialContext.doLookup( "java:module/UserFacade" );
         }
-
+        catch( ClassCastException e )
+        {
+            LogService.logIt(  "UserFacade.getInstance() " + e.toString() + ", returning null." );
+            return null;
+        }
         catch( Exception e )
         {
             LogService.logIt( e, "UserFacade.getInstance() " );
-
             return null;
         }
     }

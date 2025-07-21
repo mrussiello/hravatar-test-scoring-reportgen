@@ -1019,7 +1019,7 @@ public class BaseTestEventScorer
 
             sb.append( tt.getTitle() + Constants.DELIMITER + tt.getText() + Constants.DELIMITER + tt.getFlags()  );
 
-            str = (tt.getString1()!=null && !tt.getString1().isEmpty() ? tt.getString1() : "") + "~" + (tt.getString2()!=null && !tt.getString2().isEmpty() ? tt.getString2() : "") + "~" + (tt.getString3()!=null && !tt.getString3().isEmpty() ? tt.getString3() : "");
+            str = (tt.getString1()!=null && !tt.getString1().isEmpty() ? tt.getString1() : "") + "~" + (tt.getString2()!=null && !tt.getString2().isEmpty() ? tt.getString2() : "") + "~" + (tt.getString3()!=null && !tt.getString3().isEmpty() ? tt.getString3() : "") + "~" + (tt.getString4()!=null && !tt.getString4().isEmpty() ? tt.getString4() : "");
 
             sb.append( Constants.DELIMITER + str );
             // sb.append( XMLUtils.encodeURIComponent( tt.getTitle() ) + Constants.DELIMITER + XMLUtils.encodeURIComponent( tt.getText() ) + Constants.DELIMITER + XMLUtils.encodeURIComponent( tt.getFlags() ) );
@@ -1153,7 +1153,7 @@ public class BaseTestEventScorer
 
     protected String packResponses( List<IactnResp> irl, String sectionName, boolean includeResponseRatingSimCompetencyIds ) throws Exception
     {
-        // LogService.logIt( "BaseTestEventScorer.packResponses() AAA " + (irl==null ? "null" : irl.size()) );
+        // LogService.logIt( "BaseTestEventScorer.packResponses() AAA.1 name=" + sectionName + ", irl.size=" + (irl==null ? "null" : irl.size()) );
 
         if( irl==null || irl.isEmpty() )
             return "";
@@ -1167,17 +1167,17 @@ public class BaseTestEventScorer
         
         for( IactnResp ir : irl )
         {
-            // LogService.logIt( "ScoreManagerBean.packResponses() AAAA ir.getSimletItemType().isText()=" + ir.getSimletItemType().isText() + " ir.getSimletItemType()=" + ir.getSimletItemType().toString() );
+            // LogService.logIt( "BaseTestEventScorer.packResponses() AAA.2 Checking " + StringUtils.getUrlDecodedValue(ir.intnObj.getName()) );
 
             // if no non-competency question type is present, this item must have a simlet competency defined and an itemtype assigned that supports manual scoring via report.
-            if( ir.intnObj.getNoncompetencyquestiontypeid()<= 0)
+            if( ir.intnObj.getNoncompetencyquestiontypeid()<=0)
             {
                 // be sure that a simlet competency is is set and that the itemtype supports manual scoring via report
                 if( ir.getIntnObj().getCompetencyscoreid()<=0 || !ir.getSimletItemType().supportsManualScoringViaReport() )
                     continue;
             }
 
-            // LogService.logIt( "BaseTestEventScorer.packResponses() Getting ttl for " + ir.intnObj.getName() );
+            // LogService.logIt( "BaseTestEventScorer.packResponses() Getting ttl for " + StringUtils.getUrlDecodedValue(ir.intnObj.getName()) );
 
             // this method returns a list of TTLs for each title/text pair to include in report for this item.
             ttl = ir.getTextAndTitleList();
@@ -1194,6 +1194,8 @@ public class BaseTestEventScorer
             
             // LogService.logIt( "BaseTestEventScorer.packResponses() ttl list==" + ttl.size() );
 
+            Collections.sort(ttl);
+            
             tmp = packTextBasedResponses( ttl );
 
             if( tmp != null && !tmp.isEmpty() )
@@ -1942,9 +1944,23 @@ public class BaseTestEventScorer
 
         boolean computePercentiles = !reportRules.getReportRuleAsBoolean("percentilesoff");
 
+        SimCompetencyScore parentScs;
+        
         for( SimCompetencyScore scs : te.getSimCompetencyScoreList() )
         {
             scs.setBoolean1(false);
+            
+            if( scs.getItemScoreTextAndTitleList()!=null && !scs.getItemScoreTextAndTitleList().isEmpty() && ( (scs.getName().contains(" (") && scs.getName().endsWith(")") ) || (scs.getNameEnglish()!=null && scs.getNameEnglish().contains("(") && scs.getNameEnglish().endsWith(")")) ) )
+            {
+                parentScs = getParentForSupplementalSimCompetency( scs, te.getSimCompetencyScoreList() );
+                
+                if( parentScs!=null && parentScs.getItemScoreTextAndTitleList()!=null )
+                {
+                    LogService.logIt( "BaseTestEventScorer.setCompetencyTestEventScores() moved " + scs.getItemScoreTextAndTitleList().size() + "  ItemScoreTextTitles from " + scs.getName() + " to " + parentScs.getName() );                    
+                    parentScs.getItemScoreTextAndTitleList().addAll( scs.getItemScoreTextAndTitleList() );
+                    scs.getItemScoreTextAndTitleList().clear();
+                }
+            }
         }
 
         List<TextAndTitle> ttl;
@@ -2102,6 +2118,7 @@ public class BaseTestEventScorer
                 }
             }
 
+            Collections.sort( ttl);
             tes.setTextbasedResponses( packTextBasedResponses( ttl ) );
 
             // This MUST come after we set the score2,score3, score4, etch values.
@@ -2132,8 +2149,6 @@ public class BaseTestEventScorer
                 }
             }
             
-            //if( Constants.USE_CAVEATS2 )
-            //{
             if( scs.getCaveatList2()!=null )
             {
                 for( CaveatScore cscr : scs.getCaveatList2() )
@@ -2154,35 +2169,7 @@ public class BaseTestEventScorer
                     disp++;
                 }
             }
-            //}
             
-            /*
-            String cvs = "";
-            for( String cv : scs.getCaveatList() )
-            {
-                if( cv==null )
-                    continue;
-
-                if( cv.isBlank() )
-                    continue;
-
-                if( cefrType!= null && cefrScoreType!=null && !cefrScoreType.equals( CefrScoreType.UNKNOWN) )
-                {
-                    if( !CefrUtils.showTopicCaveatForCefrScore( cv, cefrScoreType, simLocale ))
-                        continue;
-                }
-
-
-                if( !cvs.isBlank() )
-                    cvs += Constants.DELIMITER;
-
-                cvs += cv; // URLDecoder.decode( cv, "UTF8" );
-            }
-            if( !cvs.isBlank() )
-                tp += "[" + Constants.CAVEATSKEY + "]" + cvs;
-            */
-            
-
             String categInfo = scs.getScoreCategoryInfoString( scoreColorSchemeType );
 
             if( !categInfo.isEmpty() )
@@ -2194,10 +2181,10 @@ public class BaseTestEventScorer
 
             // LogService.logIt( "BaseTestEventScorer.setCompetencyTestEventScores() CCC.3 scs.name=" + scs.getNameEnglish() + ", commentParent=" + (commentParentScs==null ? "null" : commentParentScs.getNameEnglish()) + ", commentScs=" + (commentScs==null ? "null" : commentScs.getNameEnglish())  );
             
-            // Only collectd response info if this sim competency does not have a comment parent. If it does, the parent will collect.
+            // Only collect response info if this sim competency does not have a comment parent. If it does, the parent will collect.
             if( commentParentScs==null )
             {
-                if( scs.getItemScoreTextAndTitleList() !=null && !scs.getItemScoreTextAndTitleList().isEmpty() )
+                if( scs.getItemScoreTextAndTitleList()!=null && !scs.getItemScoreTextAndTitleList().isEmpty() )
                     itemScoreTtl.addAll( scs.getItemScoreTextAndTitleList() );
 
                 // this allows unscored survey responses to be presented using existing logic.
@@ -2227,7 +2214,11 @@ public class BaseTestEventScorer
             }
 
             if( !itemScoreTtl.isEmpty() )
+            {
+                Collections.sort( itemScoreTtl );
+                
                 tp += "[" + Constants.ITEMSCOREINFOKEY + "]" + packTextBasedResponses(itemScoreTtl);
+            }
 
             if( scs.getSimCompetencyObj().getPresentationtype()==ScorePresentationType.SPECTRUM.getScorePresentationTypeId() )
             {
@@ -3110,5 +3101,34 @@ public class BaseTestEventScorer
             return scrSum.toString();
 
         return "";
+    }
+    
+    public SimCompetencyScore getParentForSupplementalSimCompetency( SimCompetencyScore suppScs, List<SimCompetencyScore> simCompetencyScoreList )
+    {
+        if( suppScs==null || simCompetencyScoreList==null || simCompetencyScoreList.isEmpty() )
+            return null;
+
+        String nameMatch = !suppScs.getName().contains("(") || !suppScs.getName().endsWith(")") ? null : 
+                suppScs.getName().substring(0, suppScs.getName().lastIndexOf(" (") ).trim();
+        
+        String nameMatchEng = suppScs.getNameEnglish()==null || !suppScs.getNameEnglish().contains("(") || !suppScs.getNameEnglish().endsWith(")") ? null : 
+                suppScs.getNameEnglish().substring(0, suppScs.getNameEnglish().lastIndexOf(" (") ).trim();
+        
+        LogService.logIt( "BaseTestEventScorer.getParentForSupplementalSimCompetency() supp=" + suppScs.getName() + ", seeking: " + (nameMatch==null ? "null" : nameMatch) + ", seeking english=" + (nameMatchEng==null ? "null" : nameMatchEng) );
+        
+        if( nameMatch==null && nameMatchEng==null )
+            return null;
+        
+        for( SimCompetencyScore scs : simCompetencyScoreList )
+        {
+            if( scs.getSimCompetencyObj().getId()==suppScs.getSimCompetencyObj().getId() )
+                continue;
+
+            if( nameMatch!=null && scs.getName().trim().equals( nameMatch ))
+                return scs;
+            if( scs.getNameEnglish()!=null && !scs.getNameEnglish().isBlank() && scs.getNameEnglish().trim().equals( nameMatchEng))
+                return scs;
+        }
+        return null;
     }
 }

@@ -188,15 +188,19 @@ public class FileUploadFacade
         return uuf;
     }
     
+    public UploadedUserFile getUploadedUserFile( long testEventId, int ct5ItemId, int ct5ItemPartId, int uploadedUserFileTypeId, boolean refresh) throws Exception
+    {
+        return getUploadedUserFile(testEventId, null, ct5ItemId, ct5ItemPartId, uploadedUserFileTypeId, refresh);
+    }
     
-    public UploadedUserFile getUploadedUserFile( long testEventId, String nodeUniqueId, int nodeSeq, int subnodeSeq, boolean refresh) throws Exception
+    public UploadedUserFile getUploadedUserFile( long testEventId, String nodeUniqueId, int nodeSeq, int subnodeSeq, int uploadedUserFileTypeId, boolean refresh) throws Exception
     {
         try
         {
             // LogService.logIt("FileUploadFacade.getUploadedUserFile() " + testEventId + ", nodeSeq=" + nodeSeq + ", nodeUniqueId=" + nodeUniqueId + ", subnodeSeq=" + subnodeSeq );
             if( nodeUniqueId!=null && !nodeUniqueId.isEmpty() )
             {
-                UploadedUserFile uuf = getUploadedUserFileByUniqueId( testEventId,  nodeUniqueId,  subnodeSeq,  refresh);
+                UploadedUserFile uuf = getUploadedUserFileByUniqueId(testEventId,  nodeUniqueId,  subnodeSeq,  refresh, uploadedUserFileTypeId);
                 
                 if( uuf!=null )
                     return uuf;
@@ -211,6 +215,7 @@ public class FileUploadFacade
             q.setParameter( "testEventId", testEventId );
             q.setParameter( "nodeSeq", nodeSeq );
             q.setParameter( "subnodeSeq", subnodeSeq );
+            q.setParameter("uploadedUserFileTypeId", uploadedUserFileTypeId>=0 ? uploadedUserFileTypeId : 0);
 
             if( refresh )
                 q.setHint( "jakarta.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS );
@@ -233,7 +238,7 @@ public class FileUploadFacade
     }
 
 
-    public UploadedUserFile getUploadedUserFileByUniqueId( long testEventId, String nodeUniqueId, int subnodeSeq, boolean refresh) throws Exception
+    public UploadedUserFile getUploadedUserFileByUniqueId( long testEventId, String nodeUniqueId, int subnodeSeq, boolean refresh, int uploadedUserFileTypeId) throws Exception
     {
         try
         {
@@ -248,6 +253,7 @@ public class FileUploadFacade
             q.setParameter( "testEventId", testEventId );
             q.setParameter( "nodeUniqueId", nodeUniqueId );
             q.setParameter( "subnodeSeq", subnodeSeq );
+            q.setParameter("uploadedUserFileTypeId", uploadedUserFileTypeId>=0 ? uploadedUserFileTypeId : 0 );
 
             if( refresh )
                 q.setHint( "jakarta.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS );

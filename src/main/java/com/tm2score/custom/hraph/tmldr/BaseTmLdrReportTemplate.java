@@ -3596,11 +3596,14 @@ public abstract class BaseTmLdrReportTemplate extends TmLdrReportSettings implem
             // Phrase ep = new Phrase( "", getFontSmall() );
 
             Phrase p;
+            Paragraph textPar;
 
             String misSpells;
 
             String theText;
             String transText;
+            String summary;
+            
 
             BaseColor graybg = new BaseColor(0xf4,0xf4,0xf4);
             boolean useGrayBg = true;            
@@ -3609,7 +3612,6 @@ public abstract class BaseTmLdrReportTemplate extends TmLdrReportSettings implem
             // For each competency
             for( TextAndTitle tt : ttl )
             {
-
                 useGrayBg = !useGrayBg;
                 
                 if( tt.getText() == null || tt.getText().isEmpty() )
@@ -3632,10 +3634,18 @@ public abstract class BaseTmLdrReportTemplate extends TmLdrReportSettings implem
                 if( StringUtils.getHasHtml(theText) )
                     theText = StringUtils.convertHtml2PlainText(theText, true );
 
-
-
+                
                 misSpells = tt.getString1();
                 transText = tt.getString3();
+                summary = tt.getString4();
+
+                textPar = new Paragraph();
+                if( summary !=null && !summary.isBlank() )
+                {
+                    textPar.add( new Chunk( lmsg("g.SummaryAI") + ": ", getFontSmallBold() ));
+                    textPar.add( new Chunk( summary + "\n\n", getFontSmall()));
+                    textPar.add( new Chunk( lmsg("g.FromCandidate") + ": ", getFontSmallBold() ) );
+                }                
 
                 if( misSpells!=null && !misSpells.isEmpty() )
                 {
@@ -3647,7 +3657,10 @@ public abstract class BaseTmLdrReportTemplate extends TmLdrReportSettings implem
                     theText += "\n\n[" + lmsg( "g.ReverseTranslatedC" ) + " " + transText + "]";
                 }
 
-                c = new PdfPCell( new Phrase( theText, getFontSmall() ) );
+                textPar.add( new Chunk( theText, getFontSmall()) );
+                
+                c = new PdfPCell( textPar );
+                // c = new PdfPCell( new Phrase( theText, getFontSmall() ) );
                 c.setBackgroundColor( useGrayBg ? graybg : BaseColor.WHITE );
                 c.setBorder( Rectangle.LEFT | Rectangle.BOTTOM | Rectangle.RIGHT );
                 c.setBorderWidth( 0.5f );

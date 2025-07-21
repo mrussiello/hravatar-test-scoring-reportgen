@@ -46,7 +46,7 @@ public class AiEssayScoringUtils {
     }
             
     
-    public static boolean computeAiEssayScore( UnscoredEssay unscoredEssay, boolean autoUpdate, boolean forceRescore, String forcePromptStr, String idealResponseStr)
+    public static boolean computeAiEssayScore( UnscoredEssay unscoredEssay, boolean autoUpdate, boolean forceRescore, boolean omitGrammarMech, String forcePromptStr, String idealResponseStr, String aiInstructionsStr)
     {
         try
         {
@@ -55,51 +55,51 @@ public class AiEssayScoringUtils {
             
             if( !AI_ESSAYS_ON )
             {
-                LogService.logIt("AiRequestUtils.doEssayScoringCall() AI Essay Scoring is disabled. unscoredEssayId=" + (unscoredEssay==null ? "null" : unscoredEssay.getUnscoredEssayId()+ ", userId=" + unscoredEssay.getUserId()) );
+                LogService.logIt("AiRequestUtils.computeAiEssayScore() AI Essay Scoring is disabled. unscoredEssayId=" + (unscoredEssay==null ? "null" : unscoredEssay.getUnscoredEssayId()+ ", userId=" + unscoredEssay.getUserId()) );
                 return false;
             }
                         
             if( unscoredEssay==null )
             {
-                LogService.logIt("AiRequestUtils.doEssayScoringCall() unscoredEssay is null" );
+                LogService.logIt("AiRequestUtils.computeAiEssayScore() unscoredEssay is null" );
                 return false;
             }
 
             if( unscoredEssay.getUnscoredEssayId()<=0 )
             {
-                LogService.logIt("AiRequestUtils.doEssayScoringCall() UnscoredEssay.unscoredEssayId is invalid: " + unscoredEssay.getUnscoredEssayId() );
+                LogService.logIt("AiRequestUtils.computeAiEssayScore() UnscoredEssay.unscoredEssayId is invalid: " + unscoredEssay.getUnscoredEssayId() );
                 return false;
             }
             
             if( (unscoredEssay.getEssay()==null || unscoredEssay.getEssay().isBlank()) ) 
             {
-                LogService.logIt("AiRequestUtils.doEssayScoringCall() UnscoredEssay does not have an Essay to score. unscoredEssayId=" + unscoredEssay.getUnscoredEssayId() );
+                LogService.logIt("AiRequestUtils.computeAiEssayScore() UnscoredEssay does not have an Essay to score. unscoredEssayId=" + unscoredEssay.getUnscoredEssayId() );
                 return false;
             }
             
             if( (forcePromptStr==null || forcePromptStr.isBlank()) &&  unscoredEssay.getEssayPromptId()<=0 )
             {
-                LogService.logIt("AiRequestUtils.doEssayScoringCall() UnscoredEssay has an invalid essaypromptid: " + unscoredEssay.getEssayPromptId() );
+                LogService.logIt("AiRequestUtils.computeAiEssayScore() UnscoredEssay has an invalid essaypromptid: " + unscoredEssay.getEssayPromptId() );
                 return false;
             }
 
             if( !forceRescore && !USE_SCORE_2 && unscoredEssay.getScoreDate()!=null && unscoredEssay.getComputedScore()!=0 )                    
             {
-                LogService.logIt("AiRequestUtils.doEssayScoringCall() UnscoredEssay has already been scored by AI and forceRescore is false. unscoredEssayId=" + unscoredEssay.getUnscoredEssayId() );
+                LogService.logIt("AiRequestUtils.computeAiEssayScore() UnscoredEssay has already been scored by AI and forceRescore is false. unscoredEssayId=" + unscoredEssay.getUnscoredEssayId() );
                 return false;
             }
 
             if( !forceRescore && USE_SCORE_2 && unscoredEssay.getScoreDate2()!=null && unscoredEssay.getComputedScore2()!=0 )                    
             {
-                LogService.logIt("AiRequestUtils.doEssayScoringCall() UnscoredEssay has already been scored by AI and forceRescore is false. unscoredEssayId=" + unscoredEssay.getUnscoredEssayId() );
+                LogService.logIt("AiRequestUtils.computeAiEssayScore() UnscoredEssay has already been scored by AI and forceRescore is false. unscoredEssayId=" + unscoredEssay.getUnscoredEssayId() );
                 return false;
             }
             
-            JsonObject responseJo = AiRequestUtils.doEssayScoringCall(unscoredEssay, AiCallType.ESSAY_SCORE, USE_SCORE_2, autoUpdate, forcePromptStr, idealResponseStr);
+            JsonObject responseJo = AiRequestUtils.doEssayScoringCall(unscoredEssay, AiCallType.ESSAY_SCORE, USE_SCORE_2, autoUpdate, forceRescore, omitGrammarMech, forcePromptStr, idealResponseStr, aiInstructionsStr);
             
             if( !AiRequestUtils.wasAiCallSuccess( responseJo ) )
             {
-                LogService.logIt("AiRequestUtils.doEssayScoringCall() AI Call failed. unscoredEssayId=" + unscoredEssay.getUnscoredEssayId() );
+                LogService.logIt("AiRequestUtils.computeAiEssayScore() AI Call failed. unscoredEssayId=" + unscoredEssay.getUnscoredEssayId() );
                 return false;
             }
             
@@ -108,9 +108,63 @@ public class AiEssayScoringUtils {
         catch( Exception e )
         {
             Tracker.addAiCallError();
-            LogService.logIt(e, "AiRequestUtils.doEssayScoringCall() unscoredEssayId=" + (unscoredEssay==null ? "null" : unscoredEssay.getUnscoredEssayId()+ ", userId=" + unscoredEssay.getUserId()) );
+            LogService.logIt(e, "AiRequestUtils.computeAiEssayScore() unscoredEssayId=" + (unscoredEssay==null ? "null" : unscoredEssay.getUnscoredEssayId()+ ", userId=" + unscoredEssay.getUserId()) );
             return false;
         }
     }
-    
+
+    public static boolean computeAiEssaySummary( UnscoredEssay unscoredEssay, boolean autoUpdate, boolean forceRedo)
+    {
+        try
+        {
+            if( AI_ESSAYS_ON==null)
+                init();
+            
+            if( !AI_ESSAYS_ON )
+            {
+                LogService.logIt("AiRequestUtils.computeAiEssaySummary() AI Essay Scoring is disabled. unscoredEssayId=" + (unscoredEssay==null ? "null" : unscoredEssay.getUnscoredEssayId()+ ", userId=" + unscoredEssay.getUserId()) );
+                return false;
+            }
+                        
+            if( unscoredEssay==null )
+            {
+                LogService.logIt("AiRequestUtils.computeAiEssaySummary() unscoredEssay is null" );
+                return false;
+            }
+
+            if( unscoredEssay.getUnscoredEssayId()<=0 )
+            {
+                LogService.logIt("AiRequestUtils.computeAiEssaySummary() UnscoredEssay.unscoredEssayId is invalid: " + unscoredEssay.getUnscoredEssayId() );
+                return false;
+            }
+            
+            if( (unscoredEssay.getEssay()==null || unscoredEssay.getEssay().isBlank()) ) 
+            {
+                LogService.logIt("AiRequestUtils.computeAiEssaySummary() UnscoredEssay does not have an Essay to score. unscoredEssayId=" + unscoredEssay.getUnscoredEssayId() );
+                return false;
+            }
+
+            if( !forceRedo && unscoredEssay.getSummaryDate()!=null && unscoredEssay.getSummary()!=null && !unscoredEssay.getSummary().isBlank() )                    
+            {
+                LogService.logIt("AiRequestUtils.computeAiEssaySummary() UnscoredEssay has already been summarized by AI and forceRedo is false. unscoredEssayId=" + unscoredEssay.getUnscoredEssayId() );
+                return false;
+            }
+
+            JsonObject responseJo = AiRequestUtils.doEssaySummaryCall(unscoredEssay, AiCallType.ESSAY_SUMMARY, autoUpdate, forceRedo);
+            
+            if( !AiRequestUtils.wasAiCallSuccess( responseJo ) )
+            {
+                LogService.logIt("AiRequestUtils.computeAiEssaySummary() AI Call failed. unscoredEssayId=" + unscoredEssay.getUnscoredEssayId() );
+                return false;
+            }
+            
+            return true;
+        }
+        catch( Exception e )
+        {
+            Tracker.addAiCallError();
+            LogService.logIt(e, "AiRequestUtils.computeAiEssaySummary() unscoredEssayId=" + (unscoredEssay==null ? "null" : unscoredEssay.getUnscoredEssayId()+ ", userId=" + unscoredEssay.getUserId()) );
+            return false;
+        }
+    }
 }

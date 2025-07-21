@@ -29,6 +29,10 @@ public class TextAndTitle implements Comparable<TextAndTitle>
     private String string1 = null;
     private String string2 = null;
     private String string3 = null;
+    private String string4 = null;
+    
+    private int displaySeq;
+    
 
     public TextAndTitle( String text, String title)
     {
@@ -67,6 +71,8 @@ public class TextAndTitle implements Comparable<TextAndTitle>
 
     public TextAndTitle( String text, String title, boolean rf, long uploadedUserFileId, int sequenceId, String string1, String string2)
     {
+        this(  text,  title,  rf,  uploadedUserFileId,  sequenceId,  string1,  string2,  null,  null);
+        /*
         this.text = text;
         this.title = HtmlUtils.removeAllHtmlTags(title);
         this.redFlag = rf;
@@ -74,10 +80,14 @@ public class TextAndTitle implements Comparable<TextAndTitle>
         this.string1=string1;
         this.string2=string2;
         this.sequenceId=sequenceId;
+        */
     }
 
     public TextAndTitle( String text, String title, boolean rf, long uploadedUserFileId, int sequenceId, String string1, String string2, String string3)
     {
+        this(  text,  title,  rf,  uploadedUserFileId,  sequenceId,  string1,  string2,  string3,  null);
+
+        /*
         this.text = text;
         this.title = HtmlUtils.removeAllHtmlTags(title);
         this.redFlag = rf;
@@ -86,8 +96,22 @@ public class TextAndTitle implements Comparable<TextAndTitle>
         this.string2=string2;
         this.string3=string3;
         this.sequenceId=sequenceId;
+        */
     }
 
+    public TextAndTitle( String text, String title, boolean rf, long uploadedUserFileId, int sequenceId, String string1, String string2, String string3, String string4)
+    {
+        this.text = text;
+        this.title = HtmlUtils.removeAllHtmlTags(title);
+        this.redFlag = rf;
+        this.uploadedUserFileId = uploadedUserFileId;
+        this.string1=string1;
+        this.string2=string2;
+        this.string3=string3;
+        this.string4=string4;
+        this.sequenceId=sequenceId;
+    }
+    
     public TextAndTitle( String text, String title, int sequenceId, String string1, String string2)
     {
         this.text = text;
@@ -119,8 +143,11 @@ public class TextAndTitle implements Comparable<TextAndTitle>
     @Override
     public int compareTo(TextAndTitle o)
     {
-        if( o.getOrder() != 0 && order != 0 )
+        if( o.getOrder()!=0 && order!=0 )
             return ((Integer)( order )).compareTo( o.getOrder() );
+
+        if( o.getSequenceId()!=0 && sequenceId!=0 )
+            return ((Integer)( o.getSequenceId() )).compareTo( o.getSequenceId() );
 
         if( title != null && o.getTitle() != null )
             return title.compareTo( o.getTitle() );
@@ -283,6 +310,17 @@ public class TextAndTitle implements Comparable<TextAndTitle>
     public void setSequenceId(int sequenceId) {
         this.sequenceId = sequenceId;
     }
+
+    public String getString4()
+    {
+        return string4;
+    }
+
+    public void setString4(String string4)
+    {
+        this.string4 = string4;
+    }
+
 
 
     

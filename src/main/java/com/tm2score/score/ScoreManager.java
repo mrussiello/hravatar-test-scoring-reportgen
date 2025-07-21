@@ -20,7 +20,7 @@ import com.tm2score.entity.event.TestEventScore;
 import com.tm2score.entity.event.TestKey;
 import com.tm2score.entity.purchase.Product;
 import com.tm2score.entity.user.User;
-import com.tm2score.essay.DiscernFacade;
+import com.tm2score.essay.EssayFacade;
 import com.tm2score.event.*;
 import com.tm2score.global.Constants;
 import com.tm2score.global.RuntimeConstants;
@@ -438,9 +438,9 @@ public class ScoreManager extends BaseScoreManager
         //    LogService.logIt( "ScoreManagerBean.scoreBatch() found " + tkl.size() + " test Keys to score." );
 
         if( tkl.size() >= 30 )
-            DiscernFacade.ESSAY_PLAG_CHECK_MAX_OFFSET = 2000;
+            EssayFacade.ESSAY_PLAG_CHECK_MAX_OFFSET = 2000;
         else
-            DiscernFacade.ESSAY_PLAG_CHECK_MAX_OFFSET = 4000;
+            EssayFacade.ESSAY_PLAG_CHECK_MAX_OFFSET = 4000;
         
         boolean useThread = !noThread;
         
@@ -1048,9 +1048,9 @@ public class ScoreManager extends BaseScoreManager
                 
                 
                 
-                DiscernFacade discernFacade=DiscernFacade.getInstance();
+                EssayFacade essayFacade=EssayFacade.getInstance();
                 
-                discernFacade.deleteCompletedUnscoredEssaysForTestEvent(te.getTestEventId());
+                essayFacade.deleteUnscoredEssaysForTestEvent(te.getTestEventId());
                 
                 // if we still have a Ct5TestEvent clear the result XML and regenerate.
                 if( te.getProductTypeId()==ProductType.CT5DIRECTTEST.getProductTypeId() && te.getResultXml()!=null && !te.getResultXml().isEmpty() )

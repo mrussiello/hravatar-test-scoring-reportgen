@@ -156,7 +156,7 @@ public class LocalEssayScoringUtils {
      */
     public static int[] getWritingErrorCount( String text, Locale locale, String authorCountryCode, List<String> wordsToIgnoreLc) throws Exception
     {
-        Object[] anal = getWritingAnalysis(text, locale, authorCountryCode, wordsToIgnoreLc );
+        Object[] anal = getWritingAnalysis(text, locale, authorCountryCode, wordsToIgnoreLc, true );
         return (int[]) anal[0];
     }    
 
@@ -192,7 +192,7 @@ public class LocalEssayScoringUtils {
      * @return
      * @throws Exception
      */
-    public static Object[] getWritingAnalysis( String text, Locale locale, String authorCountryCode, List<String> wordsToIgnoreLc) throws Exception
+    public static Object[] getWritingAnalysis( String text, Locale locale, String authorCountryCode, List<String> wordsToIgnoreLc, boolean spellingGrammarOk) throws Exception
     {
         if( locale == null )
             locale = Locale.US;
@@ -200,13 +200,17 @@ public class LocalEssayScoringUtils {
         String language = locale.getLanguage();
         String country = locale.getCountry();
 
-        Object[] data = getWritingAnalysisForCountry(text, language, country, wordsToIgnoreLc );
+        Object[] data = getWritingAnalysisForCountry(text, language, country, spellingGrammarOk, wordsToIgnoreLc );
+        
+        if( !spellingGrammarOk )
+            return data;
         
         // No need to take a second look. No authorCountryCode or same as locale.country or language is not english (only have different code for different versions of english and portuguese).
         if( authorCountryCode==null || authorCountryCode.isEmpty() || authorCountryCode.equalsIgnoreCase( country ) || ( !language.equalsIgnoreCase( "en") && !language.equalsIgnoreCase( "pt") ) )
             return data;
         
-        Object[] data2 = getWritingAnalysisForCountry(text, language, authorCountryCode, wordsToIgnoreLc );
+        
+        Object[] data2 = getWritingAnalysisForCountry(text, language, authorCountryCode, spellingGrammarOk, wordsToIgnoreLc );
         
         if( data2==null || data2[0]==null || data[0]==null )
             return data;
@@ -241,7 +245,7 @@ public class LocalEssayScoringUtils {
      * out[1] = Map<String, Integer> - misspelled words, counts
      * 
      */    
-    public static Object[] getWritingAnalysisForCountry( String text, String language, String country, List<String> wordsToIgnoreLc) throws Exception
+    public static Object[] getWritingAnalysisForCountry( String text, String language, String country, boolean spellingGrammarOk, List<String> wordsToIgnoreLc) throws Exception
     {
         init();
 
@@ -309,6 +313,12 @@ public class LocalEssayScoringUtils {
 
             // String langCode = locale.getLanguage();
             // String country = locale.getCountry();
+            
+            if( !spellingGrammarOk )
+            {
+                nums[7]=0;
+                return out;
+            }
             
             Language lang = null;
 
