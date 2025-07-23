@@ -661,8 +661,8 @@ public class BaseReportManager {
             if( te.getTestEventScoreList()==null )
                 te.setTestEventScoreList( eventFacade.getTestEventScoresForTestEvent( te.getTestEventId(), true ));
 
-            if( tk.getMetaScoreList()==null )
-                tk.setMetaScoreList( eventFacade.getReportableMetaScoreListForTestKey( tk.getTestKeyId()));
+            if( tk.getAiMetaScoreList()==null )
+                tk.setAiMetaScoreList( eventFacade.getReportableAiMetaScoreListForTestKey( tk.getTestKeyId()));
             
             ReportData rd = new ReportData( tk, te, r, tk.getUser(), tk.getOrg(), te.getProfile() );
 
@@ -1078,8 +1078,8 @@ public class BaseReportManager {
                 }
             }
 
-            if( tk.getMetaScoreList()==null )
-                tk.setMetaScoreList( eventFacade.getReportableMetaScoreListForTestKey( tk.getTestKeyId()));
+            if( tk.getAiMetaScoreList()==null )
+                tk.setAiMetaScoreList( eventFacade.getReportableAiMetaScoreListForTestKey( tk.getTestKeyId()));
             
             if( (tk.getTestKeyProctorTypeId()>0 || tk.getOnlineProctoringType().getIsAnyPremium()) && tk.getProctorSuspensionList()==null)
             {

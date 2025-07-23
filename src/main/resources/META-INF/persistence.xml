@@ -52,10 +52,10 @@
     <class>com.tm2score.entity.proctor.ProctorSuspension</class>
     <class>com.tm2score.entity.event.TestEventResponseRating</class>
     <class>com.tm2score.entity.user.Resume</class>
-    <class>com.tm2score.entity.ai.MetaScore</class>
     <class>com.tm2score.entity.jobdesc.JobDescrip</class>
     <class>com.tm2score.entity.jobdesc.UserJobMap</class>
     <class>com.tm2score.entity.user.OrgTraits</class>
+    <class>com.tm2score.entity.ai.AiMetaScore</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
     <properties/>

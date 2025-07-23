@@ -59,6 +59,7 @@ public class BaseScoredAvIactnResp  extends IactnResp implements ScorableRespons
         }
     }
 
+    /*
     public BaseScoredAvIactnResp( SimJ.Intn intn, AvItemResponse iir, Locale locale, TestEvent testEvent) throws Exception
     {
         super(null, testEvent);
@@ -77,6 +78,7 @@ public class BaseScoredAvIactnResp  extends IactnResp implements ScorableRespons
             throw e;
         }
     }
+    */
 
 
     public void initAv( AvItemResponse iir, Locale simLocale, TestEvent testEvent) throws Exception
@@ -115,8 +117,7 @@ public class BaseScoredAvIactnResp  extends IactnResp implements ScorableRespons
         }
         catch( Exception e )
         {
-            LogService.logIt(e, "BaseScoredAvIactnResp.initAv() " + (iir==null ? "AvItemResponse is null" : iir.toString()) );
-            
+            LogService.logIt(e, "BaseScoredAvIactnResp.initAv() " + (iir==null ? "AvItemResponse is null" : iir.toString()) );            
             throw e;
         }
     }
@@ -167,7 +168,7 @@ public class BaseScoredAvIactnResp  extends IactnResp implements ScorableRespons
     {
         if( avItemScorer!=null )        
         {
-            TextAndTitle tt = this.avItemScorer.getItemScoreTextTitle(includeItemScoreTypeId, this);
+            TextAndTitle tt = avItemScorer.getItemScoreTextTitle(includeItemScoreTypeId, this);
             if( tt!=null )
             {
                 tt.setOrder( this.intnResultObjO.getSq()*100 );

@@ -660,8 +660,8 @@ public class BaseDistManager {
             }
         }
         
-        if( tk.getMetaScoreList()==null )
-            tk.setMetaScoreList( eventFacade.getReportableMetaScoreListForTestKey( tk.getTestKeyId()));
+        if( tk.getAiMetaScoreList()==null )
+            tk.setAiMetaScoreList( eventFacade.getReportableAiMetaScoreListForTestKey( tk.getTestKeyId()));
         
         for( TestEvent te : tk.getTestEventList() )
         {

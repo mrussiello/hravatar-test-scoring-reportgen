@@ -29,7 +29,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.LineSeparator;
 // import com.itseasy.rtf.text.Border;
 import com.tm2builder.sim.xml.SimJ;
-import com.tm2score.ai.MetaScoreType;
+import com.tm2score.ai.AiMetaScoreType;
 import com.tm2score.battery.BatteryScoringUtils;
 import com.tm2score.bot.ChatMessageType;
 import com.tm2score.custom.bestjobs.BaseBestJobsReportTemplate;
@@ -38,7 +38,7 @@ import com.tm2score.custom.bestjobs.BestJobsReportUtils;
 import com.tm2score.custom.bestjobs.EeoMatch;
 import com.tm2score.custom.coretest2.cefr.CefrScoreType;
 import com.tm2score.custom.coretest2.cefr.CefrUtils;
-import com.tm2score.entity.ai.MetaScore;
+import com.tm2score.entity.ai.AiMetaScore;
 import com.tm2score.entity.proctor.ProctorEntry;
 import com.tm2score.entity.event.TestEvent;
 
@@ -128,7 +128,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
@@ -3651,13 +3650,13 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
             return;
 
         // next see if there are any metascores
-        if( reportData.getTestKey().getMetaScoreList()==null || reportData.getTestKey().getMetaScoreList().isEmpty() )
+        if( reportData.getTestKey().getAiMetaScoreList()==null || reportData.getTestKey().getAiMetaScoreList().isEmpty() )
             return;
         
         int valCount = 0;
-        for( MetaScore ms : reportData.getTestKey().getMetaScoreList() )
+        for( AiMetaScore ms : reportData.getTestKey().getAiMetaScoreList() )
         {
-            if( ms.getMetaScoreTypeId()>0 && ms.getScore()>0 && ms.getConfidence()>= Constants.MIN_METASCORE_CONFIDENCE )
+            if( ms.getAiMetaScoreTypeId()>0 && ms.getScore()>0 && ms.getConfidence()>= Constants.MIN_METASCORE_CONFIDENCE )
                 valCount++;
         }
         
@@ -3736,17 +3735,17 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
             String scoreText;
             
             int count = 0;
-            MetaScoreType metaScoreType;
+            AiMetaScoreType metaScoreType;
             String lastUpdate;
             Paragraph par;
             
-            for( MetaScore metaScore : reportData.getTestKey().getMetaScoreList() )
+            for( AiMetaScore metaScore : reportData.getTestKey().getAiMetaScoreList() )
             {
-                if( metaScore.getMetaScoreTypeId()<=0 || metaScore.getScore()<=0 || metaScore.getConfidence()<Constants.MIN_METASCORE_CONFIDENCE )
+                if( metaScore.getAiMetaScoreTypeId()<=0 || metaScore.getScore()<=0 || metaScore.getConfidence()<Constants.MIN_METASCORE_CONFIDENCE )
                     continue;
                 count++;
                 
-                metaScoreType = MetaScoreType.getValue(metaScore.getMetaScoreTypeId() );
+                metaScoreType = AiMetaScoreType.getValue(metaScore.getAiMetaScoreTypeId() );
 
                 c = new PdfPCell(new Phrase( metaScoreType.getName(reportData.getLocale()), fontToUse));
                 c.setBorder( Rectangle.NO_BORDER );
@@ -3788,7 +3787,8 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                 
                 metaScore.setLocale(reportData.getLocale());
                 c = new PdfPCell();
-                par = new Paragraph(metaScoreType.getDescription(reportData.getLocale()) + " " + lmsg("g.AiMetaScrInputTypesUsed", new String[]{metaScore.getMetaScoreInputTypesStr()}), smallFontToUse);
+                // par = new Paragraph(metaScoreType.getDescription(reportData.getLocale()) + " " + lmsg("g.AiMetaScrInputTypesUsed", new String[]{metaScore.getMetaScoreInputTypesStr()}), smallFontToUse);
+                par = new Paragraph(metaScoreType.getDescription(reportData.getLocale()), smallFontToUse);
                 c.addElement(par);
 
                 if( scoreText!=null && !scoreText.isBlank() )
@@ -9675,7 +9675,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
         if( ReportManager.DEBUG_REPORTS )
             LogService.logIt(  "BaseCT2ReportTemplate.addItemScoresSection() AAA " );
 
-        if( ( reportData.getR2Use().getIncludeItemScores() <= 0 && !reportData.getReportRuleAsBoolean( "itmscoreson" ) ) || reportData.getReportRuleAsBoolean( "itmscoresoff") )
+        if( ( reportData.getR2Use().getIncludeItemScores()<=0 && !reportData.getReportRuleAsBoolean( "itmscoreson" ) ) || reportData.getReportRuleAsBoolean( "itmscoresoff") )
             return;
 
         try

@@ -44,7 +44,6 @@ public class Type112AvUploadItemScorer extends BaseAudioSampleAvItemScorer imple
     // int avItemTypeId;
     boolean isLooseCompare = false;
     float overallMaxPoints = 0;
-    SimJ.Intn intn;
     String textIn;
     
     
@@ -202,7 +201,6 @@ public class Type112AvUploadItemScorer extends BaseAudioSampleAvItemScorer imple
             return null;
         
         return new TextAndTitle( text, title );
-
     }
     
     public boolean getPartialCreditAssigned( ScorableResponse sr )

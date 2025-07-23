@@ -4,12 +4,12 @@
  */
 package com.tm2score.format;
 
-import com.tm2score.ai.MetaScoreType;
+import com.tm2score.ai.AiMetaScoreType;
 import com.tm2score.battery.BatteryScoreType;
 import com.tm2score.battery.BatteryScoringUtils;
 import com.tm2score.battery.BatteryType;
 import com.tm2score.bot.ChatMessageType;
-import com.tm2score.entity.ai.MetaScore;
+import com.tm2score.entity.ai.AiMetaScore;
 import com.tm2score.entity.battery.Battery;
 import com.tm2score.entity.battery.BatteryScore;
 import com.tm2score.entity.proctor.ProctorEntry;
@@ -3138,15 +3138,15 @@ NONE(0,"None"),    // When an ONET Soc is selected
         out[0] = "";
         out[1] = tog;
 
-        if( getReport().getIncludeAiScores()<=0 || getReportRuleAsBoolean( "skipaiscoressection") || getTestKey().getMetaScoreList()==null || getTestKey().getMetaScoreList().isEmpty() )
+        if( getReport().getIncludeAiScores()<=0 || getReportRuleAsBoolean( "skipaiscoressection") || getTestKey().getAiMetaScoreList()==null || getTestKey().getAiMetaScoreList().isEmpty() )
             return out;
 
         LogService.logIt(  "BaseScoreFormatter.getStandardGenAISection() BBB.1 " );
 
         int valCount = 0;
-        for( MetaScore ms : getTestKey().getMetaScoreList() )
+        for( AiMetaScore ms : getTestKey().getAiMetaScoreList() )
         {
-            if( ms.getMetaScoreTypeId()>0 && ms.getScore()>0 && ms.getConfidence()>= Constants.MIN_METASCORE_CONFIDENCE )
+            if( ms.getAiMetaScoreTypeId()>0 && ms.getScore()>0 && ms.getConfidence()>= Constants.MIN_METASCORE_CONFIDENCE )
                 valCount++;
         }
         
@@ -3159,7 +3159,7 @@ NONE(0,"None"),    // When an ONET Soc is selected
         String confScr;
         String scoreText;
         int count = 0;
-        MetaScoreType metaScoreType;
+        AiMetaScoreType metaScoreType;
         String lastUpdate;
 
         String tt = lmsg( "g.AiGenScoresSubtitle" );
@@ -3167,13 +3167,13 @@ NONE(0,"None"),    // When an ONET Soc is selected
         // sb.append( getRowTitleSubtitle( rowStyleHdr, lmsg(  "g.AiGenScoresSht", null ), subtitle ) );
         sb.append( getRowTitle( rowStyleHdr, lmsg("g.AiGenScoresSht", null ), lmsg( "g.Score" ), lmsg( "g.Interpretation" ) + " " + lmsg("g.AiGenScoresSubtitleSht"), null ) );
 
-        for( MetaScore metaScore : getTestKey().getMetaScoreList() )
+        for( AiMetaScore metaScore : getTestKey().getAiMetaScoreList() )
         {
-            if( metaScore.getMetaScoreTypeId()<=0 || metaScore.getScore()<=0 || metaScore.getConfidence()<Constants.MIN_METASCORE_CONFIDENCE )
+            if( metaScore.getAiMetaScoreTypeId()<=0 || metaScore.getScore()<=0 || metaScore.getConfidence()<Constants.MIN_METASCORE_CONFIDENCE )
                 continue;
             count++;
 
-            metaScoreType = MetaScoreType.getValue(metaScore.getMetaScoreTypeId() );
+            metaScoreType = AiMetaScoreType.getValue(metaScore.getAiMetaScoreTypeId() );
 
             scr = I18nUtils.getFormattedNumber( getLocale(), metaScore.getScore(), scrDigits );
             
@@ -3182,7 +3182,7 @@ NONE(0,"None"),    // When an ONET Soc is selected
 
             metaScore.setLocale(getLocale());
             
-            scoreText = confScr + metaScoreType.getDescription(getLocale()) + " " + lmsg("g.AiMetaScrInputTypesUsed", new String[]{metaScore.getMetaScoreInputTypesStr()});
+            scoreText = confScr + metaScoreType.getDescription(getLocale()); //  + " " + lmsg("g.AiMetaScrInputTypesUsed", new String[]{metaScore.getMetaScoreInputTypesStr()});
             
             if( metaScore.getScoreText()!=null && !metaScore.getScoreText().isBlank() )                
                 scoreText += "\n\n" + metaScore.getScoreTextXhtml();

@@ -48,55 +48,14 @@ public class TextAndTitle implements Comparable<TextAndTitle>
         this.sequenceId=sequenceId;
     }
 
-    /*
-    public TextAndTitle( String text, String title, boolean rf, long  uploadedUserFileId )
-    {
-        this.text = text;
-        this.title = title;
-        this.redFlag = rf;
-        this.uploadedUserFileId = uploadedUserFileId;
-    }
-    */
-
-    /*
-    public TextAndTitle( String text, String title, boolean rf, long  uploadedUserFileId, String string1 )
-    {
-        this.text = text;
-        this.title = title;
-        this.redFlag = rf;
-        this.uploadedUserFileId = uploadedUserFileId;
-        this.string1=string1;
-    }
-    */
-
     public TextAndTitle( String text, String title, boolean rf, long uploadedUserFileId, int sequenceId, String string1, String string2)
     {
         this(  text,  title,  rf,  uploadedUserFileId,  sequenceId,  string1,  string2,  null,  null);
-        /*
-        this.text = text;
-        this.title = HtmlUtils.removeAllHtmlTags(title);
-        this.redFlag = rf;
-        this.uploadedUserFileId = uploadedUserFileId;
-        this.string1=string1;
-        this.string2=string2;
-        this.sequenceId=sequenceId;
-        */
     }
 
     public TextAndTitle( String text, String title, boolean rf, long uploadedUserFileId, int sequenceId, String string1, String string2, String string3)
     {
         this(  text,  title,  rf,  uploadedUserFileId,  sequenceId,  string1,  string2,  string3,  null);
-
-        /*
-        this.text = text;
-        this.title = HtmlUtils.removeAllHtmlTags(title);
-        this.redFlag = rf;
-        this.uploadedUserFileId = uploadedUserFileId;
-        this.string1=string1;
-        this.string2=string2;
-        this.string3=string3;
-        this.sequenceId=sequenceId;
-        */
     }
 
     public TextAndTitle( String text, String title, boolean rf, long uploadedUserFileId, int sequenceId, String string1, String string2, String string3, String string4)

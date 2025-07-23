@@ -10,7 +10,7 @@ import com.tm2score.av.AvEventFacade;
 import com.tm2score.custom.bestjobs.BestJobsReportUtils;
 import com.tm2score.custom.bestjobs.EeoMatch;
 import com.tm2score.custom.coretest2.cefr.CefrScoreType;
-import com.tm2score.entity.ai.MetaScore;
+import com.tm2score.entity.ai.AiMetaScore;
 import com.tm2score.entity.battery.Battery;
 import com.tm2score.entity.battery.BatteryScore;
 import com.tm2score.entity.event.AvItemResponse;
@@ -600,20 +600,20 @@ public class AssessmentStatusCreator {
 
                     }
 
-                    if( testKey.getMetaScoreList()==null )
-                        testKey.setMetaScoreList( eventFacade.getReportableMetaScoreListForTestKey(testKey.getTestKeyId() ) );
+                    if( testKey.getAiMetaScoreList()==null )
+                        testKey.setAiMetaScoreList( eventFacade.getReportableAiMetaScoreListForTestKey(testKey.getTestKeyId() ) );
                     // Add meta scores (aI Scores)
-                    if( testKey.getMetaScoreList()!=null && !testKey.getMetaScoreList().isEmpty() )
+                    if( testKey.getAiMetaScoreList()!=null && !testKey.getAiMetaScoreList().isEmpty() )
                     {
                         AssessmentResult.AssessmentStatus.MetaScores aoasmeta;                    
-                        for( MetaScore metaScore : testKey.getMetaScoreList() )
+                        for( AiMetaScore metaScore : testKey.getAiMetaScoreList() )
                         {
                             aoasmeta = new AssessmentResult.AssessmentStatus.MetaScores();
-                            aoasmeta.setType(metaScore.getMetaScoreTypeId());
+                            aoasmeta.setType(metaScore.getAiMetaScoreTypeId());
                             aoasmeta.setScoreNumeric( metaScore.getScore());
                             aoasmeta.setConfidence(metaScore.getConfidence());
                             aoasmeta.setScoreText( metaScore.getScoreText());
-                            aoasmeta.setMetaScoreInputTypeIds( metaScore.getMetaScoreInputTypeIds() );
+                            // aoasmeta.setMetaScoreInputTypeIds( Integer.toString(metaScore.getAiMetaScoreInputTypeId()) );
                             aoas.getMetaScores().add( aoasmeta);
                         }
                     }

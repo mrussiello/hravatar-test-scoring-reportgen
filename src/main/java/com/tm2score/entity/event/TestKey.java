@@ -2,7 +2,7 @@ package com.tm2score.entity.event;
 
 import com.tm2score.entity.proctor.ProctorEntry;
 import com.tm2score.api.ApiType;
-import com.tm2score.entity.ai.MetaScore;
+import com.tm2score.entity.ai.AiMetaScore;
 import com.tm2score.entity.battery.Battery;
 import com.tm2score.entity.battery.BatteryScore;
 import com.tm2score.entity.corp.Corp;
@@ -334,7 +334,7 @@ public class TestKey implements Serializable, ErrorTxtObject {
     private List<ProctorSuspension> proctorSuspensionList;
 
     @Transient
-    private List<MetaScore> metaScoreList;
+    private List<AiMetaScore> aiMetaScoreList;
 
     //@Transient
     //private HtmlScoreFormatter htmlScoreFormatter;
@@ -448,14 +448,14 @@ public class TestKey implements Serializable, ErrorTxtObject {
         p.setSuborgId(suborgId);
     }
 
-    public MetaScore getMetaScore(int metaScoreTypeId)
+    public AiMetaScore getMetaScore(int metaScoreTypeId)
     {
-        if (this.metaScoreList == null)
+        if (this.aiMetaScoreList == null)
             return null;
 
-        for (MetaScore m : this.metaScoreList)
+        for (AiMetaScore m : this.aiMetaScoreList)
         {
-            if (m.getMetaScoreTypeId() == metaScoreTypeId)
+            if (m.getAiMetaScoreTypeId() == metaScoreTypeId)
                 return m;
         }
 
@@ -1730,41 +1730,14 @@ public class TestKey implements Serializable, ErrorTxtObject {
         this.includeResume = includeResume;
     }
 
-    public List<MetaScore> getMetaScoreList()
+    public List<AiMetaScore> getAiMetaScoreList()
     {
-
-        /*
-        if( 1==2 && (metaScoreList==null || metaScoreList.isEmpty()) )
-        {
-            int count=0;
-            List<MetaScore> out = new ArrayList<>();
-            MetaScore ms;
-            for( MetaScoreType t : MetaScoreType.values() )
-            {
-                if( t.getMetaScoreTypeId()==0 )
-                    continue;
-                ms = new MetaScore();
-                ms.setMetaScoreTypeId(t.getMetaScoreTypeId());
-                ms.setScore((float) (100f*Math.random()));
-                ms.setScoreText( StringUtils.generateRandomString(200));
-                ms.setCreateDate(new Date());
-                ms.setLastUpdate(new Date());
-                ms.setConfidence( 0.5f + (float)(0.5f*Math.random()));
-                ms.setMetaScoreInputTypeIds("1,2,3,4");
-                out.add(ms);
-                count++;
-                if( count>=2 )
-                    break;
-            }
-            metaScoreList = out;
-        }
-         */
-        return metaScoreList;
+        return aiMetaScoreList;
     }
 
-    public void setMetaScoreList(List<MetaScore> metaScoreList)
+    public void setAiMetaScoreList(List<AiMetaScore> metaScoreList)
     {
-        this.metaScoreList = metaScoreList;
+        this.aiMetaScoreList = metaScoreList;
     }
 
     public int getJobId()

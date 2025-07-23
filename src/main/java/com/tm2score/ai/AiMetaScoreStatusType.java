@@ -2,9 +2,9 @@ package com.tm2score.ai;
 
 
 
-public enum MetaScoreStatusType
+public enum AiMetaScoreStatusType
 {
-    NOT_READY(0,"Not Ready"),
+        NOT_READY(0,"Not Ready"),
     READY(100,"Ready for Scoring"),
     SCORING_STARTED(105,"Scoring Started"),
     PENDING_ASYNC_SCORES(106,"Scoring - Pending External/Async Scores"),
@@ -13,14 +13,14 @@ public enum MetaScoreStatusType
     DEACTIVATED(202,"Deactivated"),
     SCORE_ERROR(203,"Scoring Error" );
 
-    private final int metaScoreStatusTypeId;
+    private final int aiMetaScoreStatusTypeId;
 
     private String key;
 
 
-    private MetaScoreStatusType( int p , String key )
+    private AiMetaScoreStatusType( int p , String key )
     {
-        this.metaScoreStatusTypeId = p;
+        this.aiMetaScoreStatusTypeId = p;
 
         this.key = key;
     }
@@ -28,18 +28,18 @@ public enum MetaScoreStatusType
 
 
 
-    public int getMetaScoreStatusTypeId()
+    public int getAiMetaScoreStatusTypeId()
     {
-        return this.metaScoreStatusTypeId;
+        return this.aiMetaScoreStatusTypeId;
     }
 
     
     public boolean getHasResultsToShow()
     {
-        return metaScoreStatusTypeId>=SCORED.getMetaScoreStatusTypeId() && metaScoreStatusTypeId<=REPORT_COMPLETE.getMetaScoreStatusTypeId();
+        return aiMetaScoreStatusTypeId>=SCORED.getAiMetaScoreStatusTypeId() && aiMetaScoreStatusTypeId<=REPORT_COMPLETE.getAiMetaScoreStatusTypeId();
     }
 
-    public static MetaScoreStatusType getType( int typeId )
+    public static AiMetaScoreStatusType getType( int typeId )
     {
         return getValue( typeId );
     }
@@ -52,15 +52,16 @@ public enum MetaScoreStatusType
 
 
 
-    public static MetaScoreStatusType getValue( int id )
+    public static AiMetaScoreStatusType getValue( int id )
     {
-        MetaScoreStatusType[] vals = MetaScoreStatusType.values();
+        AiMetaScoreStatusType[] vals = AiMetaScoreStatusType.values();
 
         for( int i=0 ; i<vals.length ; i++ )
         {
-            if( vals[i].getMetaScoreStatusTypeId() == id )
+            if( vals[i].getAiMetaScoreStatusTypeId() == id )
                 return vals[i];
         }
         return NOT_READY;
     }
+
 }

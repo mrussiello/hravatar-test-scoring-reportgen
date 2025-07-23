@@ -110,24 +110,20 @@ public class BaseAvItemScorer {
     {
         String idt = sr==null ? null : UrlEncodingUtils.decodeKeepPlus( sr.getExtItemId() );
         
-        if( idt == null || idt.isEmpty() )
+        if( idt==null || idt.isBlank() )
         {            
             idt = UrlEncodingUtils.decodeKeepPlus( intn.getUniqueid() );
             
             if( idt==null || idt.isEmpty() )
                 idt = UrlEncodingUtils.decodeKeepPlus(intn.getId());
 
-            if( idt == null || idt.isEmpty() )
+            if( idt==null || idt.isEmpty() )
                 idt = Integer.toString( intn.getSeq() );
         } 
         
         return idt;
     }
     
-    public TextAndTitle getItemScoreTextTitle(int includeItemScoreTypeId, ScorableResponse sr )
-    {
-        return null;
-    }
     
     public SimJ.Intn.Intnitem getSelectedIntnItem( SimJ.Intn intn, AvItemResponse avItemResponse )
     {
