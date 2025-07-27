@@ -19,7 +19,7 @@ import com.tm2score.service.LogService;
 public class IFrameTestEventScorer implements TestEventScorer
 {
     TestKey tk;
-    EventFacade eventFacade;
+    EventFacade eventFacade;    
     
     @Override
     public void scoreTestEvent( TestEvent te, SimDescriptor sd, boolean skipVersionCheck) throws Exception
@@ -69,4 +69,12 @@ public class IFrameTestEventScorer implements TestEventScorer
         return "IFrameTestEventScorer() ";
     }
 
+    @Override
+    public void setClearExternal(boolean clearExternal)
+    {
+        // does nothing in this class.
+    }
+
+    
+    
 }

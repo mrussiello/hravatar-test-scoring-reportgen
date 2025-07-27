@@ -14,6 +14,8 @@ import com.tm2score.entity.sim.SimDescriptor;
 public interface TestEventScorer
 {
 
+    public void setClearExternal( boolean clearExternal );
+    
     public void scoreTestEvent( TestEvent te, SimDescriptor sd, boolean skipVersionCheck ) throws Exception;
 
 

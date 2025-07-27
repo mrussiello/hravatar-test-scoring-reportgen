@@ -13,7 +13,6 @@ import com.tm2score.global.RuntimeConstants;
 import com.tm2score.av.AvEventFacade;
 import com.tm2score.av.AvItemResponsePrepThread;
 import com.tm2score.file.HttpFileUtils;
-import com.tm2score.googlecloud.GoogleApiException;
 import com.tm2score.purchase.CreditSourceType;
 import com.tm2score.purchase.PurchaseFacade;
 import com.tm2score.score.ScoreUtils;
@@ -26,7 +25,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -520,7 +518,7 @@ public class VoiceVibesUtils {
                         break;
                 }
 
-                if( clipList.size()>0 )
+                if( !clipList.isEmpty() )
                 {
                     byte[] bytes = AudioAppender.getAppendedAudio( clipList );
                     // LogService.logIt( "VoiceVibesUtils.postAudioToVoiceVibes() CCC.3 TestEventId=" + (te==null ? "null" : te.getTestEventId()) + ", clips used=" + clipList.size() + ", Appending Audios bytes=" + (bytes==null ? "null" : bytes.length ) );  
@@ -701,7 +699,7 @@ public class VoiceVibesUtils {
         }
         catch( VoiceVibesException | IOException e )
         {
-            LogService.logIt( "VoiceVibesUtils.postAudioToVoiceVibes() " + e.toString() + ", Recording voice vibes error in avItemResponse. " + iir.toString() );            
+            LogService.logIt( "VoiceVibesUtils.postAudioToVoiceVibes() XXX.1 " + e.toString() + ", Recording voice vibes error in avItemResponse. " + iir.toString() );            
             iir.setVoiceVibesStatusTypeId( VoiceVibesStatusType.POST_ERROR.getVoiceVibesStatusTypeId() );
             iir.setVoiceVibesPostErrorCount(iir.getVoiceVibesPostErrorCount()+1 );
             
@@ -723,7 +721,7 @@ public class VoiceVibesUtils {
         //}
         catch( Exception e )
         {
-            LogService.logIt(e, "VoiceVibesUtils.postAudioToVoiceVibes() " + iir.toString() );            
+            LogService.logIt(e, "VoiceVibesUtils.postAudioToVoiceVibes() YYY.1 " + iir.toString() );            
             throw e;
         }
     }

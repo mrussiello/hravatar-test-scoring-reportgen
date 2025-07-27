@@ -10,6 +10,7 @@ import com.tm2score.score.scorer.TestEventScorer;
 import com.tm2score.score.scorer.StandardSurveyEventScorer;
 import com.tm2score.score.scorer.TestEventScorerFactory;
 import com.tm2score.dist.DistManager;
+import com.tm2score.entity.ai.AiMetaScore;
 import com.tm2score.entity.battery.Battery;
 import com.tm2score.entity.battery.BatteryScore;
 import com.tm2score.entity.ct5.event.Ct5ItemResponse;
@@ -353,7 +354,7 @@ public class ScoreManager extends BaseScoreManager
                         }
                     }
                     
-                    scoreTestEvent(null, te, descripXml, skipVersionCheck );                   
+                    scoreTestEvent(null, te, descripXml, skipVersionCheck, clearExternal );                   
                 }
 
                 catch( ScoringException e )
@@ -966,7 +967,7 @@ public class ScoreManager extends BaseScoreManager
         try
         {
             // if not completed, return false;
-            if( te.getTestEventStatusTypeId() < TestEventStatusType.COMPLETED.getTestEventStatusTypeId()  )
+            if( te.getTestEventStatusTypeId()<TestEventStatusType.COMPLETED.getTestEventStatusTypeId()  )
                 return false;
 
             // if this TestEvent was never started, continue
@@ -991,6 +992,7 @@ public class ScoreManager extends BaseScoreManager
             if( te.getOverallScore()>0 || (tesl!=null && !tesl.isEmpty())  )
                 TestEventLogUtils.createTestEventLogEntry(te.getTestEventId(),  "ScoreManager.resetTestEventStatusForScoring() Starting Rescore of TestEvent. OLD SCORE VALUES: " + getScoreStringForLogs( te, tesl ) );
             
+            AvScoringUtils asu = null;
                         
             // if scoring was started on this TestEvent, clean it, set back to completed, and save.
             // NO LONGER DELETES TestEventScores
@@ -1027,27 +1029,7 @@ public class ScoreManager extends BaseScoreManager
                     }
                         
                 }
-                /*
-                if( (te.getProductTypeId()==ProductType.CT5DIRECTTEST.getProductTypeId() ) && te.getResultXml()!=null && !te.getResultXml().isEmpty() )
-                {
-                    
-                    Ct5TestEvent cte = Ct5EventFacade.getInstance().getCt5TestEventForTestEventId(te.getTestEventId());
-                    
-                    if( cte==null )
-                    {
-                        TestEventLogUtils.createTestEventLogEntry(te.getTestEventId(),  "ScoreManager.resetTestEventStatusForScoring() Could not clear result xml for CT5 Direct Test Event because could not find Ct5TestEvent in dbms. Using existing Result Xml for rescore: " + te.getResultXml()  );                        
-                    }
-                    
-                    else
-                    {
-                        TestEventLogUtils.createTestEventLogEntry(te.getTestEventId(),  "ScoreManager.resetTestEventStatusForScoring() Clearing CT5 Result Xml for rescore: " + te.getResultXml()  );
-                        te.setResultXml(null);
-                    }
-                }
-                */
-                
-                
-                
+                                
                 EssayFacade essayFacade=EssayFacade.getInstance();
                 
                 essayFacade.deleteUnscoredEssaysForTestEvent(te.getTestEventId());
@@ -1073,11 +1055,14 @@ public class ScoreManager extends BaseScoreManager
                 
                 // Removed by Mike 5/28/2018
                 // eventFacade.clearExternalScoresForEvent(te);
+                asu = new AvScoringUtils();
+                asu.resetAvEssayScoresForTestEvent( te.getTestEventId() );
             }
             
             if( resetSpeechText )
             {
-                AvScoringUtils asu = new AvScoringUtils();
+                if( asu==null )
+                    asu = new AvScoringUtils();
                 asu.resetSpeechTextForTestEvent( te.getTestEventId() );
             }
 

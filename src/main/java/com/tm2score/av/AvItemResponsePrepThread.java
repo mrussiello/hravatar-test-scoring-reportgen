@@ -970,6 +970,38 @@ public class AvItemResponsePrepThread implements Runnable {
                                 {
                                     throw new Exception( "Start TranscriptionJob Action. Transcription operation failed. " + aout + ",  iir.avItemResponseId=" + iir.getAvItemResponseId()  + ", testEventId=" + iir.getTestEventId() );
                                 }
+                                
+                                if( aout.contains("SUCCESS"))
+                                {
+                                    if( !aout.contains(":") )
+                                        aout = atu.checkTranscriptionJobStatus(transJobName);
+                                    
+                                    String transcriptUri= aout.substring( 8, aout.length() );
+                                    Object[] tjrs = atu.getTranscriptionText(  transcriptUri, true );
+
+                                    String txt = (String) tjrs[0];
+                                    Float confidence = (Float) tjrs[1];
+
+                                    // LogService.logIt( "AvItemResponsePrepThread.cleanUnscoredAvItemResponseRecords() Amazon Transcribe. AvItemResponseId=" + iir.getAvItemResponseId() +  ",  Transcribed text length is " + (txt==null ? 0 : txt.length()) + ", avg confidence=" + confidence );
+
+                                    List<String> rl = new ArrayList<>();
+                                    rl.add( txt );
+
+                                    List<Object[]> ol = new ArrayList<>();                                    
+                                    ol.add( new Object[]{rl,confidence} );
+
+                                    s2tResult = new Speech2TextResult(ol);
+
+                                    if( (iir.getLangCode()==null || iir.getLangCode().isBlank()) && iir.getMediaLocale()!=null )
+                                        iir.setLangCode( iir.getMediaLocale().toString() );
+                                    
+                                    iir.setSpeechText( s2tResult.encodeTranscriptForStorage());                                    
+                                    // iir.setSpeechText(txt);
+                                    iir.setSpeechTextConfidence(confidence);
+                                    iir.setSpeechTextStatusTypeId( AvItemSpeechTextStatusType.COMPLETE.getSpeechTextStatusTypeId() );
+                                    chg = true;
+                                    
+                                }
 
                                 saveAvItemResponse( iir );
                                 chg=false;
@@ -1046,7 +1078,7 @@ public class AvItemResponsePrepThread implements Runnable {
                                 if( atr.contains( "FAILED" ) )
                                     throw new Exception( "AvItemResponsePrepThread.cleanUnscoredAvItemResponseRecords()  Amazon Transcribe. Checking status. Returned FAILED. transJobName=" + transJobName + ", atr=" + atr );
 
-                                else if( atr.indexOf( "SUCCESS" )>=0 )
+                                else if( atr.contains("SUCCESS") )
                                 {                                
                                     // LogService.logIt( "AvItemResponsePrepThread.cleanUnscoredAvItemResponseRecords() Amazon Transcribe. Checking status.  Returned Success: " + atr + ", transJobName=" + transJobName + ", testEventId=" + testEventId + ", irr.id=" + iir.getAvItemResponseId() );
                                     String transcriptUri= atr.substring( 8, atr.length() );

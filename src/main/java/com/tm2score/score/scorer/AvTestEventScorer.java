@@ -195,6 +195,9 @@ public class AvTestEventScorer extends StandardTestEventScorer implements TestEv
             finalizeRemoteProctorScoring();
             
             finalizeScore();                    
+            
+            initiateAiMetaScores();
+            
             // LogService.logIt( "AvTestEventScorer.scoreTestEvent() COMPLETED SCORING te.scoreFormatTypeId=" + te.getScoreFormatTypeId() + ", teId=" + te.getTestEventId() );
        }
 

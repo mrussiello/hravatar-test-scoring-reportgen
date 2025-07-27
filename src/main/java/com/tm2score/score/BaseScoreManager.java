@@ -555,7 +555,7 @@ public class BaseScoreManager
 
                 try
                 {
-                    scoreTestEvent(tk, te, null, false );
+                    scoreTestEvent(tk, te, null, false, false);
 
                     if( te.getTestEventStatusTypeId()==TestEventStatusType.COMPLETED_PENDING_EXTERNAL_SCORES.getTestEventStatusTypeId() )
                     {
@@ -921,7 +921,7 @@ public class BaseScoreManager
 
             try
             {
-                scoreTestEvent(tk, te, null, false );
+                scoreTestEvent(tk, te, null, false, false);
             }
             catch( ScoringException ee )
             {
@@ -1008,7 +1008,7 @@ public class BaseScoreManager
 
 
     
-    public void scoreTestEvent( TestKey tk, TestEvent te, String descripXml, boolean skipVersionCheck) throws Exception
+    public void scoreTestEvent( TestKey tk, TestEvent te, String descripXml, boolean skipVersionCheck, boolean clearExternal) throws Exception
     {
        try
        {
@@ -1260,7 +1260,7 @@ public class BaseScoreManager
             TestEventScorer ts = TestEventScorerFactory.getTestEventScorer(te);
 
             //LogService.logIt( "ScoreManager.scoreTestEvent() using " + ts.toString() );
-
+            ts.setClearExternal(clearExternal);
             ts.scoreTestEvent(te, te.getSimDescriptor(), skipVersionCheck );
             
             if( te.getTestEventScoreList()==null || te.getTestEventScoreList().isEmpty() )
@@ -1275,7 +1275,7 @@ public class BaseScoreManager
 
        catch( ScoringException e )
        {
-           LogService.logIt( "ScoreManager.scoreTestEvent() " + e.toString() + ", " + te.toString() );           
+           LogService.logIt("ScoreManager.scoreTestEvent() " + e.toString() + ", " + te.toString() );           
            TestEventLogUtils.createTestEventLogEntry( te.getTestEventId(),  "ScoreManager.scoreTestEvent() ScoringException Scoring Test Event. " + e.toString() );                               
            throw e;
        }

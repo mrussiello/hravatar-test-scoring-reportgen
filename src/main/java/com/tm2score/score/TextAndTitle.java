@@ -31,7 +31,7 @@ public class TextAndTitle implements Comparable<TextAndTitle>
     private String string3 = null;
     private String string4 = null;
     
-    private int displaySeq;
+    // private int displaySeq;
     
 
     public TextAndTitle( String text, String title)

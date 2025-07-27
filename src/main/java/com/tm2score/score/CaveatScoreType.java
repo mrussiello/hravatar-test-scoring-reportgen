@@ -74,6 +74,21 @@ public enum CaveatScoreType
         return NONE;
     }
     
+    public boolean getIsEssay()
+    {
+        return equals(CLARITY) || 
+                equals(ARGUMENT) || 
+                equals(MECHANICS) || 
+                equals(IDEAL ) || 
+                equals(PLAGIARIZED) || 
+                equals(PLAGIARIZED_XY) || 
+                equals(SPELLING_ERRORS) || 
+                equals(GRAMMAR_ERRORS) || 
+                equals(OTHER_ERRORS);
+                
+                
+    }
+    
     public int getHeadingLevel()
     {
         return headingLevel;

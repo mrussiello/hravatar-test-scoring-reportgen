@@ -145,7 +145,7 @@ public class AiRequestUtils
         catch( Exception e )
         {
             Tracker.addAiCallError();
-            LogService.logIt(e, "AiRequestUtils.doResumeParsingCall() aiCallType=" +  aiCallType.getName() +", ResumeId=" + (resume==null ? "null" : resume.getResumeId() + ", userId=" + resume.getUserId() + ", orgId=" + resume.getOrgId()) + ", userId=" + (user==null ? "null" : user.getUserId()) );
+            LogService.logIt(e, "AiRequestUtils.doResumeParsingCall() aiCallType=" + (aiCallType==null ? "null" : aiCallType.getName()) +", ResumeId=" + (resume==null ? "null" : resume.getResumeId() + ", userId=" + resume.getUserId() + ", orgId=" + resume.getOrgId()) + ", userId=" + (user==null ? "null" : user.getUserId()) );
             throw e;
         }
     }
@@ -179,7 +179,7 @@ public class AiRequestUtils
         catch( Exception e )
         {
             Tracker.addAiCallError();
-            LogService.logIt(e, "AiRequestUtils.doEssaySummaryCall() aiCallType=" +  aiCallType.getName() +", unscoredEssayId=" + (unscoredEssay==null ? "null" : unscoredEssay.getUnscoredEssayId()+ ", userId=" + unscoredEssay.getUserId()) );
+            LogService.logIt(e, "AiRequestUtils.doEssaySummaryCall() aiCallType=" + (aiCallType==null ? "null" : aiCallType.getName()) +", unscoredEssayId=" + (unscoredEssay==null ? "null" : unscoredEssay.getUnscoredEssayId()+ ", userId=" + unscoredEssay.getUserId()) );
             throw e;
         }
     }
@@ -233,12 +233,51 @@ public class AiRequestUtils
         catch( Exception e )
         {
             Tracker.addAiCallError();
-            LogService.logIt(e, "AiRequestUtils.doEssayScoringCall() aiCallType=" +  aiCallType.getName() +", unscoredEssayId=" + (unscoredEssay==null ? "null" : unscoredEssay.getUnscoredEssayId()+ ", userId=" + unscoredEssay.getUserId()) );
+            LogService.logIt(e, "AiRequestUtils.doEssayScoringCall() aiCallType=" + (aiCallType==null ? "null" : aiCallType.getName()) +", unscoredEssayId=" + (unscoredEssay==null ? "null" : unscoredEssay.getUnscoredEssayId()+ ", userId=" + unscoredEssay.getUserId()) );
             throw e;
         }
     }
 
 
+    public static JsonObject doEvalPlanScoringCall( AiCallType aiCallType, boolean forceRedo, User user, long testKeyId, long rcCheckId ) throws Exception
+    {
+        try
+        {
+            if( user==null )
+                throw new Exception( "User is null." );
+
+            if( testKeyId<=0 && rcCheckId<=0 )
+                throw new Exception( "Both TestKeyId and RcCheckId are 0." );
+
+            if( aiCallType==null )
+                throw new Exception( "AiCallType is null." );
+            
+            JsonObjectBuilder job = getBasePayloadJsonObjectBuilder(aiCallType, user );
+            
+            job.add("intparam1", testKeyId );
+            job.add("intparam2", rcCheckId );                
+            job.add("autoupdate", 1 );
+
+            if( forceRedo )
+                job.add( "forceredo", 1 );
+            
+            JsonObject joReq = job.build();
+
+            AiRequestClient client = new AiRequestClient();
+
+            Tracker.addAiCall();
+                        
+            return client.getJsonObjectFromAiCallRequest(joReq, BaseAiClient.AI_CALL_TIMEOUT_LONG );
+        }
+        catch( Exception e )
+        {
+            Tracker.addAiCallError();
+            LogService.logIt(e, "AiRequestUtils.doEvalPlanScoringCall() aiCallType=" +  (aiCallType==null ? "null" : aiCallType.getName()) + ", userId=" + (user==null ? "null" : user.getUserId()) + ", testKeyId=" + testKeyId + ", rcCheckId=" + rcCheckId );
+            throw e;
+        }
+    }
+    
+    
 
     private static JsonObjectBuilder getBasePayloadJsonObjectBuilder( AiCallType aiCallType, User user ) throws Exception
     {

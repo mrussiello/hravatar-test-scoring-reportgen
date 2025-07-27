@@ -15,6 +15,7 @@ import com.tm2score.file.ConversionStatusType;
 import com.tm2score.file.FileUploadFacade;
 import com.tm2score.global.RuntimeConstants;
 import com.tm2score.ivr.IvrStringUtils;
+import com.tm2score.score.CaveatScoreType;
 import com.tm2score.service.LogService;
 import com.tm2score.voicevibes.VoiceVibesStatusType;
 import com.tm2score.voicevibes.VoiceVibesUtils;
@@ -32,6 +33,74 @@ public class AvScoringUtils {
     AmazonRekognitionUtils arUtils;
             
 
+    
+    public void resetAvEssayScoresForTestEvent( long testEventId ) throws Exception
+    {
+        try
+        {
+            if( avEventFacade==null )
+                avEventFacade=AvEventFacade.getInstance();
+            
+            List<AvItemResponse> airl = avEventFacade.getAvItemResponsesForTestEventId(testEventId);
+            
+            if( airl==null || airl.isEmpty() )
+                return;
+            
+            for( AvItemResponse irr : airl )
+            {
+                if( irr.getAvItemEssayStatusType().isNotRequired())
+                {
+                    LogService.logIt( "AvScoringUtils.resetEssayScoresForTestEvent() Skipping AvItemResponseId=" + irr.getAvItemResponseId() + " Essay Scoring not required., testEventId=" + testEventId );
+                    continue;
+                }
+                                
+                LogService.logIt( "AvScoringUtils.resetEssayScoresForTestEvent() Resetting AvItemResponseId=" + irr.getAvItemResponseId() + ", Old scoringStatusTypeId=" + irr.getScoringStatusTypeId() + ", speechTextStatusTypeId=" + irr.getSpeechTextStatusTypeId() + ", speechTextErrorCount=" + irr.getSpeechTextErrorCount() + ", speechText=" + irr.getSpeechText() + ", testEventId=" + testEventId );
+                irr.setAvItemEssayStatusTypeId(AvItemEssayStatusType.NOT_REQUESTED.getEssayStatusTypeId() );
+                irr.setEssayConfidence(0);
+                irr.setEssayMachineScore(0);
+                irr.setEssayPlagiarized(0);
+                irr.setUnscoredEssayId(0);
+                irr.setScoringStatusTypeId( AvItemScoringStatusType.NOT_READY_FOR_SCORING.getScoringStatusTypeId() );
+                
+                if( CaveatScoreType.getValue(irr.getMetaScoreTypeId1()).getIsEssay() )
+                {
+                    irr.setMetaScoreTypeId1(0);
+                    irr.setMetaScore1(0);
+                }
+
+                if( CaveatScoreType.getValue(irr.getMetaScoreTypeId2()).getIsEssay() )
+                {
+                    irr.setMetaScoreTypeId2(0);
+                    irr.setMetaScore2(0);
+                }
+
+                if( CaveatScoreType.getValue(irr.getMetaScoreTypeId3()).getIsEssay() )
+                {
+                    irr.setMetaScoreTypeId3(0);
+                    irr.setMetaScore3(0);
+                }
+
+                if( CaveatScoreType.getValue(irr.getMetaScoreTypeId4()).getIsEssay() )
+                {
+                    irr.setMetaScoreTypeId4(0);
+                    irr.setMetaScore4(0);
+                }
+
+                if( CaveatScoreType.getValue(irr.getMetaScoreTypeId5()).getIsEssay() )
+                {
+                    irr.setMetaScoreTypeId5(0);
+                    irr.setMetaScore5(0);
+                }
+
+                avEventFacade.saveAvItemResponse(irr);
+            }
+        }
+        catch( Exception e )
+        {
+            LogService.logIt( e, "AvScoringUtils.resetEssayScoresForTestEvent() testEventId=" + testEventId );
+            throw e;
+        }
+    }
     
     public void resetSpeechTextForTestEvent( long testEventId ) throws Exception
     {

@@ -32,8 +32,8 @@ import java.util.Map;
  */
 public class StandardTestEventScorer extends BaseTestEventScorer implements TestEventScorer
 {
-    
-    
+
+
     @Override
     public void scoreTestEvent( TestEvent testEvent, SimDescriptor simDescriptor, boolean skipVersionCheck) throws Exception
     {
@@ -51,9 +51,9 @@ public class StandardTestEventScorer extends BaseTestEventScorer implements Test
             ///////////////////////////////////////////////////////////////////////////////////////////////
 
             setReportLocale();
-            
+
             initTestEvent();
-                 
+
             if( ScoreManager.DEBUG_SCORING )
                LogService.logIt( "StandardTestEventScorer.score() te.stdHraScoring=" + te.getStdHraScoring() + ", validItemsCanHaveZeroMaxPoints=" + validItemsCanHaveZeroMaxPoints );
 
@@ -79,13 +79,13 @@ public class StandardTestEventScorer extends BaseTestEventScorer implements Test
                 // LogService.logIt( scrSum.toString() );
                 return;
             }
-            
+
             calculateMetaScores();
 
             calculateOverallScores();
-            
-            // LogService.logIt( scrSum.toString() );   
-            
+
+            // LogService.logIt( scrSum.toString() );
+
             int counter = 1;
 
             setOverallScoreAndPercentile( counter );
@@ -95,12 +95,14 @@ public class StandardTestEventScorer extends BaseTestEventScorer implements Test
             counter = setCompetencyGroupTestEventScores(counter);
 
             setItemResponses(te.getAutoScorableResponseList());
-            
-            finalizeRemoteProctorScoring();
-            
-            finalizeScore();        
 
-            if( ScoreManager.DEBUG_SCORING )            
+            finalizeRemoteProctorScoring();
+
+            finalizeScore();
+            
+            initiateAiMetaScores();
+
+            if( ScoreManager.DEBUG_SCORING )
                 LogService.logIt( "StandardTestEventScorer.scoreTestEvent() COMPLETED SCORING te.scoreFormatTypeId=" + te.getScoreFormatTypeId() + ", teId=" + te.getTestEventId() );
        }
 
@@ -117,9 +119,9 @@ public class StandardTestEventScorer extends BaseTestEventScorer implements Test
             throw new ScoringException( "msg=" + e.getMessage() + ", StandardTestEventScorer.scoreTestEvent() " + "\n" + (scrSum!=null ? scrSum.toString() : "" ) , ScoreUtils.getExceptionPermanancy(e), te );
        }
     }
-    
-    
-    
+
+
+
     @Override
     public void recalculatePercentilesForTestEvent( TestEvent testEvent, SimDescriptor simDescriptor ) throws Exception
     {
@@ -137,7 +139,7 @@ public class StandardTestEventScorer extends BaseTestEventScorer implements Test
 
             if( te.getProduct()==null )
                 te.setProduct( eventFacade.getProduct(te.getProductId()));
-            
+
             if( normFacade == null )
                normFacade = NormFacade.getInstance();
 
@@ -161,12 +163,12 @@ public class StandardTestEventScorer extends BaseTestEventScorer implements Test
             if( frcCountry != null && !frcCountry.isEmpty() )
                 cc = frcCountry;
 
-            
+
             Map<String,Object> norm = getPercentile(te.getProductId(), te.getProduct().getIntParam24(), te, otes, te.getOrgId(), cc);
-            
+
             float percentile = norm==null ? -1 : ((Float)norm.get("percentile")).floatValue();
             int pcount = norm==null ? 0 : ((Integer)norm.get("count")).intValue();
-                        
+
             te.setOverallPercentile( percentile );
             te.setOverallPercentileCount( pcount );
             otes.setPercentile( percentile );
@@ -176,7 +178,7 @@ public class StandardTestEventScorer extends BaseTestEventScorer implements Test
             {
                 LogService.logIt( "StandardTestEventScorer.recalculatePercentilesForTestEvent() Setting TestEvent.overallPercentile to ZScore Percentile. TestEventId=" + te.getTestEventId() );
                 te.setOverallPercentile( otes.getOverallZScorePercentile() );
-                te.setOverallPercentileCount( 0 );            
+                te.setOverallPercentileCount( 0 );
                 otes.setAccountPercentile( -1 );
                 te.setAccountPercentile( -1 );
                 te.setAccountPercentileCount( 0 );
@@ -186,7 +188,7 @@ public class StandardTestEventScorer extends BaseTestEventScorer implements Test
                 te.setCountryPercentileCount( 0 );
                 otes.setCountryPercentileCount( 0 );
             }
-            
+
             // has a valid count-based norm.
             else
             {
@@ -232,7 +234,7 @@ public class StandardTestEventScorer extends BaseTestEventScorer implements Test
                 otes.setCountryPercentileCount( pcount );
                 te.setPercentileCountry(cc);
             }
-            
+
             eventFacade.saveTestEventScore(otes);
 
             Thread.sleep( 100 );
@@ -261,21 +263,21 @@ public class StandardTestEventScorer extends BaseTestEventScorer implements Test
                 if( tes.getScore()>= 0 && te.getProduct().getIntParam7()==1 )
                 {
                     norm = getPercentile(te.getProductId(), te.getProduct().getIntParam24(), te, tes, te.getOrgId(), cc );
-                    
+
                     percentile = norm==null ? -1 : ((Float)norm.get("percentile"));
                     pcount = norm==null ? 0 : ((Integer)norm.get("count"));
-                    
+
                     tes.setPercentile( percentile );
                     tes.setOverallPercentileCount( pcount );
 
                     if( percentile<0 )
                     {
                         tes.setAccountPercentile( -1 );
-                        tes.setAccountPercentileCount( 0 ); 
+                        tes.setAccountPercentileCount( 0 );
                         tes.setCountryPercentile( -1 );
                         tes.setCountryPercentileCount( 0 );
                     }
-                    
+
                     else
                     {
                         // norm = getPercentile(te.getProductId(), te, tes, te.getOrgId(), null);
@@ -301,7 +303,7 @@ public class StandardTestEventScorer extends BaseTestEventScorer implements Test
                         tes.setCountryPercentileCount( pcount );
                         tes.setPercentileCountry(cc);
                     }
-                    
+
                     eventFacade.saveTestEventScore(tes);
 
                     Thread.sleep( 100 );
@@ -338,37 +340,37 @@ public class StandardTestEventScorer extends BaseTestEventScorer implements Test
     }
 
 
-    
+
     @Override
     public List<SimCompetencyGroup> getSimCompetencyGroupList() throws Exception
     {
             List<SimCompetencyGroup> scgl = new ArrayList<>();
 
-            String groupName = reportRules.getReportRuleAsString("competencygrouptitle" + SimCompetencyGroupType.CUSTOM.getSimCompetencyGroupTypeId() );            
+            String groupName = reportRules.getReportRuleAsString("competencygrouptitle" + SimCompetencyGroupType.CUSTOM.getSimCompetencyGroupTypeId() );
             SimCompetencyGroup scg = createSimCompetencyGroup( groupName==null || groupName.isBlank() ? "Custom 1" : groupName, SimCompetencyGroupType.CUSTOM.getSimCompetencyGroupTypeId(), new int[] { SimCompetencyClass.CUSTOM.getSimCompetencyClassId(),SimCompetencyClass.CUSTOM_COMBO.getSimCompetencyClassId()}, te.getSimCompetencyScoreList(), overallRawScoreCalcType );
             if( scg != null )
                 scgl.add( scg );
-            
+
             groupName = reportRules.getReportRuleAsString("competencygrouptitle" + SimCompetencyGroupType.CUSTOM2.getSimCompetencyGroupTypeId() );
             scg = createSimCompetencyGroup( groupName==null || groupName.isBlank() ? "Custom 2" : groupName, SimCompetencyGroupType.CUSTOM2.getSimCompetencyGroupTypeId(), new int[] { SimCompetencyClass.CUSTOM2.getSimCompetencyClassId()}, te.getSimCompetencyScoreList(), overallRawScoreCalcType );
             if( scg != null )
                 scgl.add( scg );
-            
+
             groupName = reportRules.getReportRuleAsString("competencygrouptitle" + SimCompetencyGroupType.CUSTOM3.getSimCompetencyGroupTypeId() );
             scg = createSimCompetencyGroup( groupName==null || groupName.isBlank() ? "Custom 3" : groupName, SimCompetencyGroupType.CUSTOM3.getSimCompetencyGroupTypeId(), new int[] { SimCompetencyClass.CUSTOM3.getSimCompetencyClassId()}, te.getSimCompetencyScoreList(), overallRawScoreCalcType );
             if( scg != null )
                 scgl.add( scg );
-            
+
             groupName = reportRules.getReportRuleAsString("competencygrouptitle" + SimCompetencyGroupType.CUSTOM4.getSimCompetencyGroupTypeId() );
             scg = createSimCompetencyGroup( groupName==null || groupName.isBlank() ? "Custom 4" : groupName, SimCompetencyGroupType.CUSTOM4.getSimCompetencyGroupTypeId(), new int[] { SimCompetencyClass.CUSTOM4.getSimCompetencyClassId()}, te.getSimCompetencyScoreList(), overallRawScoreCalcType );
             if( scg != null )
                 scgl.add( scg );
-            
+
             groupName = reportRules.getReportRuleAsString("competencygrouptitle" + SimCompetencyGroupType.CUSTOM5.getSimCompetencyGroupTypeId() );
             scg = createSimCompetencyGroup( groupName==null || groupName.isBlank() ? "Custom 5" : groupName, SimCompetencyGroupType.CUSTOM5.getSimCompetencyGroupTypeId(), new int[] { SimCompetencyClass.CUSTOM5.getSimCompetencyClassId()}, te.getSimCompetencyScoreList(), overallRawScoreCalcType );
             if( scg != null )
                 scgl.add( scg );
-            
+
             scg = createSimCompetencyGroup( "Abilities", SimCompetencyGroupType.ABILITY.getSimCompetencyGroupTypeId(), new int[] { SimCompetencyClass.ABILITY.getSimCompetencyClassId(),SimCompetencyClass.ABILITY_COMBO.getSimCompetencyClassId()  }, te.getSimCompetencyScoreList(), overallRawScoreCalcType );
             if( scg != null )
                 scgl.add( scg );
@@ -388,16 +390,16 @@ public class StandardTestEventScorer extends BaseTestEventScorer implements Test
             scg = createSimCompetencyGroup( "Emotional Intelligence Factors", SimCompetencyGroupType.EQ.getSimCompetencyGroupTypeId(), new int[] { SimCompetencyClass.EQ.getSimCompetencyClassId() }, te.getSimCompetencyScoreList(), overallRawScoreCalcType );
             if( scg != null )
                 scgl.add( scg );
-            
+
             scg = createSimCompetencyGroup( "AI-Derived Traits", SimCompetencyGroupType.AI.getSimCompetencyGroupTypeId(), new int[] { SimCompetencyClass.VOICE_PERFORMANCE_INDEX.getSimCompetencyClassId() }, te.getSimCompetencyScoreList(), overallRawScoreCalcType );
             if( scg != null )
                 scgl.add( scg );
-            
-            return scgl;        
+
+            return scgl;
     }
-    
-    
-    
+
+
+
 
     public SimCompetencyGroup createSimCompetencyGroup( String name, int simCompetencyGroupTypeId, int[] simCompetencyClassIds, List<SimCompetencyScore> simCompetencyScoreList, OverallRawScoreCalcType overallRawScoreCalcType )
     {
@@ -409,11 +411,11 @@ public class StandardTestEventScorer extends BaseTestEventScorer implements Test
         {
             if( !scs.getHasScoreableData() )
                 continue;
-            
+
             // Do not include combo sim competencies in these calculations.
             //if( scs.getSimCompetencyClass().getIsCombo() )
             //    continue;
-            
+
             match = false;
             for( int i=0; i<simCompetencyClassIds.length; i++ )
             {
@@ -425,10 +427,10 @@ public class StandardTestEventScorer extends BaseTestEventScorer implements Test
                 continue;
 
             // Do not include SimCompetency scores where it's supposed to be Z-score but there's not mean/sd
-            if( scs.getSimCompetencyObj().getRawscorecalctypeid()==SimCompetencyRawScoreCalcType.ZSCORE_BASED_ON_TOTALS.getSimCompetencyRawScoreCalcTypeId() && 
+            if( scs.getSimCompetencyObj().getRawscorecalctypeid()==SimCompetencyRawScoreCalcType.ZSCORE_BASED_ON_TOTALS.getSimCompetencyRawScoreCalcTypeId() &&
                 scs.getSimCompetencyObj().getStddeviation()<=0 )
                 continue;
-            
+
             scsl.add( scs );
         }
 

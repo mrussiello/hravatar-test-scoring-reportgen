@@ -24,6 +24,7 @@ import com.tm2score.entity.event.Percentile;
 import com.tm2score.entity.event.TestEventArchive;
 import com.tm2score.entity.event.TestEventScore;
 import com.tm2score.entity.event.TestKey;
+import com.tm2score.entity.job.EvalPlan;
 import com.tm2score.entity.proctor.RemoteProctorEvent;
 import com.tm2score.entity.proctor.SuspiciousActivity;
 import com.tm2score.entity.report.Report;
@@ -43,6 +44,9 @@ import com.tm2score.global.NumberUtils;
 import com.tm2score.global.RuntimeConstants;
 import com.tm2score.global.UserRankComparator;
 import com.tm2score.global.WeightedObjectComparator;
+import com.tm2score.job.EvalPlanFacade;
+import com.tm2score.job.EvalPlanStatusType;
+import com.tm2score.job.EvalPlanSubmissionThread;
 import com.tm2score.proctor.ProctorFacade;
 import com.tm2score.proctor.ProctorHelpUtils;
 import com.tm2score.proctor.ProctorUtils;
@@ -108,6 +112,7 @@ public class BaseTestEventScorer
     public TestEvent te;
     public SimDescriptor sd;
 
+    public boolean clearExternal;
     public List<String> forcedRiskFactorsList;
 
     public List<MetaScorer> metaScorerList;
@@ -1538,6 +1543,58 @@ public class BaseTestEventScorer
         return null;
     }
 
+    public void initiateAiMetaScores() throws Exception
+    {
+        if( tk.getJobId()<=0 )
+            return;
+
+        if( !tk.getTestKeyStatusType().getIsScoreComplete() )
+            return;
+        
+        if( !RuntimeConstants.getBooleanValue("tm2ai_rest_api_ok") || !RuntimeConstants.getBooleanValue("tm2ai_evalplan_scoring_ok") )
+        {
+            LogService.logIt("BaseTestEventScorer.initiateAiMetaScores() AI EvalPlan Scoring is not enabled. Ignoring. testKeyId=" + tk.getTestKeyId() );
+            return;
+        }
+        
+        try
+        {
+            EvalPlan evalPlan = EvalPlanFacade.getInstance().getEvalPlan(tk.getJobId());
+            if( evalPlan==null )
+                throw new Exception( "No EvalPlan found for tk.jobId=evalPlanId=" + tk.getJobId() );
+            
+            if( evalPlan.getEvalPlanStatusTypeId()==EvalPlanStatusType.INACTIVE.getEvalPlanStatusTypeId())
+            {
+                LogService.logIt("BaseTestEventScorer.initiateAiMetaScores() EvalPlan is inactive. Ignoring. evalPlanId=" + evalPlan.getEvalPlanId() + ", testKeyId=" + tk.getTestKeyId() );
+                return;
+            }
+            
+            boolean useThread = evalPlan.getRcScriptId()>0;
+            
+            EvalPlanSubmissionThread epst = new EvalPlanSubmissionThread( te.getUser(), te.getTestKeyId(), 0, clearExternal );
+            
+            if( useThread )
+            {
+                LogService.logIt( "BaseTestEventScorer.initiateAiMetaScores() Submitting EvalPlan for scoring via thread. TestKeyId=" + tk.getTestKeyId() + ", testEventId=" + te.getTestEventId() + ", userId=" + tk.getUserId() );
+                new Thread(epst).start();
+            }
+            else
+            {
+                LogService.logIt( "BaseTestEventScorer.initiateAiMetaScores() DDD.1 Submitting EvalPlan for scoring inline. TestKeyId=" + tk.getTestKeyId() + ", testEventId=" + te.getTestEventId() + ", userId=" + tk.getUserId() );
+                boolean result = epst.submitEvalPlanScore();
+                LogService.logIt( "BaseTestEventScorer.initiateAiMetaScores() DDD.2 BACK from EvalPlan scoring call. result=" + result + ", TestKeyId=" + tk.getTestKeyId() + ", testEventId=" + te.getTestEventId() + ", userId=" + tk.getUserId() );
+                if( result )
+                    Thread.sleep(500);
+            }
+        }
+        
+        catch( Exception e )
+        {
+            LogService.logIt( e, "BaseTestEventScorer.initiateAiMetaScores() " );
+            throw e;
+        }
+        
+    }
 
     public void finalizeScore() throws Exception
     {
@@ -3130,5 +3187,10 @@ public class BaseTestEventScorer
                 return scs;
         }
         return null;
+    }
+    
+    public void setClearExternal( boolean b )
+    {
+        this.clearExternal=b;
     }
 }

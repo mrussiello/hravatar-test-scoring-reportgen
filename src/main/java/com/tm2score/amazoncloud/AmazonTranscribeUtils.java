@@ -187,8 +187,11 @@ public class AmazonTranscribeUtils
         }        
         catch( ConflictException e )
         {
-            LogService.logIt( "AmazonTranscribeUtils.startTranscriptionJob() NONFATAL ConflictException returning PENDING. " + e.toString() + ", locale=" + locale.toString() + ", mediaFileUri=" + mediaFileUri + ", mediaFormat=" + mediaFormat + ", outputBucketName=" + outputBucketName + ", transJobName=" + transJobName );
-            return "PENDING";
+            LogService.logIt( "AmazonTranscribeUtils.startTranscriptionJob() NONFATAL ConflictException returning checkTranscriptionJobStatus(), " + e.toString() + ", locale=" + locale.toString() + ", mediaFileUri=" + mediaFileUri + ", mediaFormat=" + mediaFormat + ", outputBucketName=" + outputBucketName + ", transJobName=" + transJobName );
+            
+            return checkTranscriptionJobStatus(transJobName);
+            
+            // return "PENDING";
         }
         catch( Exception e )
         {

@@ -865,7 +865,7 @@ public class TestEventScore implements Serializable, Comparable<TestEventScore>,
 
             // if( q != null && a != null && a.trim().length()>0)
             if( q != null && a != null )
-                out.add(new TextAndTitle( a, q, r!=null && r.indexOf( "red:1")>=0, uufid, sequenceId, string1, string2, string3, string4 ) );
+                out.add(new TextAndTitle( a, q, r!=null && r.contains("red:1"), uufid, sequenceId, string1, string2, string3, string4 ) );
         }
 
         return out;

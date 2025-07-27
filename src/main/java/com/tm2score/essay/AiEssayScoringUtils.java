@@ -25,8 +25,8 @@ public class AiEssayScoringUtils {
     {
         if( AI_ESSAYS_ON!=null )
             return;
-        AI_ESSAYS_ON = RuntimeConstants.getBooleanValue("ai-essay-scoring-ok");
-        USE_SCORE_2 = RuntimeConstants.getBooleanValue("ai-essay-scoring-use-score2");
+        AI_ESSAYS_ON = RuntimeConstants.getBooleanValue("tm2ai_rest_api_ok") && RuntimeConstants.getBooleanValue("ai-essay-scoring-ok");
+        USE_SCORE_2 = RuntimeConstants.getBooleanValue("tm2ai_rest_api_ok") && RuntimeConstants.getBooleanValue("ai-essay-scoring-use-score2");
     }
     
     public static boolean getAiEssayScoringOn()
