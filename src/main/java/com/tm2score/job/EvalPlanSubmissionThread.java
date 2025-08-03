@@ -20,16 +20,18 @@ public class EvalPlanSubmissionThread implements Runnable {
     static Boolean AI_SCORING_OK = null;
     
     User user;
+    int evalPlanId;
     long testKeyId;
     long rcCheckId;
     boolean forceRescore;
     
-    public EvalPlanSubmissionThread( User user, long testKeyId, long rcCheckId, boolean forceRescore )
+    public EvalPlanSubmissionThread( int evalPlanId, User user, long testKeyId, long rcCheckId, boolean forceRescore)
     {
         this.user=user;
         this.testKeyId=testKeyId;
         this.rcCheckId=rcCheckId;
         this.forceRescore=forceRescore;
+        this.evalPlanId=evalPlanId;
     }
     
     
@@ -74,7 +76,7 @@ public class EvalPlanSubmissionThread implements Runnable {
             if( user==null )
                 throw new Exception( "User is null." );
             
-            JsonObject responseJo = AiRequestUtils.doEvalPlanScoringCall(AiCallType.EVALPLAN_SCORE, forceRescore, user, testKeyId, rcCheckId);
+            JsonObject responseJo = AiRequestUtils.doEvalPlanScoringCall(AiCallType.EVALPLAN_SCORE, evalPlanId, forceRescore, user, testKeyId, rcCheckId);
             
             if( !AiRequestUtils.wasAiCallSuccess( responseJo ) )
             {

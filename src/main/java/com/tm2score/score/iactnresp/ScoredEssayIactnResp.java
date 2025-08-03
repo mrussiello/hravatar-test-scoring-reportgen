@@ -642,7 +642,7 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
         String title = itemLevelId;
         String ques = this.getQuestionText();
         if (ques!=null)
-            ques = StringUtils.truncateStringWithTrailer(ques, 256, true);
+            ques = StringUtils.truncateStringWithTrailer(ques, 512, true);
 
         if (ques != null)
             title += "\n" + ques;
@@ -660,7 +660,7 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
         {
             text = getEssayTextAll();
             if (text!=null)
-                text = StringUtils.truncateStringWithTrailer(text, 512, true);
+                text = StringUtils.truncateStringWithTrailer(text, 2048, true);
             // LogService.logIt( "ScoredEssayIactnResp.getItemScoreTextTitle() DDD.1 unique=" + this.intnObj.getUniqueid() + ", simletCompetencyScore=" + (simletCompetencyScore==null ? "null" : "present, class=" + simletCompetencyScore.getSimletCompetencyClass().getName()) );
 
             String scoreText;

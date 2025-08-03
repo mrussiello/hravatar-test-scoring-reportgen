@@ -2592,6 +2592,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
             Collections.sort(teslP, new DisplayOrderComparator() );  // new TESNameComparator() );
 
             java.util.List<TestEventScore> teslB = getTestEventScoreListToShow( TestEventScoreType.COMPETENCY , SimCompetencyClass.SCOREDBIODATA );
+            teslB.addAll( getTestEventScoreListToShow( TestEventScoreType.COMPETENCY , SimCompetencyClass.BIODATA_COMBO ) );
             Collections.sort(teslB, new DisplayOrderComparator() );  // new TESNameComparator());
 
             java.util.List<TestEventScore> teslE = getTestEventScoreListToShow( TestEventScoreType.COMPETENCY , SimCompetencyClass.EQ );
@@ -4718,6 +4719,7 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                 return;
 
             java.util.List<TestEventScore> tesl = getTestEventScoreListToShow( TestEventScoreType.COMPETENCY, SimCompetencyClass.SCOREDBIODATA ); // new ArrayList<>();
+            tesl.addAll( getTestEventScoreListToShow( TestEventScoreType.COMPETENCY, SimCompetencyClass.BIODATA_COMBO ) ); // new ArrayList<>();
 
             if( tesl.size() <= 0 )
                 return;

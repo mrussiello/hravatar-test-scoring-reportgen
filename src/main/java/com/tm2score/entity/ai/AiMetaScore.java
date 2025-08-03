@@ -73,6 +73,32 @@ public class AiMetaScore implements Serializable {
     @Column( name = "scoretext" )
     private String scoreText;
 
+    @Column( name = "strparam1" )
+    private String strParam1;
+    
+    @Column( name = "strparam2" )
+    private String strParam2;
+    
+    @Column( name = "intparam1" )
+    private int intParam1;
+    
+    @Column( name = "floatparam1" )
+    private int floatParam1;
+    
+    @Column( name = "floatparam2" )
+    private int floatParam2;
+    
+    @Column( name = "floatparam3" )
+    private int floatParam3;
+    
+    @Column( name = "floatparam4" )
+    private int floatParam4;
+    
+    @Column( name = "floatparam5" )
+    private int floatParam5;
+    
+    
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="createdate")
     private Date createDate;
@@ -294,6 +320,86 @@ public class AiMetaScore implements Serializable {
     public void setLocale(Locale locale)
     {
         this.locale = locale;
+    }
+
+    public String getStrParam1()
+    {
+        return strParam1;
+    }
+
+    public void setStrParam1(String strParam1)
+    {
+        this.strParam1 = strParam1;
+    }
+
+    public String getStrParam2()
+    {
+        return strParam2;
+    }
+
+    public void setStrParam2(String strParam2)
+    {
+        this.strParam2 = strParam2;
+    }
+
+    public int getIntParam1()
+    {
+        return intParam1;
+    }
+
+    public void setIntParam1(int intParam1)
+    {
+        this.intParam1 = intParam1;
+    }
+
+    public int getFloatParam1()
+    {
+        return floatParam1;
+    }
+
+    public void setFloatParam1(int floatParam1)
+    {
+        this.floatParam1 = floatParam1;
+    }
+
+    public int getFloatParam2()
+    {
+        return floatParam2;
+    }
+
+    public void setFloatParam2(int floatParam2)
+    {
+        this.floatParam2 = floatParam2;
+    }
+
+    public int getFloatParam3()
+    {
+        return floatParam3;
+    }
+
+    public void setFloatParam3(int floatParam3)
+    {
+        this.floatParam3 = floatParam3;
+    }
+
+    public int getFloatParam4()
+    {
+        return floatParam4;
+    }
+
+    public void setFloatParam4(int floatParam4)
+    {
+        this.floatParam4 = floatParam4;
+    }
+
+    public int getFloatParam5()
+    {
+        return floatParam5;
+    }
+
+    public void setFloatParam5(int floatParam5)
+    {
+        this.floatParam5 = floatParam5;
     }
 
 

@@ -282,7 +282,7 @@ public class DataEntryIactnResp extends IactnResp implements ScorableResponse
                 ques = StringUtils.getUrlDecodedValue( iitm.getContent() );
 
                 if( ques!=null )
-                    ques = StringUtils.truncateStringWithTrailer(ques, 256, true );
+                    ques = StringUtils.truncateStringWithTrailer(ques, 512, true );
             }
         }
 

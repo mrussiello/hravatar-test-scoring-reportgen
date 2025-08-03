@@ -158,7 +158,7 @@ public class ScoredChatIactnItemResp extends IactnItemResp
                 ques = StringUtils.getUrlDecodedValue( iitm.getContent() );
 
                 if( ques!=null )
-                    ques = StringUtils.truncateStringWithTrailer(ques, 255, true );
+                    ques = StringUtils.truncateStringWithTrailer(ques, 512, true );
             }
         }
 

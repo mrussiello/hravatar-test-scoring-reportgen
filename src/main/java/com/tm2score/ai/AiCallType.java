@@ -17,6 +17,10 @@ public enum AiCallType
     ORGTRAITS_PARSE_NOCOMPS(32,"OrgTraits Parse No Competencies", "orgtraitsparsenocomps", false),
     ORGTRAITS_PARSE_COMPSONLY(33,"OrgTraits Parse Competencies Only", "orgtraitsparsecompsonly", false),
     EVALPLAN_SCORE(100,"EvalPlan Score", "evalplanscore", false ),
+    AI_META_SCORE(110,"Single AI MetaScore", "aimetascore", false ),
+    EVAL_VS_JOBDESCRIP(150,"Eval vs JobDescrip", "evalvsjobdescrip", false ),
+    EVAL_VS_ORGCOMPS(160,"Eval vs Org Competencies", "evalvsorgcomps", false ),
+    EVAL_VS_ORGTRAITS(170,"Eval vs OrgTraits", "evalvsorgtraits", false ),
     ESSAY_SCORE(200,"Essay Score", "essayscore", false ),
     ESSAY_SUMMARY(201,"Essay Summary", "essaysummary", false );
 

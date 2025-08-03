@@ -1903,7 +1903,7 @@ public class IactnResp implements ScorableResponse
 
                 if( ques!=null )
                 {
-                    ques = StringUtils.truncateStringWithTrailer(ques, 256, true );
+                    ques = StringUtils.truncateStringWithTrailer(ques, 512, true );
                     // LogService.logIt( "IactnResp.getItemScoreTextTitle() CCC.1 Found questionStem: " + ques );
                 }
             }

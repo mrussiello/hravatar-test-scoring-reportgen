@@ -33,6 +33,7 @@ public enum SimCompetencyClass
     VOICE_PERFORMANCE_INDEX(153,"Voice Performance Index"),
     INTERESTS_COMBO(154,"Interests Combination"),
     CUSTOM_COMBO(155,"Custom Combination"),
+    BIODATA_COMBO(156,"Biodata Combination"),
     AGGREGATEABILITY(200,"AggregateAbility"),
     AGGREGATESKILL(201,"AggregateSkill"),
     AGGREGATEKNOWLEDGE(202,"AggregateKnowledge"),
@@ -132,7 +133,7 @@ public enum SimCompetencyClass
     
     public boolean getSupportsPercentiles()
     {
-        return !equals( NONCOGNITIVE ) && !equals( SCOREDBIODATA ) && !equals( EQ ) && !equals( NONCOG_COMBO );
+        return !equals( NONCOGNITIVE ) && !equals( SCOREDBIODATA ) && !equals( BIODATA_COMBO ) && !equals( EQ ) && !equals( NONCOG_COMBO );
     }
 
 
@@ -185,7 +186,7 @@ public enum SimCompetencyClass
 
     public boolean isBiodata()
     {
-        return equals( SCOREDBIODATA );
+        return equals( SCOREDBIODATA ) || equals(BIODATA_COMBO);
     }
     
     public boolean isAIDerived()
@@ -275,7 +276,7 @@ public enum SimCompetencyClass
 
     public boolean getUsesBioInterpretation()
     {
-        return equals( SCOREDBIODATA );
+        return equals( SCOREDBIODATA ) || equals(BIODATA_COMBO);
     }
 
     public boolean getUsesWritingInterpretation()
@@ -344,7 +345,7 @@ public enum SimCompetencyClass
 
     public boolean getIsCombo()
     {
-        return equals( ABILITY_COMBO ) || equals(SKILL_COMBO) || equals(NONCOG_COMBO) || equals(INTERESTS_COMBO) || equals(CUSTOM_COMBO);        
+        return equals( ABILITY_COMBO ) || equals(SKILL_COMBO) || equals(NONCOG_COMBO) || equals(INTERESTS_COMBO) || equals(CUSTOM_COMBO) || equals(BIODATA_COMBO);        
     }
     
     public boolean getIsAnyCustom()
@@ -370,7 +371,7 @@ public enum SimCompetencyClass
 
     public boolean getIsBiodata()
     {
-        return equals( SCOREDBIODATA );
+        return equals( SCOREDBIODATA ) || equals(BIODATA_COMBO);
     }
 
     public boolean getIsAggregateOrTask()

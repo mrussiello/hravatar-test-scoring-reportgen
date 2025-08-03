@@ -383,7 +383,7 @@ public class StandardTestEventScorer extends BaseTestEventScorer implements Test
             if( scg != null )
                 scgl.add( scg );
 
-            scg = createSimCompetencyGroup( "Past Behaviors", SimCompetencyGroupType.BIODATA.getSimCompetencyGroupTypeId(), new int[] { SimCompetencyClass.SCOREDBIODATA.getSimCompetencyClassId() }, te.getSimCompetencyScoreList(), overallRawScoreCalcType );
+            scg = createSimCompetencyGroup( "Past Behaviors", SimCompetencyGroupType.BIODATA.getSimCompetencyGroupTypeId(), new int[] { SimCompetencyClass.SCOREDBIODATA.getSimCompetencyClassId(),SimCompetencyClass.BIODATA_COMBO.getSimCompetencyClassId() }, te.getSimCompetencyScoreList(), overallRawScoreCalcType );
             if( scg != null )
                 scgl.add( scg );
 

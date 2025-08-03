@@ -384,6 +384,8 @@ public abstract class BaseCareerScoutReportTemplate extends BaseBestJobsReportTe
             // Collections.sort(teslE, new TESNameComparator());
             
             java.util.List<TestEventScore> teslB = getTestEventScoreListToShow(TestEventScoreType.COMPETENCY , SimCompetencyClass.SCOREDBIODATA, true );
+            teslB.addAll(getTestEventScoreListToShow(TestEventScoreType.COMPETENCY , SimCompetencyClass.BIODATA_COMBO, true ) );
+            
             // Collections.sort(teslB, new TESNameComparator());
 
             // java.util.List<TestEventScore> teslI = getTestEventScoreListToShow( TestEventScoreType.COMPETENCY , SimCompetencyClass.SCOREDINTEREST );
@@ -1289,6 +1291,7 @@ public abstract class BaseCareerScoutReportTemplate extends BaseBestJobsReportTe
             Collections.sort(teslE, new DisplayOrderComparator() );  // new TESNameComparator());
             
             java.util.List<TestEventScore> teslB = getTestEventScoreListToShow(TestEventScoreType.COMPETENCY , SimCompetencyClass.SCOREDBIODATA, false );
+            teslB.addAll(getTestEventScoreListToShow(TestEventScoreType.COMPETENCY , SimCompetencyClass.BIODATA_COMBO, false ) );
             Collections.sort(teslB, new DisplayOrderComparator() );  // new TESNameComparator());
 
             //java.util.List<TestEventScore> teslI = getTestEventScoreListToShow(TestEventScoreType.COMPETENCY , SimCompetencyClass.SCOREDINTEREST, false );

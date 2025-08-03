@@ -710,7 +710,7 @@ public class RadioButtonGroupResp  implements ScorableResponse
                 intnLevelQues = StringUtils.getUrlDecodedValue( iitm.getContent() );
 
                 if( intnLevelQues!=null )
-                    intnLevelQues = StringUtils.truncateStringWithTrailer(intnLevelQues, 255, true );
+                    intnLevelQues = StringUtils.truncateStringWithTrailer(intnLevelQues, 512, true );
             }
         }
         

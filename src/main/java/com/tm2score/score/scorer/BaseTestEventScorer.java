@@ -14,6 +14,8 @@ import com.tm2score.interview.InterviewQuestion;
 import com.tm2score.service.LogService;
 import com.tm2score.sim.NonCompetencyItemType;
 import com.tm2builder.sim.xml.SimJ;
+import com.tm2score.ai.AiMetaScoreSubmissionThread;
+import com.tm2score.ai.AiMetaScoreType;
 import com.tm2score.corp.CorpFacade;
 import com.tm2score.custom.coretest2.cefr.CefrScoreType;
 import com.tm2score.custom.coretest2.cefr.CefrType;
@@ -58,6 +60,7 @@ import com.tm2score.score.ComboSimCompetencyScoreUtils;
 import com.tm2score.score.MergableScoreObject;
 import com.tm2score.score.MergableScoreObjectCombiner;
 import com.tm2score.report.ReportRules;
+import com.tm2score.report.ReportUtils;
 import com.tm2score.score.CaveatScore;
 import com.tm2score.score.iactnresp.ScorableResponse;
 import com.tm2score.score.ScoreManager;
@@ -1545,55 +1548,92 @@ public class BaseTestEventScorer
 
     public void initiateAiMetaScores() throws Exception
     {
-        if( tk.getJobId()<=0 )
-            return;
-
         if( !tk.getTestKeyStatusType().getIsScoreComplete() )
             return;
-        
+
         if( !RuntimeConstants.getBooleanValue("tm2ai_rest_api_ok") || !RuntimeConstants.getBooleanValue("tm2ai_evalplan_scoring_ok") )
         {
             LogService.logIt("BaseTestEventScorer.initiateAiMetaScores() AI EvalPlan Scoring is not enabled. Ignoring. testKeyId=" + tk.getTestKeyId() );
             return;
         }
-        
+                
         try
         {
-            EvalPlan evalPlan = EvalPlanFacade.getInstance().getEvalPlan(tk.getJobId());
-            if( evalPlan==null )
-                throw new Exception( "No EvalPlan found for tk.jobId=evalPlanId=" + tk.getJobId() );
-            
-            if( evalPlan.getEvalPlanStatusTypeId()==EvalPlanStatusType.INACTIVE.getEvalPlanStatusTypeId())
+            if( tk.getJobId()>0 )
             {
-                LogService.logIt("BaseTestEventScorer.initiateAiMetaScores() EvalPlan is inactive. Ignoring. evalPlanId=" + evalPlan.getEvalPlanId() + ", testKeyId=" + tk.getTestKeyId() );
-                return;
+                EvalPlan evalPlan = EvalPlanFacade.getInstance().getEvalPlan(tk.getJobId());
+                if( evalPlan==null )
+                    throw new Exception( "No EvalPlan found for tk.jobId=evalPlanId=" + tk.getJobId() );
+
+                if( evalPlan.getEvalPlanStatusTypeId()==EvalPlanStatusType.INACTIVE.getEvalPlanStatusTypeId())
+                {
+                    LogService.logIt("BaseTestEventScorer.initiateAiMetaScores() EvalPlan is inactive. Ignoring. evalPlanId=" + evalPlan.getEvalPlanId() + ", testKeyId=" + tk.getTestKeyId() );
+                    return;
+                }
+
+                boolean useThread = evalPlan.getRcScriptId()>0;
+
+                EvalPlanSubmissionThread epst = new EvalPlanSubmissionThread( evalPlan.getEvalPlanId(), te.getUser(), te.getTestKeyId(), 0, clearExternal );
+
+                if( useThread )
+                {
+                    LogService.logIt( "BaseTestEventScorer.initiateAiMetaScores() Submitting EvalPlan for scoring via thread. TestKeyId=" + tk.getTestKeyId() + ", testEventId=" + te.getTestEventId() + ", userId=" + tk.getUserId() );
+                    new Thread(epst).start();
+                }
+                
+                else
+                {
+                    LogService.logIt( "BaseTestEventScorer.initiateAiMetaScores() DDD.1 Submitting EvalPlan for scoring inline. TestKeyId=" + tk.getTestKeyId() + ", testEventId=" + te.getTestEventId() + ", userId=" + tk.getUserId() );
+                    boolean result = epst.submitEvalPlanScore();
+                    LogService.logIt( "BaseTestEventScorer.initiateAiMetaScores() DDD.2 BACK from EvalPlan scoring call. result=" + result + ", TestKeyId=" + tk.getTestKeyId() + ", testEventId=" + te.getTestEventId() + ", userId=" + tk.getUserId() );
+                    if( result )
+                        Thread.sleep(500);
+                }
             }
             
-            boolean useThread = evalPlan.getRcScriptId()>0;
-            
-            EvalPlanSubmissionThread epst = new EvalPlanSubmissionThread( te.getUser(), te.getTestKeyId(), 0, clearExternal );
-            
-            if( useThread )
-            {
-                LogService.logIt( "BaseTestEventScorer.initiateAiMetaScores() Submitting EvalPlan for scoring via thread. TestKeyId=" + tk.getTestKeyId() + ", testEventId=" + te.getTestEventId() + ", userId=" + tk.getUserId() );
-                new Thread(epst).start();
-            }
             else
             {
-                LogService.logIt( "BaseTestEventScorer.initiateAiMetaScores() DDD.1 Submitting EvalPlan for scoring inline. TestKeyId=" + tk.getTestKeyId() + ", testEventId=" + te.getTestEventId() + ", userId=" + tk.getUserId() );
-                boolean result = epst.submitEvalPlanScore();
-                LogService.logIt( "BaseTestEventScorer.initiateAiMetaScores() DDD.2 BACK from EvalPlan scoring call. result=" + result + ", TestKeyId=" + tk.getTestKeyId() + ", testEventId=" + te.getTestEventId() + ", userId=" + tk.getUserId() );
-                if( result )
-                    Thread.sleep(500);
+                String reportRuleAiMetaScoreIdStr = ReportUtils.getReportFlagStringValue( "aimetascoretypeids", tk, te.getProduct(), null, null, te.getReport() );
+
+                if( reportRuleAiMetaScoreIdStr==null || reportRuleAiMetaScoreIdStr.isBlank() )
+                    return;
+
+                List<AiMetaScoreType> aimstl = new ArrayList<>();
+                AiMetaScoreType mst;
+                List<Integer> jobDescripIdList=null;
+                for( String ss : reportRuleAiMetaScoreIdStr.split(",") )
+                {
+                    if( ss.isBlank() )
+                        continue;
+                    
+                    mst = AiMetaScoreType.getValue( Integer.parseInt(ss.trim() ) );
+                    if( mst==null || mst.equals(AiMetaScoreType.NONE ) )
+                        continue;
+                    
+                    if(mst.equals( AiMetaScoreType.JOBDESCRIP ) )
+                    {
+                        String jobDescripIdStr = ReportUtils.getReportFlagStringValue("aimetascorejobdescripids", tk, te.getProduct(), null, null, te.getReport() );
+                        if( jobDescripIdStr!=null && !jobDescripIdStr.isBlank() )
+                            jobDescripIdList = StringUtils.getIntList(jobDescripIdStr);
+                        else
+                            continue;
+                    }
+                    aimstl.add(mst );
+                }
+                
+                if( aimstl.isEmpty() )
+                    return;
+                
+                AiMetaScoreSubmissionThread aimst = new AiMetaScoreSubmissionThread(te.getUser(), te.getTestKeyId(), 0, clearExternal, aimstl, jobDescripIdList );
+
+                new Thread(aimst).start();
             }
-        }
-        
+        }        
         catch( Exception e )
         {
             LogService.logIt( e, "BaseTestEventScorer.initiateAiMetaScores() " );
             throw e;
-        }
-        
+        }        
     }
 
     public void finalizeScore() throws Exception

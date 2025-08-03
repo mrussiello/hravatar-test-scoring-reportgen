@@ -239,7 +239,7 @@ public class AiRequestUtils
     }
 
 
-    public static JsonObject doEvalPlanScoringCall( AiCallType aiCallType, boolean forceRedo, User user, long testKeyId, long rcCheckId ) throws Exception
+    public static JsonObject doEvalPlanScoringCall( AiCallType aiCallType, int evalPlanId, boolean forceRedo, User user, long testKeyId, long rcCheckId) throws Exception
     {
         try
         {
@@ -254,8 +254,9 @@ public class AiRequestUtils
             
             JsonObjectBuilder job = getBasePayloadJsonObjectBuilder(aiCallType, user );
             
-            job.add("intparam1", testKeyId );
-            job.add("intparam2", rcCheckId );                
+            job.add("intparam1", evalPlanId );
+            job.add("longparam1", testKeyId );
+            job.add("longparam2", rcCheckId );                
             job.add("autoupdate", 1 );
 
             if( forceRedo )
@@ -273,6 +274,54 @@ public class AiRequestUtils
         {
             Tracker.addAiCallError();
             LogService.logIt(e, "AiRequestUtils.doEvalPlanScoringCall() aiCallType=" +  (aiCallType==null ? "null" : aiCallType.getName()) + ", userId=" + (user==null ? "null" : user.getUserId()) + ", testKeyId=" + testKeyId + ", rcCheckId=" + rcCheckId );
+            throw e;
+        }
+    }
+    
+    public static JsonObject doAiMetaScoreCall( AiMetaScoreType mst, boolean forceRescore, User user, long testKeyId, long rcCheckId, int jobDescripId ) throws Exception
+    {
+        try
+        {
+            if( mst==null || mst.equals(AiMetaScoreType.NONE))
+                throw new Exception( "AiMetaScoreType is null or None." );
+            
+            if( user==null )
+                throw new Exception( "User is null." );
+
+            if( testKeyId<=0 && rcCheckId<=0 )
+                throw new Exception( "Both TestKeyId and RcCheckId are 0." );
+
+            AiCallType aiCallType = AiCallType.AI_META_SCORE;
+            
+            if( mst.equals(AiMetaScoreType.JOBDESCRIP) && jobDescripId<=0 )
+                throw new Exception( "JobDescrip match requires a valid JobDescripId jobDescripId=" + jobDescripId );
+            
+            if( aiCallType==null )
+                throw new Exception( "AiCallType is null." );
+            
+            JsonObjectBuilder job = getBasePayloadJsonObjectBuilder(aiCallType, user);
+            
+            job.add("intparam1", mst.getAiMetaScoreTypeId() );
+            job.add("intparam2", jobDescripId );
+            job.add("longparam1", testKeyId );
+            job.add("longparam2", rcCheckId );                
+            job.add("autoupdate", 1 );
+
+            if( forceRescore )
+                job.add( "forceredo", 1 );
+            
+            JsonObject joReq = job.build();
+
+            AiRequestClient client = new AiRequestClient();
+
+            Tracker.addAiCall();
+                        
+            return client.getJsonObjectFromAiCallRequest(joReq, BaseAiClient.AI_CALL_TIMEOUT_LONG );
+        }
+        catch( Exception e )
+        {
+            Tracker.addAiCallError();
+            LogService.logIt(e, "AiRequestUtils.doAiMetaScoreCall() AiMetaScoreType=" +  (mst==null ? "null" : mst.getName()) + ", userId=" + (user==null ? "null" : user.getUserId()) + ", testKeyId=" + testKeyId + ", rcCheckId=" + rcCheckId + ", jobDescripId=" + jobDescripId );
             throw e;
         }
     }
