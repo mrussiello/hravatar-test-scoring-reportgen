@@ -83,19 +83,19 @@ public class AiMetaScore implements Serializable {
     private int intParam1;
     
     @Column( name = "floatparam1" )
-    private int floatParam1;
+    private float floatParam1;
     
     @Column( name = "floatparam2" )
-    private int floatParam2;
+    private float floatParam2;
     
     @Column( name = "floatparam3" )
-    private int floatParam3;
+    private float floatParam3;
     
     @Column( name = "floatparam4" )
-    private int floatParam4;
+    private float floatParam4;
     
     @Column( name = "floatparam5" )
-    private int floatParam5;
+    private float floatParam5;
     
     
     
@@ -137,6 +137,14 @@ public class AiMetaScore implements Serializable {
         return this.aiMetaScoreId == other.aiMetaScoreId;
     }
 
+    
+    public String[] getStrParamsArray()
+    {
+        if( (strParam1==null || strParam1.isBlank()) && (strParam2==null || strParam2.isBlank()) )
+            return null;
+        return new String[]{strParam1==null ? "" : strParam1,strParam2==null ? "" : strParam2};
+    }
+    
     public String getScoreTextXhtml()
     {
         return StringUtils.replaceStandardEntities(scoreText);
@@ -352,56 +360,55 @@ public class AiMetaScore implements Serializable {
         this.intParam1 = intParam1;
     }
 
-    public int getFloatParam1()
+    public float getFloatParam1()
     {
         return floatParam1;
     }
 
-    public void setFloatParam1(int floatParam1)
+    public void setFloatParam1(float floatParam1)
     {
         this.floatParam1 = floatParam1;
     }
 
-    public int getFloatParam2()
+    public float getFloatParam2()
     {
         return floatParam2;
     }
 
-    public void setFloatParam2(int floatParam2)
+    public void setFloatParam2(float floatParam2)
     {
         this.floatParam2 = floatParam2;
     }
 
-    public int getFloatParam3()
+    public float getFloatParam3()
     {
         return floatParam3;
     }
 
-    public void setFloatParam3(int floatParam3)
+    public void setFloatParam3(float floatParam3)
     {
         this.floatParam3 = floatParam3;
     }
 
-    public int getFloatParam4()
+    public float getFloatParam4()
     {
         return floatParam4;
     }
 
-    public void setFloatParam4(int floatParam4)
+    public void setFloatParam4(float floatParam4)
     {
         this.floatParam4 = floatParam4;
     }
 
-    public int getFloatParam5()
+    public float getFloatParam5()
     {
         return floatParam5;
     }
 
-    public void setFloatParam5(int floatParam5)
+    public void setFloatParam5(float floatParam5)
     {
         this.floatParam5 = floatParam5;
     }
-
 
 
 }

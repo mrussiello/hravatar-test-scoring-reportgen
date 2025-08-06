@@ -890,7 +890,7 @@ public class UserUtils extends FacesUtils
             if( userFacade == null ) userFacade = UserFacade.getInstance();
 
             userFacade.clearSharedCache();
-            userFacade.clearSharedCacheDiscern();
+            // userFacade.clearSharedCacheDiscern();
             
             setStringInfoMessage( "Shared DBMS Cache cleared." );
         }
@@ -922,7 +922,7 @@ public class UserUtils extends FacesUtils
 
             userFacade.clearSharedCache();
             
-            userFacade.clearSharedCacheDiscern();
+           //  userFacade.clearSharedCacheDiscern();
 
             setStringInfoMessage( "Shared DBMS Cache cleared." );
         }
@@ -2516,7 +2516,7 @@ public class UserUtils extends FacesUtils
 
                     for( long t=tei1; t<= tei2; t++ )
                     {
-                        tkl.add( new Long( t ) );
+                        tkl.add(t);
                     }
                 }
                 catch( NumberFormatException e )
@@ -2554,7 +2554,7 @@ public class UserUtils extends FacesUtils
 
             if( tkl.size()>20 )
             {
-                TestKeyRescoreThread ters = new TestKeyRescoreThread( tkl, descrip );
+                TestKeyRescoreThread ters = new TestKeyRescoreThread( tkl, userBean.getClearExternal3(), descrip );
 
                 new Thread( ters ).start();
 
@@ -2574,7 +2574,7 @@ public class UserUtils extends FacesUtils
             
             for( Long testKeyId : tkl )
             {
-                tko = sm.rescoreTestKey(testKeyId, false );
+                tko = sm.rescoreTestKey(testKeyId, false, userBean.getClearExternal3() );
 
                 if( tko[0] > 0 )
                     setStringInfoMessage( "TestKeyId: " + testKeyId + " has been rescored. Reports have been deleted and will be picked up in the next automated cycle.");
@@ -2806,7 +2806,7 @@ public class UserUtils extends FacesUtils
 
             ScoreManager sm = new ScoreManager();
 
-            int[] tko = sm.rescoreTestKey(tk.getTestKeyId(), false );
+            int[] tko = sm.rescoreTestKey(tk.getTestKeyId(), false, false );
 
             setStringInfoMessage( "Pin: " + userBean.getPin() + " has been submitted for rescore. Reports have been deleted and will be picked up in the next automated cycle.");
 

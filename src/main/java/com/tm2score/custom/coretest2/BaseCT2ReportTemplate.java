@@ -3747,8 +3747,8 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
                 count++;
                 
                 metaScoreType = AiMetaScoreType.getValue(metaScore.getAiMetaScoreTypeId() );
-
-                c = new PdfPCell(new Phrase( metaScoreType.getName(reportData.getLocale()), fontToUse));
+                
+                c = new PdfPCell(new Phrase( metaScoreType.getNameForReport(reportData.getLocale(), metaScore.getStrParamsArray() ), fontToUse));
                 c.setBorder( Rectangle.NO_BORDER );
                 c.setBorderWidth( 0 );
                 c.setPadding( 2 );

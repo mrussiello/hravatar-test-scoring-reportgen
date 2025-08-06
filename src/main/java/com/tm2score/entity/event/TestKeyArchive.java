@@ -116,6 +116,9 @@ public class TestKeyArchive implements Serializable
     @Column( name = "jobid" )
     private int jobId;
 
+    @Column(name = "jobdescripid")
+    private int jobDescripId;
+        
     @Column( name = "authorizinguserid" )
     private long authorizingUserId = 0;
 
@@ -306,6 +309,7 @@ public class TestKeyArchive implements Serializable
         tk.setMediaDeliveryModeTypeId(mediaDeliveryModeTypeId);
         tk.setUserId(userId);
         tk.setJobId(jobId);
+        tk.setJobDescripId(jobDescripId);
         tk.setNameRqd(nameRqd);
         tk.setDemoRqd(demoRqd);
         tk.setReleaseRqd(releaseRqd);
@@ -940,4 +944,14 @@ public class TestKeyArchive implements Serializable
     public void setJobId(int jobId) {
         this.jobId = jobId;
     }
+    public int getJobDescripId()
+    {
+        return jobDescripId;
+    }
+
+    public void setJobDescripId(int jobDescripId)
+    {
+        this.jobDescripId = jobDescripId;
+    }
+    
 }

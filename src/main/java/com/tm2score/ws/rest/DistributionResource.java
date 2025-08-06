@@ -10,7 +10,6 @@ import com.tm2score.entity.event.TestEvent;
 import com.tm2score.entity.event.TestEventScore;
 import com.tm2score.entity.event.TestKey;
 import com.tm2score.event.EventFacade;
-import com.tm2score.event.TestEventScoreType;
 import com.tm2score.event.TestKeyStatusType;
 import com.tm2score.global.I18nUtils;
 import com.tm2score.report.ReportManager;
@@ -204,7 +203,7 @@ public class DistributionResource extends BaseApiResource {
 
             UserFacade uf = UserFacade.getInstance();
             uf.clearSharedCache();
-            uf.clearSharedCacheDiscern();
+            // uf.clearSharedCacheDiscern();
             
             String toAddr = JsonUtils.getStringFmJson(joIn, "toaddr");
             if( toAddr == null || toAddr.isEmpty() )
@@ -291,7 +290,7 @@ public class DistributionResource extends BaseApiResource {
 
             UserFacade uf = UserFacade.getInstance();
             uf.clearSharedCache();
-            uf.clearSharedCacheDiscern();
+            // uf.clearSharedCacheDiscern();
             
             if( !tk.getTestKeyStatusType().equals( TestKeyStatusType.REPORTS_COMPLETE ) &&
                 !tk.getTestKeyStatusType().equals( TestKeyStatusType.DISTRIBUTION_STARTED ) &&
@@ -441,7 +440,7 @@ public class DistributionResource extends BaseApiResource {
 
             UserFacade uf = UserFacade.getInstance();
             uf.clearSharedCache();
-            uf.clearSharedCacheDiscern();
+            // uf.clearSharedCacheDiscern();
             String msg;
             
             if( !tk.getTestKeyStatusType().getIsCompleteOrHigher() )
@@ -510,7 +509,7 @@ public class DistributionResource extends BaseApiResource {
             
             UserFacade uf = UserFacade.getInstance();
             uf.clearSharedCache();
-            uf.clearSharedCacheDiscern();
+            // uf.clearSharedCacheDiscern();
             String msg;
             
             String teid = JsonUtils.getStringFmJson(joIn, "teid");

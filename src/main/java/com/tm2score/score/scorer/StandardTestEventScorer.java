@@ -100,7 +100,7 @@ public class StandardTestEventScorer extends BaseTestEventScorer implements Test
 
             finalizeScore();
             
-            initiateAiMetaScores();
+            // initiateAiMetaScores();
 
             if( ScoreManager.DEBUG_SCORING )
                 LogService.logIt( "StandardTestEventScorer.scoreTestEvent() COMPLETED SCORING te.scoreFormatTypeId=" + te.getScoreFormatTypeId() + ", teId=" + te.getTestEventId() );

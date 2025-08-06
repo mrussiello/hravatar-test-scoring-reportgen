@@ -613,6 +613,23 @@ public class AssessmentStatusCreator {
                             aoasmeta.setScoreNumeric( metaScore.getScore());
                             aoasmeta.setConfidence(metaScore.getConfidence());
                             aoasmeta.setScoreText( metaScore.getScoreText());
+                            if( metaScore.getStrParam1()!=null && !metaScore.getStrParam1().isBlank() )
+                                aoasmeta.setStrParam1( metaScore.getStrParam1() );
+                            if( metaScore.getStrParam2()!=null && !metaScore.getStrParam2().isBlank() )
+                                aoasmeta.setStrParam2( metaScore.getStrParam2() );
+                            if( metaScore.getIntParam1()!=0 )
+                                aoasmeta.setIntParam1( metaScore.getIntParam1() );
+                            if( metaScore.getFloatParam1()!=0 )
+                                aoasmeta.setFloatParam1( metaScore.getFloatParam1() );
+                            if( metaScore.getFloatParam2()!=0 )
+                                aoasmeta.setFloatParam2( metaScore.getFloatParam2() );
+                            if( metaScore.getFloatParam3()!=0 )
+                                aoasmeta.setFloatParam3( metaScore.getFloatParam3() );
+                            if( metaScore.getFloatParam4()!=0 )
+                                aoasmeta.setFloatParam4( metaScore.getFloatParam4() );
+                            if( metaScore.getFloatParam5()!=0 )
+                                aoasmeta.setFloatParam5( metaScore.getFloatParam5() );
+                            
                             // aoasmeta.setMetaScoreInputTypeIds( Integer.toString(metaScore.getAiMetaScoreInputTypeId()) );
                             aoas.getMetaScores().add( aoasmeta);
                         }

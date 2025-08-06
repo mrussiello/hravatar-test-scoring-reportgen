@@ -40,10 +40,14 @@ public enum TestKeyStatusType
     {
         return equals( SCORED );
     }
+    public boolean getHasValidScore()
+    {
+        return testKeyStatusTypeId>=SCORED.getTestKeyStatusTypeId() && testKeyStatusTypeId<=DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId();
+    }
 
     public boolean getIsScoredOrHigher()
     {
-        return  testKeyStatusTypeId>=SCORED.testKeyStatusTypeId && testKeyStatusTypeId<=DISTRIBUTION_COMPLETE.testKeyStatusTypeId;
+        return  testKeyStatusTypeId>=SCORED.getTestKeyStatusTypeId() && testKeyStatusTypeId<=DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId();
     }
     
     public boolean getIsScorePending()

@@ -160,9 +160,19 @@
                                 <p:inputText value="#{userBean.testKeyIdsStr}" size="20">
                                 </p:inputText>
                                 <h:panelGroup>
-                                    <p:commandButton ajax="false" action="#{userUtils.processRescoreTestKeyIds}" value="Rescore"/> &#160;range or comma delim list.
+                                    range or comma delim list.
                                 </h:panelGroup>
 
+                                <h:panelGroup>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:selectBooleanCheckbox value="#{userBean.clearExternal3}"/>&#160;Clear external scores.
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:commandButton ajax="false" action="#{userUtils.processRescoreTestKeyIds}" value="Rescore"/> 
+                                </h:panelGroup>
+                                
+                                
                                 <h:panelGroup>
                                     <div class="bodysmallbold" style="text-align: right">Score Incomplete Battery TestKeyId:</div>
                                 </h:panelGroup>

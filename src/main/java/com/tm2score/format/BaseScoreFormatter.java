@@ -3190,7 +3190,7 @@ NONE(0,"None"),    // When an ONET Soc is selected
             lastUpdate = I18nUtils.getFormattedDateTime(getLocale(), metaScore.getLastUpdate(), getTestKey().getUser().getTimeZone());
             scoreText += "\n\n" + lmsg("g.AiMetaScrCalcDateX", new String[]{lastUpdate}); 
             
-            sb.append( this.getRow(style, metaScoreType.getName(getLocale()), scr, scoreText , false) );            
+            sb.append( this.getRow(style, metaScoreType.getNameForReport(getLocale(), metaScore.getStrParamsArray() ), scr, scoreText , false) );            
         }        
 
         out[0] = sb.toString();

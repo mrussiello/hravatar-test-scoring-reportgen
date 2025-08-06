@@ -1,9 +1,6 @@
 package com.tm2score.ai;
 
 import com.tm2score.util.MessageFactory;
-import jakarta.faces.model.SelectItem;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 public enum AiMetaScoreType {
@@ -21,24 +18,23 @@ public enum AiMetaScoreType {
         this.key = key;
     }
 
-    public List<SelectItem> getSelectItemList(Locale locale)
-    {
-        if (locale == null)
-            locale = Locale.US;
-
-        List<SelectItem> out = new ArrayList<>();
-        for (AiMetaScoreType v : AiMetaScoreType.values())
-        {
-            out.add(new SelectItem(v.getAiMetaScoreTypeId(), v.getName(locale)));
-        }
-        return out;
-    }
-
     public int getAiMetaScoreTypeId()
     {
         return this.aiMetaScoreTypeId;
     }
 
+    public String getNameForReport(Locale locale, String[] strParams)
+    {
+        if (locale == null)
+            locale = Locale.US;
+
+        if( strParams==null || strParams.length<=0 )   
+            return MessageFactory.getStringMessage(locale, key);
+        
+        return MessageFactory.getStringMessage(locale, key + ".full", strParams );        
+    }
+    
+    
     public String getName(Locale locale)
     {
         if (locale == null)

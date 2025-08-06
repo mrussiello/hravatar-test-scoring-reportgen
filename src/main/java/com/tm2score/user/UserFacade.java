@@ -47,8 +47,8 @@ public class UserFacade
     @PersistenceContext( name = "persistence/tm2mirror", unitName = "tm2mirror" )
     EntityManager emmirror;
     
-    @PersistenceContext( name = "persistence/discern", unitName = "discern" )
-    EntityManager discern;
+    //@PersistenceContext( name = "persistence/discern", unitName = "discern" )
+    //EntityManager discern;
     
     // private static final String PERSISTENCE_UNIT_NAME = "tm2";
     // private static EntityManagerFactory tm2Factory;
@@ -84,7 +84,7 @@ public class UserFacade
             //EntityManager em = tm2Factory.createEntityManager();
             em.getEntityManagerFactory().getCache().evictAll();
             emmirror.getEntityManagerFactory().getCache().evictAll();
-            discern.getEntityManagerFactory().getCache().evictAll();
+            // discern.getEntityManagerFactory().getCache().evictAll();
         }
 
         catch( Exception e )
@@ -93,6 +93,7 @@ public class UserFacade
         }
     }
 
+    /*
     public void clearSharedCacheDiscern()
     {
         try
@@ -110,6 +111,7 @@ public class UserFacade
             LogService.logIt( e, "UserFacade.clearSharedCache() " );
         }
     }
+    */
     
     
 

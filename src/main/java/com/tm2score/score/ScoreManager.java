@@ -151,7 +151,7 @@ public class ScoreManager extends BaseScoreManager
 
 
 
-    public int[] rescoreTestKey( long testKeyId, boolean rescoreOnly) throws Exception
+    public int[] rescoreTestKey( long testKeyId, boolean rescoreOnly, boolean clearExternal) throws Exception
     {
         try
         {            
@@ -172,7 +172,7 @@ public class ScoreManager extends BaseScoreManager
             if( !BaseScoreManager.isScoringFirstTimeOrRepeatAllowed(testKeyId) )
                 throw new STException( "g.PassThru", new String[] {"TestKey has been active in scoring system in last 5 minutes. Please wait and try again. testKeyId=" + testKeyId } );
             
-            resetTestKeyStatusForScoring( tk, true );
+            resetTestKeyStatusForScoring(tk, true, clearExternal );
 
             Thread.sleep( 200 );
 
@@ -831,7 +831,7 @@ public class ScoreManager extends BaseScoreManager
 
 
 
-    public boolean resetTestKeyStatusForScoring( TestKey tk, boolean fullReset ) throws Exception
+    public boolean resetTestKeyStatusForScoring( TestKey tk, boolean fullReset, boolean clearExternal) throws Exception
     {
         try
         {
@@ -865,7 +865,7 @@ public class ScoreManager extends BaseScoreManager
                     throw new ScoringException( "TestEvent is not yet complete. " + te.toString(), ScoringException.NON_PERMANENT, te );
                 }
 
-                if( resetTestEventStatusForScoring(te, fullReset, false, false ) )
+                if( resetTestEventStatusForScoring(te, fullReset, clearExternal, false ) )
                     hasUnscored = true;
 
                 if( te.getTestEventStatusTypeId()==TestEventStatusType.COMPLETED_PENDING_EXTERNAL_SCORES.getTestEventStatusTypeId() )
@@ -904,14 +904,14 @@ public class ScoreManager extends BaseScoreManager
 
         catch( ScoringException e )
         {
-            LogService.logIt( e, "ScoreManager.resetTestKeyStatusForScoring() "  + tk.toString() );
+            LogService.logIt(e, "ScoreManager.resetTestKeyStatusForScoring() "  + tk.toString() );
             throw e;
         }
 
        // unforseen exceptions are permanent. Disable this TestEvent until fixed.
        catch( Exception e )
        {
-           LogService.logIt( e, "ScoreManager.resetTestKeyStatusForScoring() "  + tk.toString() );
+           LogService.logIt(e, "ScoreManager.resetTestKeyStatusForScoring() "  + tk.toString() );
 
            throw new ScoringException( e.getMessage() + "ScoreManager.resetTestKeyStatusForScoring() " , ScoreUtils.getExceptionPermanancy(e), tk );
        }
@@ -1121,7 +1121,7 @@ public class ScoreManager extends BaseScoreManager
 
             for( TestKey tk : ptkl )
             {
-                hasUnscored = resetTestKeyStatusForScoring( tk, false );
+                hasUnscored = resetTestKeyStatusForScoring(tk, false, false );
 
                 // increment partials
                 if( hasUnscored )
@@ -1180,7 +1180,7 @@ public class ScoreManager extends BaseScoreManager
                 
                 try
                 {
-                    hasUnscored = resetTestKeyStatusForScoring( tk, false );
+                    hasUnscored = resetTestKeyStatusForScoring(tk, false, false );
                 }
                 catch( ScoringException e )
                 {

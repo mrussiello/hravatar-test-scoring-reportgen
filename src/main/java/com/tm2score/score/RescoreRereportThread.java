@@ -64,7 +64,7 @@ public class RescoreRereportThread extends Thread
                 * int[4] = testevents skipped because they are incompleted (only if partiallyCompleteBatteriesOk=true)
             
             */
-            int[] tko = sm.rescoreTestKey(testKeyId, rescoreOnly );
+            int[] tko = sm.rescoreTestKey(testKeyId, rescoreOnly, false );
 
             if( tko[0] <= 0 && tko[2]<=0 )
             {

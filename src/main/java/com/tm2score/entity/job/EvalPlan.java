@@ -61,8 +61,8 @@ public class EvalPlan implements Serializable, Comparable<EvalPlan>
     @Column( name = "userid" )
     private long userId;
 
-    @Column( name = "jobdescripid" )
-    private int jobDescripId;
+    //@Column( name = "jobdescripid" )
+    //private int jobDescripId;
 
     @Column( name = "testproductid" )
     private int testProductId;
@@ -70,6 +70,9 @@ public class EvalPlan implements Serializable, Comparable<EvalPlan>
     @Column( name = "rcscriptid" )
     private int rcScriptId;
     
+    @Column( name = "jobdescripids" )
+    private String jobDescripIds;
+
     /*
       Max Wait Days - for evaluation when only partial data is available.
     */
@@ -271,16 +274,6 @@ public class EvalPlan implements Serializable, Comparable<EvalPlan>
         this.userId = userId;
     }
 
-    public int getJobDescripId()
-    {
-        return jobDescripId;
-    }
-
-    public void setJobDescripId(int jobDescripId)
-    {
-        this.jobDescripId = jobDescripId;
-    }
-
     public int getTestProductId()
     {
         return testProductId;
@@ -380,6 +373,16 @@ public class EvalPlan implements Serializable, Comparable<EvalPlan>
     public void setLastUpdate(Date lastUpdate)
     {
         this.lastUpdate = lastUpdate;
+    }
+
+    public String getJobDescripIds()
+    {
+        return jobDescripIds;
+    }
+
+    public void setJobDescripIds(String jobDescripIds)
+    {
+        this.jobDescripIds = jobDescripIds;
     }
     
 

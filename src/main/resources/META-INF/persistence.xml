@@ -56,7 +56,8 @@
     <class>com.tm2score.entity.jobdesc.UserJobMap</class>
     <class>com.tm2score.entity.user.OrgTraits</class>
     <class>com.tm2score.entity.ai.AiMetaScore</class>
-    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <class>com.tm2score.entity.job.EvalPlan</class>
+    <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
     <properties/>
   </persistence-unit>
@@ -110,10 +111,11 @@
     <class>com.tm2score.entity.ct5.event.Ct5TestEvent</class>
     <class>com.tm2score.entity.proctor.ProctorEntry</class>
     <class>com.tm2score.entity.proctor.ProctorSuspension</class>
-    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
     <properties/>
   </persistence-unit>
+  <!--
   <persistence-unit name="discern" transaction-type="JTA">
     <jta-data-source>jdbc/discern</jta-data-source>
     <class>com.tm2score.entity.discern.Essay</class>
@@ -123,4 +125,5 @@
     <properties>
     </properties>
   </persistence-unit>
+  -->
 </persistence>

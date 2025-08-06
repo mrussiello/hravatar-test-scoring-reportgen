@@ -59,7 +59,7 @@ public class ReminderStarter implements Runnable {
                 return;
             }
             uf.clearSharedCache();
-            uf.clearSharedCacheDiscern();
+            // uf.clearSharedCacheDiscern();
             
             // LogService.logIt( "ReminderStarter.run() STARTING SETUP  AAA ");
             EmailUtils eu = EmailUtils.getInstance();

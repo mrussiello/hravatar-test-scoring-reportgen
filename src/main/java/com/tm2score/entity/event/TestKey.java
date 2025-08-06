@@ -135,6 +135,9 @@ public class TestKey implements Serializable, ErrorTxtObject {
     @Column(name = "jobid")
     private int jobId;
 
+    @Column(name = "jobdescripid")
+    private int jobDescripId;
+        
     @Column(name = "authorizinguserid")
     private long authorizingUserId = 0;
 
@@ -388,6 +391,7 @@ public class TestKey implements Serializable, ErrorTxtObject {
         tka.setMediaDeliveryModeTypeId(mediaDeliveryModeTypeId);
         tka.setUserId(userId);
         tka.setJobId(jobId);
+        tka.setJobDescripId(jobDescripId);
         tka.setNameRqd(nameRqd);
         tka.setDemoRqd(demoRqd);
         tka.setReleaseRqd(releaseRqd);
@@ -1748,6 +1752,15 @@ public class TestKey implements Serializable, ErrorTxtObject {
     public void setJobId(int jobId)
     {
         this.jobId = jobId;
+    }
+    public int getJobDescripId()
+    {
+        return jobDescripId;
+    }
+
+    public void setJobDescripId(int jobDescripId)
+    {
+        this.jobDescripId = jobDescripId;
     }
 
 }

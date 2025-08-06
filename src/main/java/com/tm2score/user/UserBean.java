@@ -76,6 +76,8 @@ public class UserBean implements Serializable
 
     private boolean clearExternal = false;
     private boolean clearExternal2 = false;
+    private boolean clearExternal3 = false;
+    
     private boolean resetSpeechText = false;
     private boolean sendResendCandidateReportEmails = false;
     private boolean sendResendCandidateReportEmails2 = false;
@@ -725,6 +727,16 @@ public class UserBean implements Serializable
 
     public void setSimIdVersionIdPairs(String simIdVersionIdPairs) {
         this.simIdVersionIdPairs = simIdVersionIdPairs;
+    }
+
+    public boolean getClearExternal3()
+    {
+        return clearExternal3;
+    }
+
+    public void setClearExternal3(boolean clearExternal3)
+    {
+        this.clearExternal3 = clearExternal3;
     }
     
     

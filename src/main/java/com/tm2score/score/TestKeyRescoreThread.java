@@ -18,12 +18,14 @@ public class TestKeyRescoreThread implements Runnable
     List<Long> testKeyIdList;
 
     String description;
+    boolean clearExternal;
 
 
-    public TestKeyRescoreThread( List<Long> tkidl, String description )
+    public TestKeyRescoreThread( List<Long> tkidl, boolean clearExternal, String description)
     {
         this.testKeyIdList = tkidl;
         this.description = description;
+        this.clearExternal=clearExternal;
     }
 
     @Override
@@ -39,7 +41,7 @@ public class TestKeyRescoreThread implements Runnable
             
             for( Long testKeyId : testKeyIdList )
             {
-                tko = sm.rescoreTestKey(testKeyId, false );
+                tko = sm.rescoreTestKey(testKeyId, false, clearExternal );
 
                 if( tko[0] > 0 )
                     LogService.logIt( "TestKeyRescoreThread.run() TestKeyId: " + testKeyId + " has been rescored. Reports have been deleted and will be picked up in the next automated cycle.");
