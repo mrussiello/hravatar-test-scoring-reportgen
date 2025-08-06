@@ -10,7 +10,11 @@ import com.tm2score.entity.ct5.event.Ct5ItemResponse;
 import com.tm2score.entity.ct5.event.Ct5TestEvent;
 import com.tm2score.entity.event.SurveyEvent;
 import com.tm2score.entity.event.TestEvent;
+import com.tm2score.entity.event.TestKey;
 import com.tm2score.entity.user.User;
+import com.tm2score.event.EventFacade;
+import com.tm2score.event.TestEventStatusType;
+import com.tm2score.event.TestKeyStatusType;
 import com.tm2score.imo.xml.Clicflic;
 import com.tm2score.score.ScoringException;
 import com.tm2score.service.LogService;
@@ -45,7 +49,29 @@ public class Ct5ResultXmlGenerator {
                 throw new ScoringException( "Ct5ResultXmlGenerator.createResultXmlObj() Ct5TestEvent is null ", ScoringException.NON_PERMANENT, null );
 
             if( !ct5Te.getTestEventStatusType().getIsCompleteOrHigher()  )
+            {
+                if( ct5Te.getPercentComplete()>0 )
+                    te.setTestEventStatusTypeId( TestEventStatusType.STARTED.getTestEventStatusTypeId());
+                else
+                    te.setTestEventStatusTypeId( TestEventStatusType.STARTED.getTestEventStatusTypeId());
+                
+                te.setPercentComplete(ct5Te.getPercentComplete());
+                
+                EventFacade eventFacade = EventFacade.getInstance();
+                eventFacade.saveTestEvent(te);
+                
+                TestKey tk = te.getTestKey();
+                if( tk==null )
+                    tk = eventFacade.getTestKey( te.getTestKeyId(), true);
+
+                if( tk.getTestKeyStatusType().getIsCompleteOrHigher() )
+                {
+                    tk.setTestKeyStatusTypeId( TestKeyStatusType.STARTED.getTestKeyStatusTypeId() );
+                    eventFacade.saveTestKey(tk);
+                }
+                
                 throw new ScoringException( "Ct5ResultXmlGenerator.createResultXmlObj() Ct5TestEvent.ct5TestEventStatusTypeId is not in completed or higher status. " + ct5Te.getCt5TestEventStatusTypeId() + ", testEventId=" + te.getTestEventId(), ScoringException.NON_PERMANENT, null );
+            }
 
             if( te!=null && ct5Te.getTestEventId()!=te.getTestEventId()  )
                 throw new ScoringException( "Ct5ResultXmlGenerator.createResultXmlObj() Ct5TestEvent.testEventId=" + ct5Te.getTestEventId() + " does not match testEvent.testEventId=" + (te==null ? "null" : te.getTestEventId()) + ", surveyEventId=" + (se==null ? "null" : se.getSurveyEventId()), ScoringException.NON_PERMANENT, null );
