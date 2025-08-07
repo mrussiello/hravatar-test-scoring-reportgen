@@ -33,24 +33,27 @@ public class TestKeyReportThread extends BaseReportManager implements Runnable
     long frcReportId;
     boolean forceCalcSection;
     boolean skipCompleted = false;
+    boolean createAsArchived = false;
     
     int reportErrorCt = 0;
 
-    public TestKeyReportThread(TestKey tk, long frcReportId, boolean forceCalcSection, boolean skipCompleted)
+    public TestKeyReportThread(TestKey tk, long frcReportId, boolean forceCalcSection, boolean skipCompleted, boolean createAsArchived)
     {
         // this.te = te;
         this.tk = tk;
         this.frcReportId = frcReportId;
         this.forceCalcSection = forceCalcSection;
         this.skipCompleted = skipCompleted;
+        this.createAsArchived=createAsArchived;
     }
 
-    public TestKeyReportThread(TestEvent partialBatteryTestEvent, long frcReportId, boolean forceCalcSection)
+    public TestKeyReportThread(TestEvent partialBatteryTestEvent, long frcReportId, boolean forceCalcSection, boolean createAsArchived)
     {
         // this.te = te;
         this.partialBatteryTestEvent = partialBatteryTestEvent;
         this.frcReportId = frcReportId;
         this.forceCalcSection = forceCalcSection;
+        this.createAsArchived=createAsArchived;
     }
 
     
@@ -88,7 +91,7 @@ public class TestKeyReportThread extends BaseReportManager implements Runnable
         te.setPartialBatteryTestEvent(true);
         try
         {
-            generateReports(te, tk, frcReportId, forceCalcSection, false, null, skipCompleted, errCount);
+            generateReports(te, tk, frcReportId, forceCalcSection, false, null, skipCompleted, createAsArchived, errCount);
             
             // since there will be no distribution, this is complete. Ok to remove from map
             BaseScoreManager.removeTestEventFromPartialDateMap( te.getTestEventId() );
@@ -147,7 +150,7 @@ public class TestKeyReportThread extends BaseReportManager implements Runnable
                     throw new ReportException( "TestKeyReportThread.generateTestKeyReports() TestEvent is not scored. testKeyId=" + tk.getTestKeyId() + ", testEventId=" + te.getTestEventId() + ", tk.batteryId=" + tk.getBatteryId() + ", testKeyStatusTypeId=" + tk.getTestKeyStatusTypeId() + ", current TestEvent status=" + te.getTestEventStatusTypeId() + ", " + TestEventStatusType.getValue(te.getTestEventStatusTypeId()).getKey(), 0, te,0, null );
                 }
                 
-                generateReports(te, tk, frcReportId, forceCalcSection, false, null, skipCompleted, reportErrorCt);
+                generateReports(te, tk, frcReportId, forceCalcSection, false, null, skipCompleted, createAsArchived, reportErrorCt);
                 
                 // no exception, so ...
                 reportErrorCt=0;

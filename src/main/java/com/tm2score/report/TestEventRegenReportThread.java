@@ -26,6 +26,7 @@ public class TestEventRegenReportThread implements Runnable
     long reportId;
 
     String description;
+    boolean createAsArchived = false;
     boolean forceCalcSection = false;
     boolean sendResendCandidateReportEmails = false;
     Date startDate;
@@ -41,7 +42,7 @@ public class TestEventRegenReportThread implements Runnable
     
     
 
-    public TestEventRegenReportThread( long simId, int simVersionId, int orgId, int suborgId, Date startDate, Date endDate, long minTestEventId, List<Long> tel, long reportId, UserUtils uu, String description, boolean forceCalcSection, boolean sendResendCandidateReportEmails, Date maxLastCandidateSendDate)
+    public TestEventRegenReportThread( long simId, int simVersionId, int orgId, int suborgId, Date startDate, Date endDate, long minTestEventId, List<Long> tel, long reportId, UserUtils uu, String description, boolean createAsArchived, boolean forceCalcSection, boolean sendResendCandidateReportEmails, Date maxLastCandidateSendDate)
     {
         this.simId=simId;
         this.simVersionId=simVersionId;
@@ -57,6 +58,7 @@ public class TestEventRegenReportThread implements Runnable
         this.sendResendCandidateReportEmails=sendResendCandidateReportEmails;
         this.maxLastCandidateSendDate=maxLastCandidateSendDate;
         this.suborgId=suborgId;
+        this.createAsArchived=createAsArchived;
     }
 
     @Override
@@ -69,7 +71,7 @@ public class TestEventRegenReportThread implements Runnable
             if( testEventIdList!=null && !testEventIdList.isEmpty() )
             {
                 LogService.logIt( "TestEventRegenReportThread.run() STARTING Batch " + batchCount + ", testEventIdList.size=" + testEventIdList.size() + ", offset=" + 0 + ", " + description);
-                userUtils.regenerateReports(testEventIdList, reportId, true, forceCalcSection, sendResendCandidateReportEmails, maxLastCandidateSendDate );
+                userUtils.regenerateReports(testEventIdList, reportId, true, createAsArchived, forceCalcSection, sendResendCandidateReportEmails, maxLastCandidateSendDate );
                 LogService.logIt( "TestEventRegenReportThread.run() COMPLETED Batch " + batchCount + ", testEventIdList.size=" + testEventIdList.size() + ", " + description );
             }
             
@@ -90,7 +92,7 @@ public class TestEventRegenReportThread implements Runnable
                 if( !testEventIdList.isEmpty() )
                 {
                     LogService.logIt( "TestEventRegenReportThread.run() STARTING Batch " + batchCount + ", testEventIdList.size=" + testEventIdList.size() + ", offset=" + offset + ", " + description);
-                    userUtils.regenerateReports(testEventIdList, reportId, true, forceCalcSection, sendResendCandidateReportEmails, maxLastCandidateSendDate );
+                    userUtils.regenerateReports(testEventIdList, reportId, true, createAsArchived, forceCalcSection, sendResendCandidateReportEmails, maxLastCandidateSendDate );
                     LogService.logIt( "TestEventRegenReportThread.run() COMPLETED Batch " + batchCount + ", testEventIdList.size=" + testEventIdList.size() + ", offset=" + offset + ", " + description );
                     
                 }

@@ -5,7 +5,7 @@
 package com.tm2score.user;
 
 import com.tm2score.entity.event.TestEventScore;
-import com.tm2score.event.TestEventScoreType;
+import com.tm2score.report.ReportArchiveUtils;
 import com.tm2score.service.LogService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
@@ -97,9 +97,21 @@ public class ReportDownloadBean implements Serializable {
             return null;
         }
         
+        
         try
         {
-            byte[] bytes = tes.getReportBytes();
+            byte[] bytes;
+            
+            if( tes.getTestEventScoreStatusType().getIsReportArchived() )
+            {
+                ReportArchiveUtils reportArchiveUtils = new ReportArchiveUtils();
+                TestEventScore tesx = reportArchiveUtils.unarchiveReportTestEventScore(tes);
+                bytes = tesx.getReportBytes();
+                LogService.logIt( "ReportDownloadRequest.getreportfileForDownload() Unarchived TestEventScore bytes.length=" + bytes.length );
+            }
+
+            else
+                bytes = tes.getReportBytes();
 
             // LogService.logIt( "ReportDownloadRequest.getreportfileForDownload() report size is " + bytes.length );
 

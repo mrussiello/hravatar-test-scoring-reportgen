@@ -34,6 +34,7 @@ import com.tm2score.file.MediaTempUrlSourceType;
 import com.tm2score.global.Constants;
 import com.tm2score.global.I18nUtils;
 import com.tm2score.global.RuntimeConstants;
+import com.tm2score.report.ReportArchiveUtils;
 import com.tm2score.report.ReportUtils;
 import com.tm2score.score.TextAndTitle;
 import com.tm2score.service.EncryptUtils;
@@ -732,6 +733,14 @@ public class AssessmentStatusCreator {
                         {
                             for( TestEventScore tes : rptTesl )
                             {
+                                if( tes.getTestEventScoreStatusType().getIsReportArchived() )
+                                {
+                                    ReportArchiveUtils reportArchiveUtils = new ReportArchiveUtils();
+                                    TestEventScore tesx = reportArchiveUtils.unarchiveReportTestEventScore(tes);                                    
+                                    LogService.logIt( "ReportDownloadRequest.getreportfileForDownload() Unarchived TestEventScore bytes.length=" + (tesx.getReportBytes()==null ? "null" : tesx.getReportBytes().length) );
+                                    tes = tesx;
+                                }
+                                
                                 if( tes.getReportBytes()==null || tes.getReportBytes().length==0 )
                                     continue;
 

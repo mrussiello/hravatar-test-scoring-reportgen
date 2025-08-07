@@ -275,7 +275,7 @@ public class UserUtils extends FacesUtils
                 //if( rmb.getTestEventScoreList() == null )
                 rm.setTestEventScoreList( new ArrayList<>() );
 
-                int ct = rm.genOrRegenReportsTestKey(testKeyId, userBean.getReportId(), forceCalcSection, forceSendCandidateReports, maxLastCandidateSendDate, false );
+                int ct = rm.genOrRegenReportsTestKey(testKeyId, userBean.getReportId(), forceCalcSection, forceSendCandidateReports, maxLastCandidateSendDate, false, RuntimeConstants.getBooleanValue("create_reports_init_as_archived") );
 
                 // if( userBean.getReportTestEventScoreList() == null )
                 userBean.setReportTestEventScoreList( new ArrayList<>() );
@@ -364,7 +364,7 @@ public class UserUtils extends FacesUtils
 
             if( tel.size()>1 )
             {
-                TestEventRegenReportThread ters = new TestEventRegenReportThread( simId, simVersionId, orgId, suborgId, start, end, minTestEventId, tel,reportId, this, "Regen Reports SimId=" + simId + ", simVersionId=" + simVersionId + ", orgId=" + orgId + ", suborgId=" + suborgId, forceCalcSection, forceSendCandidateReports, maxLastCandidateSendDate );
+                TestEventRegenReportThread ters = new TestEventRegenReportThread( simId, simVersionId, orgId, suborgId, start, end, minTestEventId, tel,reportId, this, "Regen Reports SimId=" + simId + ", simVersionId=" + simVersionId + ", orgId=" + orgId + ", suborgId=" + suborgId, RuntimeConstants.getBooleanValue("create_reports_init_as_archived"), forceCalcSection, forceSendCandidateReports, maxLastCandidateSendDate );
 
                 new Thread( ters ).start();
 
@@ -384,7 +384,7 @@ public class UserUtils extends FacesUtils
                 //if( rmb.getTestEventScoreList() == null )
                 rm.setTestEventScoreList( new ArrayList<>() );
 
-                List<Report> rl = rm.genRegenReportTestEvent(teId, userBean.getReportId4(), forceCalcSection, false, false, maxLastCandidateSendDate );
+                List<Report> rl = rm.genRegenReportTestEvent(teId, userBean.getReportId4(), forceCalcSection, false, false, false, maxLastCandidateSendDate );
 
                 if( rl != null && !rl.isEmpty()  )
                 {
@@ -499,7 +499,7 @@ public class UserUtils extends FacesUtils
 
                 if( loc==null )
                 {
-                    List<Report> rl = rm.genRegenReportTestEvent(testEventId, userBean.getReportId2(), forceCalcSection, false, forceSendCandidateReports, maxLastCandidateSendDate );
+                    List<Report> rl = rm.genRegenReportTestEvent(testEventId, userBean.getReportId2(), forceCalcSection, false, RuntimeConstants.getBooleanValue("create_reports_init_as_archived"), forceSendCandidateReports, maxLastCandidateSendDate );
                     if( rl!=null && !rl.isEmpty()  )
                     {
                         String s = "";
@@ -528,7 +528,7 @@ public class UserUtils extends FacesUtils
 
                 else
                 {
-                    TestEventScore tes = rm.generateReportForTestEventAndLanguage(testEventId, userBean.getReportId2(), loc.toString(), 0, forceCalcSection, forceSendCandidateReports, maxLastCandidateSendDate );
+                    TestEventScore tes = rm.generateReportForTestEventAndLanguage(testEventId, userBean.getReportId2(), loc.toString(), 0, false, forceCalcSection, forceSendCandidateReports, maxLastCandidateSendDate );
 
                     if( tes!=null )
                     {
@@ -678,7 +678,7 @@ public class UserUtils extends FacesUtils
         return performReportBatch( false );
     }    
     
-    private String performReportBatch( boolean withArchive )
+    private String performReportBatch( boolean includeArchivedTestKeys )
     {
         try
         {
@@ -701,9 +701,9 @@ public class UserUtils extends FacesUtils
             ReportManager rm = new ReportManager();
 
            // if( rmb.getTestEventScoreList() == null )
-                rm.setTestEventScoreList( new ArrayList<>() );
+            rm.setTestEventScoreList( new ArrayList<>() );
 
-            int[] data = rm.generateReportBatch(withArchive, true, false );
+            int[] data = rm.generateReportBatch(includeArchivedTestKeys, true, false, ReportManager.CREATE_INITIALLY_AS_ARCHIVED );
 
             LogService.logIt( "UserUtils.processPerformReportBatch() Completed. " + data[0] + " TestKeys evaluated. " + data[1] + " TestEvents processed, " + data[2] + " Errors, " + data[3] + " partially completed battery test events processed." );
 
@@ -1779,7 +1779,7 @@ public class UserUtils extends FacesUtils
 
 
 
-    public void regenerateReports( List<Long> testEventIdList, long reportId, boolean isThread, boolean forceCalcSection, boolean sendResendCandidateReportEmails, Date maxLastCandidateSendDate) throws Exception
+    public void regenerateReports( List<Long> testEventIdList, long reportId, boolean isThread, boolean createAsArchived, boolean forceCalcSection, boolean sendResendCandidateReportEmails, Date maxLastCandidateSendDate) throws Exception
     {
         long testEventId = 0;
 
@@ -1797,7 +1797,7 @@ public class UserUtils extends FacesUtils
                 //if( rmb.getTestEventScoreList() == null )
                 rm.setTestEventScoreList( new ArrayList<>() );
 
-                List<Report> rl = rm.genRegenReportTestEvent(teid, reportId, forceCalcSection, false, sendResendCandidateReportEmails, maxLastCandidateSendDate );
+                List<Report> rl = rm.genRegenReportTestEvent(teid, reportId, forceCalcSection, false, createAsArchived, sendResendCandidateReportEmails, maxLastCandidateSendDate );
 
                 if( rl != null && !rl.isEmpty()  )
                 {

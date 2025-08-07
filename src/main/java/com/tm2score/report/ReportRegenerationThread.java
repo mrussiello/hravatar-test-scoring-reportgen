@@ -6,6 +6,7 @@
 package com.tm2score.report;
 
 import com.tm2score.entity.report.Report;
+import com.tm2score.global.RuntimeConstants;
 import com.tm2score.service.LogService;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,7 @@ public class ReportRegenerationThread implements Runnable {
             rm.setTestEventScoreList( new ArrayList<>() );
 
 
-            List<Report> rl = rm.genRegenReportTestEvent(testEventId, reportId, forceCalcSection, skipCompleted, false, null );
+            List<Report> rl = rm.genRegenReportTestEvent(testEventId, reportId, forceCalcSection, skipCompleted, RuntimeConstants.getBooleanValue("create_reports_init_as_archived"), false, null );
 
             if( rl != null && !rl.isEmpty()  )
             {

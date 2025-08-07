@@ -2,7 +2,9 @@ package com.tm2score.global;
 
 public class Constants
 {
-    // Countries where texting is allowed. To get name of country use cntry.PY.
+    public static String[] AFFILIATEIDS_THAT_PULL_PDF_REPORTS = new String[]{"midot"};
+    
+     // Countries where texting is allowed. To get name of country use cntry.PY.
     public static String[] SMS_OK_COUNTRIES = new String[] {"AU","CA","GB","MX","PE", "SG","US","UK","ZA"};
     public static int[] SMS_OK_COUNTRY_CODES = new int[] {61,1,44,52,51,65,1,44,27};
     

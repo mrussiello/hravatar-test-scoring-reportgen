@@ -74,6 +74,7 @@ public class ReportManager extends BaseReportManager
     public static boolean OK_TO_START_ANY = true;
 
     public static boolean BATCH_IN_PROGRESS = false;
+    public static boolean CREATE_INITIALLY_AS_ARCHIVED = false;
 
     
     public ReportManager()
@@ -86,6 +87,8 @@ public class ReportManager extends BaseReportManager
     {
         if( INIT_COMPLETE )
             return;
+        
+        CREATE_INITIALLY_AS_ARCHIVED = RuntimeConstants.getBooleanValue( "create_reports_init_as_archived" );
         
         if( RuntimeConstants.getBooleanValue( "disableCertificateVerification" ) )
             SSLUtils.disableSslVerification();
@@ -100,6 +103,9 @@ public class ReportManager extends BaseReportManager
         // Check for tests needing score
         try
         {
+            if( !INIT_COMPLETE )
+                init();
+
             if( !OK_TO_START_ANY )
                 return;
 
@@ -117,7 +123,7 @@ public class ReportManager extends BaseReportManager
 
             // ReportManager rm = new ReportManager();
 
-            int[] count = generateReportBatch(false, noThread, false );
+            int[] count = generateReportBatch(false, noThread, false, CREATE_INITIALLY_AS_ARCHIVED );
 
             FIRST_BATCH = false;
             
@@ -150,7 +156,7 @@ public class ReportManager extends BaseReportManager
      out[3]=partial battery test events
     
     */
-    public int[] generateReportBatch(boolean withArchive, boolean noThread, boolean skipCompleted ) throws Exception
+    public int[] generateReportBatch(boolean includeArchivedTestKeys, boolean noThread, boolean skipCompleted, boolean createAsArchived) throws Exception
     {
         // LogService.logIt( "ReportManager.generateReportBatch() Starting batch. " );
 
@@ -184,7 +190,7 @@ public class ReportManager extends BaseReportManager
             
         List<Integer> orgIdsToSkip = RuntimeConstants.getIntList("OrgIdsToSkip",",");
         
-        List<TestKey> tkl = eventFacade.getNextBatchOfTestKeysToScore(TestKeyStatusType.SCORED.getTestKeyStatusTypeId(), 0, withArchive, -1, orgIdsToSkip );
+        List<TestKey> tkl = eventFacade.getNextBatchOfTestKeysToScore(TestKeyStatusType.SCORED.getTestKeyStatusTypeId(), 0, includeArchivedTestKeys, -1, orgIdsToSkip );
         
         //if( FIRST_BATCH && RuntimeConstants.getBooleanValue("seekStartedReportsFirstBatch") )
         //{
@@ -192,7 +198,7 @@ public class ReportManager extends BaseReportManager
         //}
         //if( RuntimeConstants.getIntValue( "Hra_OptionalTest_ScoreDelay_Minutes" ) > 0 )
         
-        if( tkl.size() < 20 || withArchive || FIRST_BATCH )
+        if( tkl.size() < 20 || includeArchivedTestKeys || FIRST_BATCH )
             tkl.addAll(eventFacade.getNextBatchOfTestKeyArchivesToScore(TestKeyStatusType.SCORED.getTestKeyStatusTypeId(), orgIdsToSkip, 0 ) );
 
         removeTestKeysRequiringDelay( tkl );
@@ -206,6 +212,8 @@ public class ReportManager extends BaseReportManager
 
         long delayBetweenReports = 250;
         
+        boolean createAsArchivedFinal;
+        
         // for each testkey, get the test events
         testkeyloop:
         for( TestKey tk : tkl )
@@ -215,6 +223,7 @@ public class ReportManager extends BaseReportManager
                 LogService.logIt("ReportManager.generateReportBatch() Last Scoring Call was within min last date window. IGNORING Report Gen for this Test Key for now. testKeyId=" + tk.getTestKeyId() );  
                 continue;                                                    
             } 
+            
             
             BaseScoreManager.addTestKeyToDateMap( tk.getTestKeyId() );
                         
@@ -234,6 +243,23 @@ public class ReportManager extends BaseReportManager
             {
                 if( te.getProduct()==null )
                     te.setProduct( eventFacade.getProduct( te.getProductId() ));
+            }
+            
+            createAsArchivedFinal=createAsArchived;
+            
+            if( createAsArchived && 
+                tk.getTestKeySourceTypeId()==TestKeySourceType.API.getTestKeySourceTypeId() && 
+                !tk.getOmitPdfReportFromResultsPost() &&
+                tk.getResultPostUrl()!=null && !tk.getResultPostUrl().isBlank() )
+            {
+                if( tk.getOrg()==null )
+                {
+                    if( userFacade==null )
+                        userFacade=UserFacade.getInstance();
+                    tk.setOrg( userFacade.getOrg( tk.getOrgId() ));
+                }
+                if( tk.getOrg()!=null && tk.getOrg().getAffiliateId()!=null && !tk.getOrg().getAffiliateId().isBlank() && getIsAffiliateIdPullsResultPdfs(tk.getOrg().getAffiliateId()))
+                    createAsArchivedFinal=false;
             }
 
             // Sort to place the Riasec events at the end. So, other reports are generated first.
@@ -256,7 +282,7 @@ public class ReportManager extends BaseReportManager
                 for( TestEvent te : tk.getTestEventList() )
                 {
                     // skip if report complete
-                    if( te.getTestEventStatusTypeId() >= TestEventStatusType.REPORT_COMPLETE.getTestEventStatusTypeId() )
+                    if( te.getTestEventStatusTypeId()>=TestEventStatusType.REPORT_COMPLETE.getTestEventStatusTypeId() )
                         continue;
 
                     // this should not happen, but in case.
@@ -270,7 +296,7 @@ public class ReportManager extends BaseReportManager
                     {
                         //if( noThread )
                         //{
-                            generateReports(te, tk, 0, false, false, null, skipCompleted, errCount);
+                            generateReports(te, tk, 0, false, false, null, skipCompleted, createAsArchivedFinal, errCount);
                             out[1]++;
                         //}
                         //else
@@ -322,7 +348,7 @@ public class ReportManager extends BaseReportManager
                 try
                 {
                     // LogService.logIt( "ReportManager.generateReportBatch() Starting Report Thread tkid=" + tk.getTestKeyId() );
-                    new Thread(new TestKeyReportThread( tk, 0, false, skipCompleted )).start(); 
+                    new Thread(new TestKeyReportThread( tk, 0, false, skipCompleted, createAsArchived )).start(); 
                     Thread.sleep(delayBetweenReports);                
                 }
                 catch( Exception e )
@@ -365,7 +391,7 @@ public class ReportManager extends BaseReportManager
             
             if( noThread )
             {
-                TestKeyReportThread tkrt = new TestKeyReportThread(te, 0, false );
+                TestKeyReportThread tkrt = new TestKeyReportThread(te, 0, false, createAsArchived );
                 if( tkrt.generatePartialBatteryReport() )
                     out[3]++;
             }
@@ -373,7 +399,7 @@ public class ReportManager extends BaseReportManager
             else
             {
                 // LogService.logIt( "ScoreManager.scoreBatch() Starting Score Thread tkid=" + tk.getTestKeyId() );
-                new Thread( new TestKeyReportThread( te, 0, false ) ).start();
+                new Thread( new TestKeyReportThread( te, 0, false, createAsArchived ) ).start();
                 Thread.sleep(100);                
             }
         }        
@@ -564,7 +590,7 @@ public class ReportManager extends BaseReportManager
     }
     
 
-    public int genOrRegenReportsTestKey( long testKeyId, long reportId, boolean forceCalcSection, boolean sendResendCandidateReports, Date forceSendCandidatemaxCandidateSendDate, boolean skipCompleted) throws Exception
+    public int genOrRegenReportsTestKey( long testKeyId, long reportId, boolean forceCalcSection, boolean sendResendCandidateReports, Date forceSendCandidatemaxCandidateSendDate, boolean skipCompleted, boolean createAsArchived) throws Exception
     {
         try
         {
@@ -647,7 +673,7 @@ public class ReportManager extends BaseReportManager
 
                 try
                 {
-                    generateReports(te, tk, reportId > 0 ? reportId : 0, forceCalcSection, false, null, skipCompleted, errCount);
+                    generateReports(te, tk, reportId > 0 ? reportId : 0, forceCalcSection, false, null, skipCompleted, createAsArchived, errCount);
                     count++;
                 }
 
@@ -703,7 +729,7 @@ public class ReportManager extends BaseReportManager
         }
     }
 
-    public List<Report> genRegenReportTestEvent( long testEventId, long reportId, boolean forceCalcSection, boolean skipCompleted, boolean sendResendCandidateReportEmails, Date maxLastCandidateSendDate) throws Exception
+    public List<Report> genRegenReportTestEvent( long testEventId, long reportId, boolean forceCalcSection, boolean skipCompleted, boolean createAsArchived, boolean sendResendCandidateReportEmails, Date maxLastCandidateSendDate) throws Exception
     {
         
         List<TestEventScore> tesl;
@@ -794,9 +820,7 @@ public class ReportManager extends BaseReportManager
             //}
             BaseScoreManager.addTestEventToPartialDateMapIfNew(te.getTestEventId());
             
-            
-            
-            List<Report> out = generateReports(te, tk, reportId > 0 ? reportId : 0, forceCalcSection, sendResendCandidateReportEmails, maxLastCandidateSendDate, skipCompleted, 0);
+            List<Report> out = generateReports(te, tk, reportId > 0 ? reportId : 0, forceCalcSection, sendResendCandidateReportEmails, maxLastCandidateSendDate, skipCompleted, createAsArchived, 0);
 
             /*
             if( r != null )
@@ -842,7 +866,7 @@ public class ReportManager extends BaseReportManager
 
 
 
-    public TestEventScore generateReportForTestEventAndLanguage( long testEventId, long reportId, String langStr, int includeEnglishReport, boolean forceCalcSection, boolean forceSendCandidateReports, Date maxLastCandidateSendDate) throws Exception
+    public TestEventScore generateReportForTestEventAndLanguage( long testEventId, long reportId, String langStr, int includeEnglishReport, boolean createAsArchived, boolean forceCalcSection, boolean forceSendCandidateReports, Date maxLastCandidateSendDate) throws Exception
     {
         try
         {
@@ -1010,7 +1034,7 @@ public class ReportManager extends BaseReportManager
             
             long engEquivSimId = product.getLongParam4();
             
-            TestEventScore tes = null;         
+            TestEventScore tes;         
             
             if( createPdfDoc )
             {
@@ -1041,12 +1065,12 @@ public class ReportManager extends BaseReportManager
                     //te.getProduct().getLongParam4()> 0 )  // test has an english equivalent Sim
                 {
                     LogService.logIt("ReportManager.generateReportForTestEventAndLanguage() DDD.1 since target report language is " + rptLocale.toString() + " AND the Sim is in "  + te.getProduct().getLangStr() + " AND there is an equivalent sim for this sim in the target report language (langEquivSimId=" + langEquivSimId + "), generating an equivalent report. reportId = " + reportId + ", languageEquivReportId=" + langEquivReportId  );
-                    Object[] ot = generateLanguageEquivReport(te, tk, reportId, rptLocale, langEquivSimId, langEquivReportId, 0, false, forceCalcSection );  
+                    Object[] ot = generateLanguageEquivReport(te, tk, reportId, rptLocale, langEquivSimId, langEquivReportId, 0, false, forceCalcSection, createAsArchived );  
                     
-                    // THIS IS NOT SAVED AT THIS TIME. Could be an existing, could be not.
+                    // THIS IS NOT SAVED AT THIS TIME. Could be an existing, could be new.
                     tes = (TestEventScore) ot[2];
                     
-                    if( tes!=null )
+                    if( tes!=null && !createAsArchived )
                         rptBytes = tes.getReportBytes();
 
                     LogService.logIt("ReportManager.generateReportForTestEventAndLanguage() DDD.2 tes=" + (tes==null ? "null" : "not null, testEventScoreId=" + tes.getTestEventScoreId() +", bytes=" + (rptBytes==null ? "null" : rptBytes.length))  );
@@ -1062,7 +1086,7 @@ public class ReportManager extends BaseReportManager
                     
                 
                 // Did not generate a Language Equivalent Report
-                if( rptBytes==null )
+                if( !createAsArchived && rptBytes==null )
                 {
                     // now get the report template class
                     String tmpltClassname = r.getImplementationClass();
@@ -1091,15 +1115,15 @@ public class ReportManager extends BaseReportManager
                 }
                 
 
-                if( rptBytes==null || rptBytes.length == 0 )
+                if( !createAsArchived && (rptBytes==null || rptBytes.length == 0) )
                 {    
                     if( te.getProduct().getProductType().getIsFindly() )
                     {
                         LogService.logIt("ReportManager.generateReportForTestEventAndLanguage() Findly Report for test event is empty. " + te.getProduct().toString() + ", " + r.toString() + ", " + te.toString() );
-                        throw new Exception( "Generated Findly report is empty." );
+                        throw new Exception( "Generated FFF.1 Findly report is empty." );
                     }
                     
-                    throw new Exception( "Generated report is empty." );
+                    throw new Exception( "Generated FFF.2 non-Findly report is empty." );
                 }
                 
                 // Generate an English Equivalent Report?
@@ -1129,7 +1153,7 @@ public class ReportManager extends BaseReportManager
                     // Indicates we should generate.
                     if( includeEng==1 )
                     {
-                        Object[] ot = generateLanguageEquivReport(te, tk, reportId, Locale.US, te.getProduct().getLongParam4(), r.getLongParam1(), 0, true, forceCalcSection );
+                        Object[] ot = generateLanguageEquivReport(te, tk, reportId, Locale.US, te.getProduct().getLongParam4(), r.getLongParam1(), 0, true, forceCalcSection, createAsArchived );
 
                         //TestEventScore eeTes = (TestEventScore) ot[2];
                         //if( eeTes == null )
@@ -1140,7 +1164,7 @@ public class ReportManager extends BaseReportManager
                 }
             }
 
-                        // List<TestEventScore> tesl = te.getTestEventScoreListForReportId(reportId);
+            // List<TestEventScore> tesl = te.getTestEventScoreListForReportId(reportId);
             tes = te.getTestEventScoreForReportId( r.getReportId(), rptLocale.toString() );
 
             if( tes==null )
@@ -1151,11 +1175,16 @@ public class ReportManager extends BaseReportManager
             
             tes.setTestEventId( te.getTestEventId() );
             tes.setTestEventScoreTypeId( TestEventScoreType.REPORT.getTestEventScoreTypeId() );
-            tes.setTestEventScoreStatusTypeId( TestEventScoreStatusType.ACTIVE.getTestEventScoreStatusTypeId() );
+            
+            if( createAsArchived )
+                tes.setTestEventScoreStatusTypeId( TestEventScoreStatusType.REPORT_ARCHIVED.getTestEventScoreStatusTypeId() );
+            else
+                tes.setTestEventScoreStatusTypeId( TestEventScoreStatusType.ACTIVE.getTestEventScoreStatusTypeId() );
+            
             tes.setReportId( r.getReportId() );
             tes.setStrParam1( rptLocale.toString() );
 
-            tes.setReportBytes( rptBytes );
+            tes.setReportBytes( createAsArchived ? null : rptBytes );
 
             if( createPdfDoc )
             {
@@ -1177,7 +1206,7 @@ public class ReportManager extends BaseReportManager
             
             eventFacade.saveTestEventScore(tes);
 
-            LogService.logIt( "ReportManager.generateReportForTestEventAndLanguage() completed report " + tes.getReportFilename() + ", " + ( tes.getReportBytes() == null ? "No Document in Report." :  tes.getReportBytes().length + " bytes.  testEventScoreId=" + tes.getTestEventScoreId() ) );
+            LogService.logIt( "ReportManager.generateReportForTestEventAndLanguage() completed report " + tes.getReportFilename() + ", bytes=" + ( tes.getReportBytes() == null ? "No Document in Report." :  tes.getReportBytes().length + " bytes.  testEventScoreId=" + tes.getTestEventScoreId() ) );
 
             Tracker.addResponseTime( "Generate Single Report", new Date().getTime() - procStart.getTime() );
 
@@ -2075,7 +2104,7 @@ public class ReportManager extends BaseReportManager
             
             if( !useReport2 &&  product.getStrParam13()!=null && !product.getStrParam13().isBlank() )
             {
-                byte[] reportBytes = this.getSampleReportBytes( product.getStrParam13() );
+                byte[] reportBytes = getSampleReportBytes( product.getStrParam13() );
                 
                 if( reportBytes!=null && reportBytes.length>0 )
                 {
@@ -2094,7 +2123,7 @@ public class ReportManager extends BaseReportManager
             
             if( tes==null )
             {
-                Object[] ot = generateSingleReport(te, tk, reportId, true, 0, false );
+                Object[] ot = generateSingleReport(te, tk, reportId, true, 0, false, false );
 
                 Report rpt = (Report) ot[0];
 

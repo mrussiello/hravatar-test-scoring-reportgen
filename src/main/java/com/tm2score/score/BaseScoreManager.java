@@ -705,7 +705,7 @@ public class BaseScoreManager {
                     Collections.sort(tk.getTestEventList(), new TestEventProductInParam4Comparator());
 
                     // LogService.logIt( "BaseScoreManager.scoreTestKey() Starting Report Thread tkid=" + tk.getTestKeyId() );
-                    TestKeyReportThread tkrt = new TestKeyReportThread(tk, 0, false, true);
+                    TestKeyReportThread tkrt = new TestKeyReportThread(tk, 0, false, true, RuntimeConstants.getBooleanValue("create_reports_init_as_archived" ));
 
                     // !noThread indicates this method is already called from a thread, so don't spin a new thread. Just use this one.
                     tkrt.run();
@@ -1072,7 +1072,7 @@ public class BaseScoreManager {
 
                     // LogService.logIt( "BaseScoreManager.scoreTestKey() Starting Report Thread tkid=" + tk.getTestKeyId() );
                     //TestKeyReportThread tkrt =
-                    new Thread(new TestKeyReportThread(te, 0, false)).start();
+                    new Thread(new TestKeyReportThread(te, 0, false, RuntimeConstants.getBooleanValue("create_reports_init_as_archived"))).start();
                     //tkrt.run();
                     // new Thread(new TestKeyReportThread( tk, 0, false )).start();
                     return out;

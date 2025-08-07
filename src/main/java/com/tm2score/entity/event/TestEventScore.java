@@ -3,6 +3,7 @@ package com.tm2score.entity.event;
 import com.tm2score.entity.report.Report;
 import com.tm2score.event.ScoreCategoryType;
 import com.tm2score.event.ScoreFormatType;
+import com.tm2score.event.TestEventScoreStatusType;
 import com.tm2score.event.TestEventScoreType;
 import com.tm2score.format.FormatCompetency;
 import com.tm2score.global.Constants;
@@ -415,6 +416,11 @@ public class TestEventScore implements Serializable, Comparable<TestEventScore>,
         return (TestEventScore) super.clone(); 
     }
 
+    
+    public TestEventScoreStatusType getTestEventScoreStatusType()
+    {
+        return TestEventScoreStatusType.getValue(this.testEventScoreStatusTypeId);
+    }
 
     public boolean getUsesPercentCorrectScoring()
     {
@@ -935,7 +941,7 @@ public class TestEventScore implements Serializable, Comparable<TestEventScore>,
 
     public boolean getHasReport()
     {
-        return reportBytes != null && reportBytes.length > 0;
+        return this.getTestEventScoreStatusType().getIsReportArchived() || (reportBytes != null && reportBytes.length > 0);
     }
 
     public ScoreCategoryType getScoreCategoryType()

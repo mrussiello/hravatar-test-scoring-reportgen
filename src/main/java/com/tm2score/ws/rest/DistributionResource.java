@@ -12,6 +12,7 @@ import com.tm2score.entity.event.TestKey;
 import com.tm2score.event.EventFacade;
 import com.tm2score.event.TestKeyStatusType;
 import com.tm2score.global.I18nUtils;
+import com.tm2score.global.RuntimeConstants;
 import com.tm2score.report.ReportManager;
 import com.tm2score.score.BaseScoreManager;
 import com.tm2score.score.RescoreRereportThread;
@@ -458,7 +459,7 @@ public class DistributionResource extends BaseApiResource {
                 throw new ApiException( msg, 160, Response.Status.BAD_REQUEST.getStatusCode() );
             }
             
-            RescoreRereportThread rrt = new RescoreRereportThread( testKeyId, true );
+            RescoreRereportThread rrt = new RescoreRereportThread( testKeyId, true, RuntimeConstants.getBooleanValue("create_reports_init_as_archived") );
 
             rrt.start();
 
@@ -553,7 +554,7 @@ public class DistributionResource extends BaseApiResource {
 
             rm.setTestEventScoreList( new ArrayList<>() );
 
-            TestEventScore tes = rm.generateReportForTestEventAndLanguage(testEventId, reportId, langStr, includeEnglishReport, forceCalcSection==1, false, null );
+            TestEventScore tes = rm.generateReportForTestEventAndLanguage(testEventId, reportId, langStr, includeEnglishReport, false, forceCalcSection==1, false, null );
 
             byte[] out = tes==null || tes.getReportBytes()==null || tes.getReportBytes().length==0 ? new byte[0] : tes.getReportBytes();
 

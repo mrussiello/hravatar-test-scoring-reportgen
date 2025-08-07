@@ -183,6 +183,8 @@ public class RuntimeConstants
 
         cache.put( "ForceNoThreadBasedBatchesInScoreReportDistrib", false );
 
+        
+        cache.put("create_reports_init_as_archived", false );
 
         //////////////////////////////////////////////////////////////////////////////
         // TM2 SCORE API
@@ -540,6 +542,8 @@ public class RuntimeConstants
 
         cache.put( "useTestFoldersForAwsLvFiles" , false );
 
+        
+        
         ///////////////////////////////////////////////////////////////////////////
         // Resume Func
         ///////////////////////////////////////////////////////////////////////////

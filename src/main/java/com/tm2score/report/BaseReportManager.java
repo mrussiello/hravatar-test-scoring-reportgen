@@ -25,6 +25,7 @@ import com.tm2score.event.TestEventScoreStatusType;
 import com.tm2score.event.TestEventScoreType;
 import com.tm2score.event.TestEventStatusType;
 import com.tm2score.event.TestKeyStatusType;
+import com.tm2score.global.Constants;
 import com.tm2score.global.I18nUtils;
 import com.tm2score.global.RuntimeConstants;
 import com.tm2score.global.STException;
@@ -85,7 +86,7 @@ public class BaseReportManager {
     /*
        frcReportId=999999 means all feedback reports
     */
-    public List<Report> generateReports( TestEvent te, TestKey tk, long frcReportId, boolean forceCalcSection, boolean sendResendCandidateReportEmails, Date maxLastCandidateSendDate, boolean skipCompleted, int nonFatalErrCount) throws Exception
+    public List<Report> generateReports( TestEvent te, TestKey tk, long frcReportId, boolean forceCalcSection, boolean sendResendCandidateReportEmails, Date maxLastCandidateSendDate, boolean skipCompleted, boolean createAsArchived, int nonFatalErrCount) throws Exception
     {
         List<Report> out = new ArrayList<>();
 
@@ -304,7 +305,7 @@ public class BaseReportManager {
 
             if( reportId>0 )
             {
-                ot = generateSingleReport(te, tk, reportId, forceCalcSection, tesDispOrdr, skipCompleted );
+                ot = generateSingleReport(te, tk, reportId, forceCalcSection, tesDispOrdr, skipCompleted, createAsArchived );
                 tesDispOrdr++;
 
                 r = (Report) ot[0];
@@ -339,7 +340,7 @@ public class BaseReportManager {
 
                         if( includeEng==1 )
                         {
-                            ot = generateLanguageEquivReport(te, tk, reportId, Locale.US, te.getProduct().getLongParam4(), r.getLongParam1(), tesDispOrdr, true, forceCalcSection );
+                            ot = generateLanguageEquivReport(te, tk, reportId, Locale.US, te.getProduct().getLongParam4(), r.getLongParam1(), tesDispOrdr, true, forceCalcSection, false );
                             tesDispOrdr++;
 
                             r = (Report) ot[0];
@@ -381,7 +382,7 @@ public class BaseReportManager {
 
             if( reportId2>0 )
             {
-                ot = generateSingleReport(te, tk, reportId2, forceCalcSection, tesDispOrdr, skipCompleted );
+                ot = generateSingleReport(te, tk, reportId2, forceCalcSection, tesDispOrdr, skipCompleted, createAsArchived );
                 tesDispOrdr++;
 
                 Report r2 = (Report) ot[0];
@@ -405,7 +406,7 @@ public class BaseReportManager {
 
                     if( reportLocale != null && !reportLocale.getLanguage().equals( "en" ) && tk.getOrg()!=null && tk.getOrg().getIncludeEnglishReport()==1 && engEquivSimId>0 )
                     {
-                        ot = generateLanguageEquivReport(te, tk, reportId2, Locale.US, te.getProduct().getLongParam4(), r2.getLongParam1(), tesDispOrdr, true, forceCalcSection );
+                        ot = generateLanguageEquivReport(te, tk, reportId2, Locale.US, te.getProduct().getLongParam4(), r2.getLongParam1(), tesDispOrdr, true, forceCalcSection, false );
                         tesDispOrdr++;
 
                         r2 = (Report) ot[0];
@@ -437,7 +438,7 @@ public class BaseReportManager {
 
             if( reportId3>0 )
             {
-                ot = generateSingleReport(te, tk, reportId3, forceCalcSection, tesDispOrdr, skipCompleted );
+                ot = generateSingleReport(te, tk, reportId3, forceCalcSection, tesDispOrdr, skipCompleted, createAsArchived );
                 tesDispOrdr++;
 
                 Report r3 = (Report) ot[0];
@@ -461,7 +462,7 @@ public class BaseReportManager {
 
                     if( reportLocale != null && !reportLocale.getLanguage().equals( "en" ) && tk.getOrg()!=null && tk.getOrg().getIncludeEnglishReport()==1 && engEquivSimId>0 )
                     {
-                        ot = generateLanguageEquivReport(te, tk, reportId3, Locale.US, te.getProduct().getLongParam4(), r3.getLongParam1(), tesDispOrdr, true, forceCalcSection );
+                        ot = generateLanguageEquivReport(te, tk, reportId3, Locale.US, te.getProduct().getLongParam4(), r3.getLongParam1(), tesDispOrdr, true, forceCalcSection, false );
                         tesDispOrdr++;
 
                         r3 = (Report) ot[0];
@@ -496,7 +497,7 @@ public class BaseReportManager {
             {
                 // LogService.logIt( "ReportManager.generatingReport() generating test taker feedback report feedbackReportId=" + feedbackReportId + " for testEventId=" + te.getTestEventId() );
 
-                ot = generateSingleReport(te, tk, feedbackReportId, false, tesDispOrdr, skipCompleted );
+                ot = generateSingleReport(te, tk, feedbackReportId, false, tesDispOrdr, skipCompleted, createAsArchived );
                 tesDispOrdr++;
 
                 //Report r2 = (Report) ot[0];
@@ -557,7 +558,7 @@ public class BaseReportManager {
                 // wait 20 seconds and try again.
                 LogService.logIt("ReportManager.generateReport() CCC.1 Non-Fatal Report Exception waiting and trying again. testEventId=" + te.getTestEventId() + ", testKeyId=" + te.getTestKeyId());
                 Thread.sleep( NON_FATAL_ERROR_WAIT_SECS*1000 );
-                return generateReports( te, tk, frcReportId,  forceCalcSection, sendResendCandidateReportEmails,maxLastCandidateSendDate,  true,  nonFatalErrCount );
+                return generateReports( te, tk, frcReportId,  forceCalcSection, sendResendCandidateReportEmails,maxLastCandidateSendDate,  true, createAsArchived,  nonFatalErrCount );
             }
 
             throw e;
@@ -585,7 +586,7 @@ public class BaseReportManager {
      * @return
      * @throws Exception
      */
-    public Object[] generateSingleReport( TestEvent te, TestKey tk, long reportId, boolean forceCalcSection, int tesDispOrdr, boolean skipCompleted) throws Exception
+    public Object[] generateSingleReport( TestEvent te, TestKey tk, long reportId, boolean forceCalcSection, int tesDispOrdr, boolean skipCompleted, boolean createAsArchived) throws Exception
     {
         Object[] out = new Object[4];
 
@@ -734,8 +735,15 @@ public class BaseReportManager {
                 out[1] = rptLocale;
                 return out;
             }
+            
+            // already have an archived version present.
+            if( createAsArchived && tes!=null && tes.getTestEventScoreStatusTypeId()==TestEventScoreStatusType.REPORT_ARCHIVED.getTestEventScoreStatusTypeId() )
+            {
+                out[1] = rptLocale;
+                return out;
+            }
 
-            if( createPdfDoc )
+            if( createPdfDoc && !createAsArchived )
             {
                 long langEquivSimId = 0;
                 long langEquivReportId = 0;
@@ -755,7 +763,7 @@ public class BaseReportManager {
                 if( langEquivSimId>0 )
                 {
                     LogService.logIt("ReportManager.generateSingleReport() since target report language is " + rptLocale.toString() + " AND the Sim is in "  + te.getProduct().getLangStr() + " AND there is an equivalent sim for this sim in the target report language (langEquivSimId=" + langEquivSimId + "), generating an equivalent report. reportId = " + reportId  );
-                    Object[] ot = generateLanguageEquivReport(te, tk, reportId, rptLocale, langEquivSimId, langEquivReportId, tesDispOrdr+1, false, forceCalcSection );
+                    Object[] ot = generateLanguageEquivReport(te, tk, reportId, rptLocale, langEquivSimId, langEquivReportId, tesDispOrdr+1, false, forceCalcSection, false );
                     out[3]=true;
                     tes = (TestEventScore) ot[2];
 
@@ -852,20 +860,25 @@ public class BaseReportManager {
                 tes.setTestEventId( te.getTestEventId() );
             }
 
+            
+            if( createAsArchived )
+                tes.setTestEventScoreStatusTypeId( TestEventScoreStatusType.REPORT_ARCHIVED.getTestEventScoreStatusTypeId() );
+            else
+                tes.setTestEventScoreStatusTypeId( TestEventScoreStatusType.ACTIVE.getTestEventScoreStatusTypeId() );
+                
             tes.setTestEventScoreTypeId( TestEventScoreType.REPORT.getTestEventScoreTypeId() );
-            tes.setTestEventScoreStatusTypeId( TestEventScoreStatusType.ACTIVE.getTestEventScoreStatusTypeId() );
             tes.setReportId( r.getReportId() );
             tes.setStrParam1( rptLocale.toString() );
             tes.setTextParam1( reportNotes );
 
-            tes.setReportBytes( rptBytes );
+            tes.setReportBytes( createAsArchived ? null : rptBytes );
 
             if( createPdfDoc )
             {
                 // String suffix = "";
 
                 tes.setReportFileContentTypeId( 500 ); // PDF
-                tes.setReportFilename(getReportFilename( te ) + ".PDF" );
+                tes.setReportFilename( getReportFilename( te ) + ".PDF" );
             }
 
             else
@@ -888,7 +901,7 @@ public class BaseReportManager {
 
             // LogService.logIt( "ReportManager.generateSingleReport() saving test event. " );
 
-            if(  te.getTestEventStatusTypeId() < TestEventStatusType.REPORT_COMPLETE.getTestEventStatusTypeId() )
+            if( te.getTestEventStatusTypeId() < TestEventStatusType.REPORT_COMPLETE.getTestEventStatusTypeId() )
             {
                 te.setTestEventStatusTypeId( TestEventStatusType.REPORT_COMPLETE.getTestEventStatusTypeId() );
 
@@ -1012,7 +1025,7 @@ public class BaseReportManager {
      * @return
      * @throws Exception
      */
-    public Object[] generateLanguageEquivReport( TestEvent te, TestKey tk, long reportId, Locale tgtLocale, long langEquivSimId, long langEquivReportId, int tesDispOrdr, boolean saveTestEventScore, boolean forceCalcSection) throws Exception
+    public Object[] generateLanguageEquivReport( TestEvent te, TestKey tk, long reportId, Locale tgtLocale, long langEquivSimId, long langEquivReportId, int tesDispOrdr, boolean saveTestEventScore, boolean forceCalcSection, boolean createAsArchived) throws Exception
     {
         Object[] out = new Object[3];
 
@@ -1189,13 +1202,13 @@ public class BaseReportManager {
                     eventFacade.saveTestEvent( te );
             }
 
-            rptBytes = rt.generateReport();
+            rptBytes = createAsArchived ? null : rt.generateReport();
 
             out[1] = tgtLocale;
 
             rt.dispose();
 
-            if( rptBytes == null || rptBytes.length == 0 )
+            if( !createAsArchived && (rptBytes == null || rptBytes.length == 0) )
             {
                 if( te.getProduct().getProductType().getIsFindly() )
                 {
@@ -1221,16 +1234,16 @@ public class BaseReportManager {
             if( tes == null )
             {
                 tes = new TestEventScore();
-                tes.setDisplayOrder( tesDispOrdr>0 ? tesDispOrdr : te.getTestEventScoreList().size() + 1 );
+                tes.setDisplayOrder(tesDispOrdr>0 ? tesDispOrdr : te.getTestEventScoreList().size() + 1 );
                 tes.setTestEventId( te.getTestEventId() );
             }
 
             tes.setTestEventScoreTypeId( TestEventScoreType.REPORT.getTestEventScoreTypeId() );
-            tes.setTestEventScoreStatusTypeId( TestEventScoreStatusType.ACTIVE.getTestEventScoreStatusTypeId() );
+            tes.setTestEventScoreStatusTypeId( createAsArchived ? TestEventScoreStatusType.REPORT_ARCHIVED.getTestEventScoreStatusTypeId() : TestEventScoreStatusType.ACTIVE.getTestEventScoreStatusTypeId() );
             tes.setReportId( r.getReportId() );
             tes.setStrParam1( tgtLocale.toString() );
 
-            tes.setReportBytes( rptBytes );
+            tes.setReportBytes( createAsArchived ? null : rptBytes );
 
             tes.setReportFileContentTypeId( 500 ); // PDF
             tes.setReportFilename(getReportFilename( te ) + "_" + tgtLocale.toString() + ".PDF" );
@@ -1892,6 +1905,19 @@ public class BaseReportManager {
         {
             LogService.logIt(e, "ReportManager.saveErrorInfo() " );
         }
+    }
+    
+    public boolean getIsAffiliateIdPullsResultPdfs( String affiliateId )
+    {
+        if( affiliateId==null || affiliateId.isBlank() )
+            return false;
+        
+        for( String aid : Constants.AFFILIATEIDS_THAT_PULL_PDF_REPORTS )
+        {
+            if( aid!=null && aid.equalsIgnoreCase(affiliateId))
+                return true;
+        }
+        return false;
     }
 
 }

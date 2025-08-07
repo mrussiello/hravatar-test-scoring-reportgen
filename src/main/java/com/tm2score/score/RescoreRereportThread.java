@@ -19,6 +19,7 @@ public class RescoreRereportThread extends Thread
     long testKeyId;
     boolean rescoreOnly = false;
     boolean skipCompleted = false;
+    boolean createReportsAsArchived = false;
 
     // @Inject
     EventFacade eventFacade;
@@ -28,10 +29,11 @@ public class RescoreRereportThread extends Thread
     //   this.testKeyId = testKeyId;
     //}
     
-    public RescoreRereportThread( long testKeyId, boolean rescoreOnly )
+    public RescoreRereportThread( long testKeyId, boolean rescoreOnly, boolean createReportsAsArchived)
     {
         this.testKeyId = testKeyId;
         this.rescoreOnly = rescoreOnly;
+        this.createReportsAsArchived=createReportsAsArchived;
     }
 
     @Override
@@ -96,7 +98,7 @@ public class RescoreRereportThread extends Thread
             //if( rmb.getTestEventScoreList() == null )
             rm.setTestEventScoreList( new ArrayList<>() );
 
-            int ct = rm.genOrRegenReportsTestKey(testKeyId, 0, false, false, null, skipCompleted );
+            int ct = rm.genOrRegenReportsTestKey(testKeyId, 0, false, false, null, skipCompleted, createReportsAsArchived );
 
             LogService.logIt( "RescoreRereportThread.run() FINISH testKeyId=" + testKeyId + " created " + ct + " reports." );
         }
