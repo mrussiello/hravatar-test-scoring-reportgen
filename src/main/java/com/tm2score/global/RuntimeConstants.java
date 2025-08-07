@@ -184,7 +184,7 @@ public class RuntimeConstants
         cache.put( "ForceNoThreadBasedBatchesInScoreReportDistrib", false );
 
         
-        cache.put("create_reports_init_as_archived", false );
+        cache.put("create_reports_init_as_archived", true );
 
         //////////////////////////////////////////////////////////////////////////////
         // TM2 SCORE API
