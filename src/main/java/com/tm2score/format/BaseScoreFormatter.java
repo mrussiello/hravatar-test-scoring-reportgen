@@ -1750,7 +1750,7 @@ public class BaseScoreFormatter
                 // test taker - only email the report for this specific Report
                 else
                 {
-                    if( tes.getReport().getEmailTestTaker()==1 && tes.getReportId()==this.report.getReportId() )
+                    if( tes.getReport().getEmailTestTaker()==1 && tes.getReportId()==this.report.getReportId() && tes.getReportFilename()!=null && !tes.getReportFilename().equalsIgnoreCase("NoReport") )
                         tesList.add(tes);
                 }
             }
@@ -1772,6 +1772,9 @@ public class BaseScoreFormatter
                 tog=!tog;
                 style = tog ? rowStyle1 : rowStyle2;
                 link = tes.getReportDirectDownloadLink();
+                
+                if( link==null || link.isBlank() )
+                    continue;
 
                 String pdfImgLnk = getPdfDownloadImgLink( link );
 

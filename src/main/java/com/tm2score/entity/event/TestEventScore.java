@@ -430,7 +430,7 @@ public class TestEventScore implements Serializable, Comparable<TestEventScore>,
     
     public String getReportDirectDownloadLink()
     {
-        if( !getTestEventScoreType().getIsReport() ||  !getHasReport() )
+        if( !getTestEventScoreType().getIsReport() ||  !getHasReport() || (reportFilename==null || reportFilename.equalsIgnoreCase("NoReport")) )
             return null;
 
         try

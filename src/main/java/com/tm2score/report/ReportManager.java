@@ -1176,7 +1176,7 @@ public class ReportManager extends BaseReportManager
             tes.setTestEventId( te.getTestEventId() );
             tes.setTestEventScoreTypeId( TestEventScoreType.REPORT.getTestEventScoreTypeId() );
             
-            if( createAsArchived )
+            if( createPdfDoc && createAsArchived )
                 tes.setTestEventScoreStatusTypeId( TestEventScoreStatusType.REPORT_ARCHIVED.getTestEventScoreStatusTypeId() );
             else
                 tes.setTestEventScoreStatusTypeId( TestEventScoreStatusType.ACTIVE.getTestEventScoreStatusTypeId() );

@@ -5,13 +5,8 @@
 package com.tm2score.custom.coretest;
 
 import com.tm2score.format.*;
-import com.tm2score.entity.event.TestEventScore;
-import com.tm2score.event.TestEventScoreType;
-import com.tm2score.global.I18nUtils;
 import com.tm2score.global.STException;
 import com.tm2score.service.LogService;
-import com.tm2score.util.MessageFactory;
-import java.util.List;
 
 /**
  *
@@ -51,7 +46,7 @@ public class CoreTestTestTakerHtmlScoreFormatter extends BaseScoreFormatter impl
             if( !temp.isEmpty() )
             {
                 sb.append( temp );
-                tog = ( (Boolean) out[1]).booleanValue();
+                tog = ( (Boolean) out[1]);
                 sb.append( getRowSpacer( rowStyle0 ) );
             }
 
@@ -61,7 +56,7 @@ public class CoreTestTestTakerHtmlScoreFormatter extends BaseScoreFormatter impl
             if( !temp.isEmpty() )
             {
                 sb.append( temp );
-                tog = ( (Boolean) out[1]).booleanValue();
+                tog = ( (Boolean) out[1]);
                 sb.append( getRowSpacer( rowStyle0 ) );
             }
 

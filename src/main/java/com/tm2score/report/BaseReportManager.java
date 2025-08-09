@@ -771,7 +771,7 @@ public class BaseReportManager {
                         rptBytes = tes.getReportBytes();
                 }
 
-                if( rptBytes == null )
+                if( rptBytes==null )
                 {
                     // now get the report template class
                     String tmpltClassname = r.getImplementationClass();
@@ -861,7 +861,7 @@ public class BaseReportManager {
             }
 
             
-            if( createAsArchived )
+            if( createPdfDoc && createAsArchived )
                 tes.setTestEventScoreStatusTypeId( TestEventScoreStatusType.REPORT_ARCHIVED.getTestEventScoreStatusTypeId() );
             else
                 tes.setTestEventScoreStatusTypeId( TestEventScoreStatusType.ACTIVE.getTestEventScoreStatusTypeId() );

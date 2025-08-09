@@ -712,7 +712,7 @@ public class AssessmentStatusCreator {
 
                         AssessmentResult.Results.SupportingMaterials.ReportId rpt;
 
-                        if( includeScoreCode==3 && reportBytes != null && reportBytes.length > 0 )
+                        if( includeScoreCode==3 && reportBytes!= null && reportBytes.length > 0 )
                         {
                             rpt = new AssessmentResult.Results.SupportingMaterials.ReportId();
                             idvl = new ArrayList<>();
