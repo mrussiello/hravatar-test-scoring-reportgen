@@ -107,7 +107,7 @@ public class DistributionResource extends BaseApiResource {
             }
             catch( ApiException e )
             {
-                LogService.logIt( e, "DistributionResource.doPost() AA.1 Authentication Error. jsonContent=" + jsonContent );
+                LogService.logIt( "DistributionResource.doPost() " + e.toString() + ", AA.1 Authentication Error. jsonContent=" + jsonContent );
                 return Response.status( e.getHttpResponseCode(), "Unable to authenticate." ).build();
             }
                         

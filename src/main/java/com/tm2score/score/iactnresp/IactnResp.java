@@ -1947,7 +1947,7 @@ public class IactnResp implements ScorableResponse
 
             text = getSelectedExtPartItemIds();
 
-            LogService.logIt( "IactnResp.getItemScoreTextTitle() DDD.1 Unique=" + intnObj.getUniqueid() + ", text=" + (text==null ? "null" : text) );
+            // LogService.logIt( "IactnResp.getItemScoreTextTitle() DDD.1 Unique=" + intnObj.getUniqueid() + ", text=" + (text==null ? "null" : text) );
 
             if( text==null || text.isBlank() )
             {
@@ -2027,7 +2027,7 @@ public class IactnResp implements ScorableResponse
         if( text==null || text.isEmpty() )
             return null;
 
-        LogService.logIt( "IactnResp.getItemScoreTextTitle() XXX.1 title=" + (title==null ? "null" : title) + ", text=" + text +", " + toString() );
+        // LogService.logIt( "IactnResp.getItemScoreTextTitle() XXX.1 title=" + (title==null ? "null" : title) + ", text=" + text +", " + toString() );
         
         text = StringUtils.replaceStr( text, "[", "{" );
         title = StringUtils.replaceStr(title, "[", "{" );
