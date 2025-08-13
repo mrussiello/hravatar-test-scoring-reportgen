@@ -46,12 +46,14 @@ public class ReportArchiveUtils {
             
             LogService.logIt( "ReportArchiveUtils.unarchiveReportTestEventScore() XXX.1 Completed unarchiving. bytes.length=" + (out==null ? "null" : out.length) + ", testEventId=" + (tesToUnarchive==null ? "null" : tesToUnarchive.getTestEventId()) + ", testEventScoreId=" + (tesToUnarchive==null ? "null" : tesToUnarchive.getTestEventScoreId()) );
             
-            if( eventFacade==null )
-                eventFacade=EventFacade.getInstance();
+            if( tes!=null )
+            {
+                if( eventFacade==null )
+                    eventFacade=EventFacade.getInstance();
+                eventFacade.saveTestEventScore(tes);
+            }
             
-            eventFacade.saveTestEventScore(tes);
-
-            return tes;
+            return tes==null ? tesToUnarchive : tes;
         }
         catch( Exception e )
         {
