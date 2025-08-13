@@ -504,16 +504,29 @@
                                     <div class="bodysmallbold" style="text-align: right">Re-Distribute TestKeyIds:</div>
                                 </h:panelGroup>
                                 <p:inputText value="#{userBean.testKeyIdsStr2}" size="30"/>
-                                <p:commandButton ajax="false" action="#{userUtils.processRedistributeTestKeyIds}" value="Re-Distribute TestKeys"/>
+                                <h:panelGroup></h:panelGroup>
 
+                                <h:panelGroup></h:panelGroup>
+                                <h:panelGroup>
+                                    <p:selectBooleanCheckbox value="#{userBean.resendResultsPost}"/>&#160;Resend API Results POST.
+                                </h:panelGroup>
+                                <p:commandButton ajax="false" action="#{userUtils.processRedistributeTestKeyIds}" value="Re-Distribute TestKeys"/>
+                                
+                                
 
                                 <h:panelGroup>
                                     <div class="bodysmallbold" style="text-align: right">Re-Distribute TestEvent Ids:</div>
                                 </h:panelGroup>
                                 <p:inputText value="#{userBean.testEventIds2}" size="30"/>
+                                <h:panelGroup></h:panelGroup>
+                                
+                                <h:panelGroup></h:panelGroup>
+                                <h:panelGroup>
+                                    <p:selectBooleanCheckbox value="#{userBean.resendResultsPost2}"/>&#160;Resend API Results POST.
+                                </h:panelGroup>
                                 <p:commandButton ajax="false" action="#{userUtils.processRedistributeTestEventIds}" value="Re-Distribute TestEvents" title="Will look up matching test keys and redistribute each."/>
 
-
+                                
                                 <h:panelGroup>
                                     <div class="bodysmallbold" style="text-align: right"><br />Generate API AssessmentResult XML:</div>
                                 </h:panelGroup>

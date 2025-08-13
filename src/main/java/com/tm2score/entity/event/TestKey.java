@@ -180,6 +180,11 @@ public class TestKey implements Serializable, ErrorTxtObject {
     @Column(name = "errorcnt")
     private int errorCnt;
 
+    /*
+      0 = no dist completed. 
+      1 = all dist completed.
+      2 = only API dist completed.
+    */
     @Column(name = "firstdistcomplete")
     private int firstDistComplete;
 

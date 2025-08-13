@@ -116,7 +116,15 @@ public class DistManager extends BaseDistManager
                     continue;
                 }
 
-
+                // if Report complete but already dist API, put in that status.
+                if( tk.getFirstDistComplete()==2 && !tk.getTestKeyStatusType().equals(TestKeyStatusType.API_DISTRIBUTION_COMPLETE) )
+                {
+                    tk.setTestKeyStatusTypeId( TestKeyStatusType.API_DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() );
+                    tk.setErrorCnt(0);
+                    eventFacade.saveTestKey(tk);
+                    //continue;
+                }                
+                
                 if( !BaseScoreManager.isScoringFirstTimeOrRepeatAllowed( tk.getTestKeyId() ) )
                 {
                     LogService.logIt("DistManager.doDistBatch() Last Scoring Call was within min last date window. IGNORING Distribution for this Test Key for now. testKeyId=" + tk.getTestKeyId() );

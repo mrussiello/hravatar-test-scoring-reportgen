@@ -1729,7 +1729,12 @@ public class BaseReportManager {
             else if( tk.getTestKeyStatusType().equals(TestKeyStatusType.REPORT_ERROR) )
             {
                 if( hasCompletedReport )
-                    tk.setTestKeyStatusTypeId( tk.getFirstDistComplete()==1 ? TestKeyStatusType.DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() : TestKeyStatusType.REPORTS_COMPLETE.getTestKeyStatusTypeId() );
+                {
+                    if( tk.getFirstDistComplete()==2 )
+                        tk.setTestKeyStatusTypeId( TestKeyStatusType.API_DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() );
+                    else
+                        tk.setTestKeyStatusTypeId( tk.getFirstDistComplete()==1 ? TestKeyStatusType.DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() : TestKeyStatusType.REPORTS_COMPLETE.getTestKeyStatusTypeId() );
+                }
                 else
                     tk.setErrorCnt( MAX_REPORT_ERRORS+1 );
 
@@ -1741,7 +1746,13 @@ public class BaseReportManager {
             else if( tk.getTestKeyStatusType().equals(TestKeyStatusType.REPORTS_STARTED) )
             {
                 if( hasCompletedReport )
-                    tk.setTestKeyStatusTypeId( tk.getFirstDistComplete()==1 ? TestKeyStatusType.DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() : TestKeyStatusType.REPORTS_COMPLETE.getTestKeyStatusTypeId());
+                {
+                    if( tk.getFirstDistComplete()==2 )
+                        tk.setTestKeyStatusTypeId( TestKeyStatusType.API_DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() );
+                    else
+                        tk.setTestKeyStatusTypeId( tk.getFirstDistComplete()==1 ? TestKeyStatusType.DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() : TestKeyStatusType.REPORTS_COMPLETE.getTestKeyStatusTypeId() );
+                    // tk.setTestKeyStatusTypeId( tk.getFirstDistComplete()==1 ? TestKeyStatusType.DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() : TestKeyStatusType.REPORTS_COMPLETE.getTestKeyStatusTypeId());
+                }
                 else
                 {
                     tk.setTestKeyStatusTypeId(TestKeyStatusType.REPORT_ERROR.getTestKeyStatusTypeId());

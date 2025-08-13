@@ -1975,6 +1975,8 @@ public class UserUtils extends FacesUtils {
             if (eventFacade == null)
                 eventFacade = EventFacade.getInstance();
 
+            boolean resendResultsPost = userBean.isResendResultsPost();
+            
             TestKey tk; //  = eventFacade.getTestKey(userBean.getTestKeyId3(), true);
 
             if (tkids == null || tkids.isBlank())
@@ -1998,7 +2000,7 @@ public class UserUtils extends FacesUtils {
 
             LogService.logIt("UserUtils.processRedistributeTestKeyIds() Found " + tkidSet.size() + " unique TestKeyIds to distribute.");
 
-            redistributeTestKeyIds(tkidSet);
+            redistributeTestKeyIds(tkidSet, resendResultsPost);
 
             userBean.clear();
         } catch (STException e)
@@ -2012,7 +2014,7 @@ public class UserUtils extends FacesUtils {
         return null;
     }
 
-    public void redistributeTestKeyIds(Set<Long> tkidSet) throws Exception
+    public void redistributeTestKeyIds(Set<Long> tkidSet, boolean resendResultsPost) throws Exception
     {
         try
         {
@@ -2037,12 +2039,20 @@ public class UserUtils extends FacesUtils {
 
                     if (!tk.getTestKeyStatusType().equals(TestKeyStatusType.REPORTS_COMPLETE)
                             && !tk.getTestKeyStatusType().equals(TestKeyStatusType.DISTRIBUTION_STARTED)
+                            && !tk.getTestKeyStatusType().equals(TestKeyStatusType.API_DISTRIBUTION_COMPLETE)
                             && !tk.getTestKeyStatusType().equals(TestKeyStatusType.DISTRIBUTION_COMPLETE)
                             && !tk.getTestKeyStatusType().equals(TestKeyStatusType.DISTRIBUTION_ERROR))
                         throw new Exception("TestKey Status is not valid for redistribution: " + tk.getTestKeyStatusType().getTestKeyStatusTypeId());
 
+                    // reset first dist complete if resend.
+                    if( resendResultsPost )
+                        tk.setFirstDistComplete(0);
+                    
                     // tk.setTestKeyStatusTypeId( TestKeyStatusType.REPORTS_COMPLETE.getTestKeyStatusTypeId() );
-                    tk.setTestKeyStatusTypeId(TestKeyStatusType.DISTRIBUTION_STARTED.getTestKeyStatusTypeId());
+                    if( tk.getFirstDistComplete()==2 )
+                        tk.setTestKeyStatusTypeId( TestKeyStatusType.API_DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId());
+                    else
+                        tk.setTestKeyStatusTypeId( TestKeyStatusType.DISTRIBUTION_STARTED.getTestKeyStatusTypeId());
 
                     eventFacade.saveTestKey(tk);
 
@@ -2077,7 +2087,7 @@ public class UserUtils extends FacesUtils {
             } else
             {
                 setStringInfoMessage("Starting batch in thread because more than 10 test keys requested. Check logs for results.");
-                DistributionBatchThread dbt = new DistributionBatchThread(tkidSet);
+                DistributionBatchThread dbt = new DistributionBatchThread(tkidSet, resendResultsPost);
                 new Thread(dbt).start();
             }
         } catch (STException e)
@@ -2202,6 +2212,8 @@ public class UserUtils extends FacesUtils {
             if (teids == null || teids.isBlank())
                 throw new Exception("TestEventIds not found. TestEventIds should be delimited by commas");
 
+            boolean resendResultsPost = userBean.isResendResultsPost();
+            
             Set<Long> tkidSet = new HashSet<>();
             Set<Long> teidSet = new HashSet<>();
             long tkid;
@@ -2231,7 +2243,7 @@ public class UserUtils extends FacesUtils {
 
             LogService.logIt("UserUtils.processRedistributeTestEventIds() Found " + tkidSet.size() + " unique TestKeyIds to distribute for " + teidSet.size() + " unique testEventIds.");
 
-            redistributeTestKeyIds(tkidSet);
+            redistributeTestKeyIds(tkidSet, resendResultsPost);
 
             userBean.clear();
         } catch (STException e)

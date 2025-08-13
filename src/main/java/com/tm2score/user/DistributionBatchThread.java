@@ -22,12 +22,14 @@ import java.util.Set;
 public class DistributionBatchThread implements Runnable {
     
     Set<Long> testKeyIds;
+    boolean resendApiPost=false;
     
     EventFacade eventFacade;
     
-    public DistributionBatchThread( Set<Long> testKeyIds )
+    public DistributionBatchThread( Set<Long> testKeyIds, boolean resendApiPost )
     {
         this.testKeyIds=testKeyIds;
+        this.resendApiPost=resendApiPost;
     }
 
     @Override
@@ -57,9 +59,10 @@ public class DistributionBatchThread implements Runnable {
                     throw new Exception( "TestKey not found for testKeyId=" + testKeyId );
                 
                 if( !tk.getTestKeyStatusType().equals( TestKeyStatusType.REPORTS_COMPLETE ) &&
+                    !tk.getTestKeyStatusType().equals( TestKeyStatusType.API_DISTRIBUTION_COMPLETE ) &&
                     !tk.getTestKeyStatusType().equals( TestKeyStatusType.DISTRIBUTION_STARTED ) &&
                     !tk.getTestKeyStatusType().equals( TestKeyStatusType.DISTRIBUTION_COMPLETE ) &&
-                     !tk.getTestKeyStatusType().equals( TestKeyStatusType.DISTRIBUTION_ERROR )   )
+                    !tk.getTestKeyStatusType().equals( TestKeyStatusType.DISTRIBUTION_ERROR )   )
                 {
 
                     msg = "DistributionBatchThread.run() TestKey Status is not valid for redistribution, so skipping. status=" + tk.getTestKeyStatusType().getTestKeyStatusTypeId() + ", testKeyId=" + testKeyId;
@@ -70,8 +73,15 @@ public class DistributionBatchThread implements Runnable {
 
                 try
                 {
+                    
+                    if( resendApiPost )
+                        tk.setFirstDistComplete(0);
+                    
                     // tk.setTestKeyStatusTypeId( TestKeyStatusType.REPORTS_COMPLETE.getTestKeyStatusTypeId() );
-                    tk.setTestKeyStatusTypeId( TestKeyStatusType.DISTRIBUTION_STARTED.getTestKeyStatusTypeId() );
+                    if( tk.getFirstDistComplete()==2 )
+                        tk.setTestKeyStatusTypeId( TestKeyStatusType.API_DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId());
+                    else
+                        tk.setTestKeyStatusTypeId( TestKeyStatusType.DISTRIBUTION_STARTED.getTestKeyStatusTypeId() );
 
                     eventFacade.saveTestKey(tk);
 

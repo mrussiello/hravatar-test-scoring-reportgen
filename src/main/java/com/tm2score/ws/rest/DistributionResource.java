@@ -58,6 +58,7 @@ import java.util.Locale;
  *             teid  encrypted (optional)
  *             candidatefbkonly boolean
  *             fbkreportid int
+ *             resendapipost boolean
  * 
  *    tran = scoretestkey
  *             tkid  encrypted
@@ -289,11 +290,14 @@ public class DistributionResource extends BaseApiResource {
             if( tk==null )
                 throw new ApiException( "Error DistributionResource.doDistTestKey() AAA.5 TestKey not found for testKeyId=" + testKeyId, 160, Response.Status.BAD_REQUEST.getStatusCode() );
 
+            boolean resendApiPost = joIn.containsKey("resendapipost") && !joIn.isNull("resendapipost") ? joIn.getBoolean("resendapipost") : false;
+            
             UserFacade uf = UserFacade.getInstance();
             uf.clearSharedCache();
             // uf.clearSharedCacheDiscern();
             
             if( !tk.getTestKeyStatusType().equals( TestKeyStatusType.REPORTS_COMPLETE ) &&
+                !tk.getTestKeyStatusType().equals( TestKeyStatusType.API_DISTRIBUTION_COMPLETE ) &&
                 !tk.getTestKeyStatusType().equals( TestKeyStatusType.DISTRIBUTION_STARTED ) &&
                 !tk.getTestKeyStatusType().equals( TestKeyStatusType.DISTRIBUTION_COMPLETE )  )
             {
@@ -301,8 +305,14 @@ public class DistributionResource extends BaseApiResource {
                 throw new ApiException( "Error DistributionResource.doDistTestKey() AAA.6 ERROR. TestKey Status is not valid for redistribution: testKeyStatusTypeId=" + tk.getTestKeyStatusType().getTestKeyStatusTypeId() + ", testKeyId=" + testKeyId, 160, Response.Status.BAD_REQUEST.getStatusCode() );
             }
 
+            if( resendApiPost )
+                tk.setFirstDistComplete(0);
+            
             // tk.setTestKeyStatusTypeId( TestKeyStatusType.REPORTS_COMPLETE.getTestKeyStatusTypeId() );
-            tk.setTestKeyStatusTypeId( TestKeyStatusType.DISTRIBUTION_STARTED.getTestKeyStatusTypeId() );
+            if( tk.getFirstDistComplete()==2 )
+                tk.setTestKeyStatusTypeId( TestKeyStatusType.API_DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() );                
+            else
+                tk.setTestKeyStatusTypeId( TestKeyStatusType.DISTRIBUTION_STARTED.getTestKeyStatusTypeId() );
 
             Tracker.addRedistribution();
 

@@ -185,7 +185,7 @@ public class ScoredEssayIactnResp extends IactnResp implements ScorableResponse 
 
             if (!seii.getHasValidScore())
             {
-                LogService.logIt( "ScoredEssayIactnResp.scoring intn.item AAA.1 Essay does not have a valid score. Skipping. " + seii.toString() );
+                LogService.logIt( "ScoredEssayIactnResp.scoring intn.item AAA.1 Essay does not have a valid score. Skipping. pendingExternalScores=" + pendingExternalScores + ", " + seii.toString() );
                 continue;
             }
 

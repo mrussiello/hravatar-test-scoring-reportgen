@@ -424,7 +424,8 @@ public class BaseDistManager {
                 
                 if( !candFbkOnly && 
                     ((tk.getResultPostUrl()!=null && !tk.getResultPostUrl().isEmpty()) ||
-                    (tk.getTestKeySourceTypeId()==TestKeySourceType.API.getTestKeySourceTypeId() && tk.getApiType().requiresReportNotification()) 
+                    (tk.getTestKeySourceTypeId()==TestKeySourceType.API.getTestKeySourceTypeId() && tk.getApiType().requiresReportNotification()) && 
+                    !tk.getTestKeyStatusType().equals(TestKeyStatusType.API_DISTRIBUTION_COMPLETE) 
                     ) )
                 {
                     postTestResults( tk );
@@ -454,8 +455,8 @@ public class BaseDistManager {
             tk.setTestKeyStatusTypeId( reportApiOnly ? TestKeyStatusType.API_DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() : TestKeyStatusType.DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() );
             tk.setErrorCnt(0);
             
-            if( !reportApiOnly )
-                tk.setFirstDistComplete( 1 );
+            // if( !reportApiOnly )
+            tk.setFirstDistComplete( reportApiOnly ? 2 : 1 );
 
             if( eventFacade == null ) 
                 eventFacade = EventFacade.getInstance();
@@ -1877,6 +1878,15 @@ public class BaseDistManager {
                 if( tk.getFirstDistComplete()==1 )
                 {
                     tk.setTestKeyStatusTypeId( TestKeyStatusType.DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() );
+                    eventFacade.saveTestKey(tk);
+                    out[1]++;
+                    continue;
+                }
+                
+                // This should not happen
+                else if( tk.getFirstDistComplete()==2 )
+                {
+                    tk.setTestKeyStatusTypeId( TestKeyStatusType.API_DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() );
                     eventFacade.saveTestKey(tk);
                     out[1]++;
                     continue;

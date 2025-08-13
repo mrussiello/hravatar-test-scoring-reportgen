@@ -314,9 +314,13 @@ public class ReportManager extends BaseReportManager
                     }
                 }
 
-                if( errCount <= 0 )
+                if( errCount<=0 )
                 {
-                    tk.setTestKeyStatusTypeId( tk.getFirstDistComplete()==1 ? TestKeyStatusType.DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() : TestKeyStatusType.REPORTS_COMPLETE.getTestKeyStatusTypeId()  );
+                    if( tk.getFirstDistComplete()==2 )
+                        tk.setTestKeyStatusTypeId( TestKeyStatusType.API_DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() );
+                    else
+                        tk.setTestKeyStatusTypeId( tk.getFirstDistComplete()==1 ? TestKeyStatusType.DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() : TestKeyStatusType.REPORTS_COMPLETE.getTestKeyStatusTypeId()  );
+                    
                     tk.setErrorCnt( 0 );
                 }
 
@@ -697,7 +701,10 @@ public class ReportManager extends BaseReportManager
             
             if( errCount == 0 && tk.getTestKeyStatusTypeId() < TestKeyStatusType.REPORTS_COMPLETE.getTestKeyStatusTypeId() )
             {
-                tk.setTestKeyStatusTypeId( tk.getFirstDistComplete()==1 ? TestKeyStatusType.DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() : TestKeyStatusType.REPORTS_COMPLETE.getTestKeyStatusTypeId() );
+                if( tk.getFirstDistComplete()==2 )
+                    tk.setTestKeyStatusTypeId( TestKeyStatusType.API_DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() );
+                else
+                    tk.setTestKeyStatusTypeId( tk.getFirstDistComplete()==1 ? TestKeyStatusType.DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() : TestKeyStatusType.REPORTS_COMPLETE.getTestKeyStatusTypeId() );
                 tk.setErrorCnt( 0 );
                 eventFacade.saveTestKey( tk );
 

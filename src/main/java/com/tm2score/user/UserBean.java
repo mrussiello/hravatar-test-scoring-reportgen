@@ -83,6 +83,9 @@ public class UserBean implements Serializable
     private boolean sendResendCandidateReportEmails2 = false;
     private boolean sendResendCandidateReportEmails3 = false;
     
+    private boolean resendResultsPost = false;
+    private boolean resendResultsPost2 = false;
+        
     private boolean skipVersionCheck = false;
     
     private int simOrgId3;
@@ -737,6 +740,26 @@ public class UserBean implements Serializable
     public void setClearExternal3(boolean clearExternal3)
     {
         this.clearExternal3 = clearExternal3;
+    }
+
+    public boolean isResendResultsPost()
+    {
+        return resendResultsPost;
+    }
+
+    public void setResendResultsPost(boolean resendResultsPost)
+    {
+        this.resendResultsPost = resendResultsPost;
+    }
+
+    public boolean isResendResultsPost2()
+    {
+        return resendResultsPost2;
+    }
+
+    public void setResendResultsPost2(boolean resendResultsPost2)
+    {
+        this.resendResultsPost2 = resendResultsPost2;
     }
     
     

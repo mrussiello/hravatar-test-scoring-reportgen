@@ -179,7 +179,10 @@ public class TestKeyReportThread extends BaseReportManager implements Runnable
         
             if( reportErrorCt <= 0 )
             {
-                tk.setTestKeyStatusTypeId( tk.getFirstDistComplete()==1 ? TestKeyStatusType.DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() : TestKeyStatusType.REPORTS_COMPLETE.getTestKeyStatusTypeId()  );
+                if( tk.getFirstDistComplete()==2 )
+                    tk.setTestKeyStatusTypeId( TestKeyStatusType.API_DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() );
+                else
+                    tk.setTestKeyStatusTypeId( tk.getFirstDistComplete()==1 ? TestKeyStatusType.DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() : TestKeyStatusType.REPORTS_COMPLETE.getTestKeyStatusTypeId()  );
                 tk.setErrorCnt(0);
             }
 
@@ -190,15 +193,18 @@ public class TestKeyReportThread extends BaseReportManager implements Runnable
                 Tracker.addReportError();
             }
 
-            if( tk.getTestKeyStatusType().equals ( TestKeyStatusType.REPORTS_COMPLETE ) )
+            if( tk.getTestKeyStatusType().equals ( TestKeyStatusType.REPORTS_COMPLETE ) || tk.getTestKeyStatusType().equals ( TestKeyStatusType.API_DISTRIBUTION_COMPLETE ) )
             {
                 if( eventFacade == null )
                     eventFacade = EventFacade.getInstance();
 
-                tk.setTestKeyStatusTypeId( TestKeyStatusType.DISTRIBUTION_STARTED.getTestKeyStatusTypeId() );
+                if( tk.getTestKeyStatusType().equals ( TestKeyStatusType.REPORTS_COMPLETE ) )
+                {
+                    tk.setTestKeyStatusTypeId( TestKeyStatusType.DISTRIBUTION_STARTED.getTestKeyStatusTypeId() );
+                }
 
                 eventFacade.saveTestKey( tk );
-
+    
                 // force a reload of test Events.
                 tk.setTestEventList( null );
 
