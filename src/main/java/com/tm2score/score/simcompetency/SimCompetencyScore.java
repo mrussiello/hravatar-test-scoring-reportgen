@@ -1122,7 +1122,9 @@ public class SimCompetencyScore implements WeightedObject, DisplayOrderObject, U
                             }
 
                             tot = tot/totWgts;
-                            LogService.logIt( "SimCompetencyScore.calculateScore() calc weighted topic score for " + this.getName() + ", " + this.getNameEnglish() + ", unweighted fraction=" + fractionScoreValue + ", weighted fraction=" + tot  );
+                            
+                            if( ScoreManager.DEBUG_SCORING )
+                                LogService.logIt( "SimCompetencyScore.calculateScore() calc weighted topic score for " + this.getName() + ", " + this.getNameEnglish() + ", unweighted fraction=" + fractionScoreValue + ", weighted fraction=" + tot  );
                             fractionScoreValue = tot;
                             fractionCorrect = tot;
                         }

@@ -941,7 +941,7 @@ public class TestEventScore implements Serializable, Comparable<TestEventScore>,
 
     public boolean getHasReport()
     {
-        return this.getTestEventScoreStatusType().getIsReportArchived() || (reportBytes != null && reportBytes.length > 0);
+        return getTestEventScoreStatusType().getIsReportArchived() || (reportBytes != null && reportBytes.length > 0);
     }
 
     public ScoreCategoryType getScoreCategoryType()

@@ -417,7 +417,42 @@ public class UserFacade
 
 
 
+    public User getUniqueAccountUserByMobilePhoneAndOrgId( String mobilePhone, int orgId ) throws Exception
+    {
+        try
+        {
+            if( mobilePhone == null || mobilePhone.length() == 0 )
+                return null;
 
+            // if( tm2Factory == null )
+            //     tm2Factory = PersistenceManager.getInstance().getEntityManagerFactory();
+            // EntityManager em = tm2Factory.createEntityManager();
+
+            Query q = em.createNamedQuery( "User.findAccountUserByPhonePrefixAndOrgId" );
+
+            q.setParameter("phonePrefix", mobilePhone );
+            q.setParameter( "orgId", orgId );
+
+            q.setHint( "jakarta.persistence.cache.retrieveMode", "BYPASS" );
+
+            List<User> ul = q.getResultList();
+            
+            // ONLY return if unique.
+            if( ul!=null && ul.size()==1 )
+                return ul.get(0);
+                
+            return null;
+        }
+        catch( NoResultException e )
+        {
+            return null;
+        }
+        catch( Exception e )
+        {
+            LogService.logIt( e, "UserFacade.getUniqueAccountUserByMobilePhoneAndOrgId() mobilePhone=" + mobilePhone + ", orgId=" + orgId );
+            return null;
+        }
+    }
 
 
 

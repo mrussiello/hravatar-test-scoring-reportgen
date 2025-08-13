@@ -119,7 +119,7 @@ public class TestTakerJobMatchHtmlScoreFormatter extends BaseScoreFormatter impl
             if( !temp.isEmpty() )
             {
                 sb.append( temp );
-                tog = ( (Boolean) out[1]).booleanValue();
+                tog = (Boolean) out[1];
                 sb.append( getRowSpacer( rowStyle0 ) );
             }
 
@@ -129,7 +129,7 @@ public class TestTakerJobMatchHtmlScoreFormatter extends BaseScoreFormatter impl
             if( !temp.isEmpty() )
             {
                 sb.append( temp );
-                tog = ( (Boolean) out[1]).booleanValue();
+                tog = (Boolean) out[1];
                 sb.append( getRowSpacer( rowStyle0 ) );
             }
 

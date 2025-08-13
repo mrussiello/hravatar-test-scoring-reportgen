@@ -34,6 +34,10 @@ public enum OnlineProctoringType
         this.key = key;
     }
 
+    public boolean getNeedsPostProcessing()
+    {
+        return !(equals( NONE ) || equals(PREMIUM_SUSPICIOUS));
+    }
     
     public boolean getIsAnyBasic()
     {

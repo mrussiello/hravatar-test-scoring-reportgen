@@ -46,7 +46,7 @@ public class AvHtmlScoreFormatter extends CT2HtmlScoreFormatter implements Score
             StringBuilder sb = new StringBuilder();
 
             // Header Section
-            Object[] out = getStandardHeaderSection( tog, includeTop, topNoteHtml, "g.CoreTestAdminScoringCompleteMsg", null );
+            Object[] out = getStandardHeaderSection(tog, includeTop, false, topNoteHtml, "g.CoreTestAdminScoringCompleteMsg", null );
             String temp = (String) out[0];
             if( !temp.isEmpty() )
             {

@@ -70,22 +70,21 @@ public class DefaultResultPosterWS extends BaseResultPoster implements ResultPos
             // The AssessmentStatusCreator uses includeScoreCode values asociated with AssessmentStatusRequest.
             
             // include everything (score and PDFs)
-            int includeScoreCodeFinal = 2;
+            int includeScoreCodeFinal = getDefaultIncludeScoreCode( testKey ); //2;
             
-            String includeScoreCodeStr = testKey.getCustomParameterValue( "includeScoreCode" );
-            
-            if( includeScoreCodeStr!=null && !includeScoreCodeStr.isEmpty() )
-            {
-                int tempCode = Integer.parseInt( includeScoreCodeStr );
+            //String includeScoreCodeStr = testKey.getCustomParameterValue( "includeScoreCode" );
+            //if( includeScoreCodeStr!=null && !includeScoreCodeStr.isEmpty() )
+            //{
+            //    int tempCode = Integer.parseInt( includeScoreCodeStr );
                 
                 // include scores but no PDFs
-                if( tempCode == 1 )
-                    includeScoreCodeFinal = 1;
+            //    if( tempCode == 1 )
+            //        includeScoreCodeFinal = 1;
                 
                 // Inlude no score info
-                else if( tempCode == 4 )
-                    includeScoreCodeFinal = 0;                    
-            }
+            //    else if( tempCode == 4 )
+            //        includeScoreCodeFinal = 0;                    
+            //}
             
             final Map<String,String> basicAuthCreds = getBasicAuthCredsFromReportFlags( testKey );
             

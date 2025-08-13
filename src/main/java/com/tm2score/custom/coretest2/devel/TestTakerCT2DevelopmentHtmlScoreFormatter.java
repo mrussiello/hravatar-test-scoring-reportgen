@@ -41,12 +41,12 @@ public class TestTakerCT2DevelopmentHtmlScoreFormatter extends BaseScoreFormatte
             StringBuilder sb = new StringBuilder();
 
             // Header Section
-            Object[] out = getStandardHeaderSection( tog, includeTop, topNote, "g.TestTakerDevelopmentScoringCompleteMsg", getCustomCandidateMsgText() );
+            Object[] out = getStandardHeaderSection(tog, includeTop, true, topNote, "g.TestTakerDevelopmentScoringCompleteMsg", getCustomCandidateMsgText() );
             String temp = (String) out[0];
             if( !temp.isEmpty() )
             {
                 sb.append( temp );
-                tog = ( (Boolean) out[1]).booleanValue();
+                tog = (Boolean) out[1];
                 sb.append( getRowSpacer( rowStyle0 ) );
             }
 
@@ -56,7 +56,7 @@ public class TestTakerCT2DevelopmentHtmlScoreFormatter extends BaseScoreFormatte
             if( !temp.isEmpty() )
             {
                 sb.append( temp );
-                tog = ( (Boolean) out[1]).booleanValue();
+                tog = (Boolean) out[1];
                 sb.append( getRowSpacer( rowStyle0 ) );
             }
 

@@ -110,12 +110,12 @@ public class UMinnHtmlScoreFormatter extends BaseScoreFormatter implements Score
             StringBuilder sb = new StringBuilder();
 
             // Header Section
-            Object[] out = getStandardHeaderSection( tog, includeTop, topNoteHtml, "g.CoreTestAdminScoringCompleteMsg", null );
+            Object[] out = getStandardHeaderSection(tog, includeTop, false, topNoteHtml, "g.CoreTestAdminScoringCompleteMsg", null );
             String temp = (String) out[0];
             if( !temp.isEmpty() )
             {
                 sb.append( temp );
-                tog = ( (Boolean) out[1]).booleanValue();
+                tog = (Boolean) out[1];
                 sb.append( getRowSpacer( rowStyle0 ) );
             }
 
@@ -138,7 +138,7 @@ public class UMinnHtmlScoreFormatter extends BaseScoreFormatter implements Score
                     tog = !tog;
                     out = getStandardOverallScoreSection( tog );
                     sb.append( (String) out[0] );
-                    tog = ( (Boolean) out[1]).booleanValue();
+                    tog = (Boolean) out[1];
                     sb.append( getRowSpacer( rowStyle0 ) );
                 }
 
@@ -148,7 +148,7 @@ public class UMinnHtmlScoreFormatter extends BaseScoreFormatter implements Score
                 if( !temp.isEmpty() )
                 {
                     sb.append( temp );
-                    tog = ( (Boolean) out[1]).booleanValue();
+                    tog = (Boolean) out[1];
                     sb.append( getRowSpacer( rowStyle0 ) );
                 }
 
@@ -161,7 +161,7 @@ public class UMinnHtmlScoreFormatter extends BaseScoreFormatter implements Score
                     if( !temp.isEmpty() )
                     {
                         sb.append( temp );
-                        tog = ( (Boolean) out[1]).booleanValue();
+                        tog = (Boolean) out[1];
                         sb.append( getRowSpacer( rowStyle0 ) );
                     }
 

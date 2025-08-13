@@ -7,10 +7,12 @@ package com.tm2score.score;
 
 import com.tm2builder.sim.xml.SimJ;
 import com.tm2score.entity.event.TestEvent;
+import com.tm2score.entity.event.TestKey;
 import com.tm2score.entity.user.Org;
 import com.tm2score.event.PercentileScoreType;
 import com.tm2score.event.ScoreCategoryType;
 import com.tm2score.event.ScoreColorSchemeType;
+import com.tm2score.event.TestKeySourceType;
 import com.tm2score.file.BucketType;
 import com.tm2score.file.FileXferUtils;
 import com.tm2score.global.RuntimeConstants;
@@ -32,7 +34,25 @@ import java.util.Map;
 public class ScoreUtils {
     
         
-    
+    public static boolean waitForPostProctorAnalysisForScoringAndReportGen( TestKey tk)
+    {
+        if( tk==null )
+        {
+            LogService.logIt( "ScoreUtils.waitForPostProctorAnalysisForScoringAndReportGen() NONFATAL testKey is NULL!" );
+            return true;
+        }
+        
+        // Nothing to wait for. 
+        if( !tk.getOnlineProctoringType().getNeedsPostProcessing() )
+            return false;
+        
+        // If reports need to be created for real, not archived ... 
+        if( !RuntimeConstants.getBooleanValue("create_reports_init_as_archived") )
+            return true;
+        
+        // wait if not api or no results post url. 
+        return tk.getTestKeySourceTypeId()!=TestKeySourceType.API.getTestKeySourceTypeId() || tk.getResultPostUrl()==null || tk.getResultPostUrl().isBlank();
+    }
     
     
     public static boolean getIncludeRawOverallScore( Org org, TestEvent te )

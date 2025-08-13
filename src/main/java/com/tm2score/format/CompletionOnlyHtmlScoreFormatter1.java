@@ -72,12 +72,12 @@ public class CompletionOnlyHtmlScoreFormatter1 extends BaseScoreFormatter implem
             StringBuilder sb = new StringBuilder();
 
             // Header Section
-            Object[] out = getStandardHeaderSection( tog, includeTop, topNoteHtml, "g.CoreTestAdminScoringCompletionOnlyMsg", null );
+            Object[] out = getStandardHeaderSection(tog, includeTop, false, topNoteHtml, "g.CoreTestAdminScoringCompletionOnlyMsg", null );
             String temp = (String) out[0];
             if( !temp.isEmpty() )
             {
                 sb.append( temp );
-                tog = ( (Boolean) out[1]).booleanValue();
+                tog = (Boolean) out[1];
                 sb.append( getRowSpacer( rowStyle0 ) );
             }
 

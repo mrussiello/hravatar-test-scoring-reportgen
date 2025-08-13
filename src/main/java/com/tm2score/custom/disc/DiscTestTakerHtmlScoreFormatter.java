@@ -53,7 +53,7 @@ public class DiscTestTakerHtmlScoreFormatter extends BaseScoreFormatter implemen
             sb.append( getRowSpacer( rowStyle0 ) );
             
             // Header Section
-            Object[] out = getStandardHeaderSection( tog, includeTop, topNote, "g.DiscTestTakerScoringCompleteMsg", getCustomCandidateMsgText() );
+            Object[] out = getStandardHeaderSection(tog, includeTop, true, topNote, "g.DiscTestTakerScoringCompleteMsg", getCustomCandidateMsgText() );
             String temp = (String) out[0];
             if( !temp.isEmpty() )
             {
@@ -86,7 +86,7 @@ public class DiscTestTakerHtmlScoreFormatter extends BaseScoreFormatter implemen
 
 
     @Override
-    public Object[] getStandardHeaderSection( boolean tog, boolean includeTop, String topNoteHtml, String introLangKey, String customMsg )
+    public Object[] getStandardHeaderSection( boolean tog, boolean includeTop, boolean testTakerOnly, String topNoteHtml, String introLangKey, String customMsg)
     {
         Object[] out = new Object[2];
 
@@ -102,7 +102,7 @@ public class DiscTestTakerHtmlScoreFormatter extends BaseScoreFormatter implemen
         if( includeTop )
         {
             if( topNoteHtml != null && !topNoteHtml.isEmpty() )
-                sb.append( "<tr " + rowStyle0 + "><td colspan=\"7\" style=\"border-bottom:0px solid black;padding-bottom:8px\">" + topNoteHtml + "</td></tr>\n" );
+                sb.append("<tr " + rowStyle0 + "><td colspan=\"7\" style=\"border-bottom:0px solid black;padding-bottom:8px\">" + topNoteHtml + "</td></tr>\n" );
 
             String intro = customMsg;
 

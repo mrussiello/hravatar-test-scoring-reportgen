@@ -5,6 +5,7 @@
 package com.tm2score.api;
 
 import com.tm2score.entity.event.TestKey;
+import com.tm2score.global.RuntimeConstants;
 import com.tm2score.report.ReportUtils;
 import com.tm2score.service.LogService;
 import com.tm2score.user.UserFacade;
@@ -17,6 +18,62 @@ import java.util.Map;
  */
 public class BaseResultPoster 
 {
+    UserFacade userFacade;
+    
+    protected int getDefaultIncludeScoreCode( TestKey tk  )
+    {
+        if( tk.getOmitPdfReportFromResultsPost() )
+            return 1;
+        
+        String includeScoreCodeStr = tk.getCustomParameterValue( "includeScoreCode" );
+        if( includeScoreCodeStr!=null && !includeScoreCodeStr.isBlank() )
+        {
+            int tempCode = Integer.parseInt( includeScoreCodeStr.trim() );
+
+            // include scores but no PDFs
+            if( tempCode == 1 )
+                return 1;
+
+            // Inlude no score info
+            else if( tempCode == 4 )
+                return 0;                    
+        }
+        
+        if( tk.getOrg()==null )
+        {
+            try
+            {
+                if( userFacade==null )
+                    userFacade=UserFacade.getInstance();
+                tk.setOrg( userFacade.getOrg(tk.getOrgId() ) );                
+            }
+            catch( Exception e )
+            {
+                LogService.logIt( e, "BaseResultPoster.getDefaultIncludeScoreCode() Loading org. testKeyId=" + tk.getTestKeyId() );
+            }
+        }
+        
+        if( tk.getOrg()!=null && tk.getOrg().getAffiliateId()!=null && !tk.getOrg().getAffiliateId().isBlank() )
+        {
+            String includePdfAffiliateIds = RuntimeConstants.getStringValue("org-affiliateids-for-full-resultpost" );
+            
+            if( includePdfAffiliateIds!=null )
+            {
+                for( String s : includePdfAffiliateIds.split(","))
+                {
+                    if( s.isBlank() )
+                        continue;
+                    
+                    if( tk.getOrg().getAffiliateId().equals(s))
+                        return 2;
+                }
+            }            
+        }
+               
+        // default
+        return 1;
+    }
+    
     protected Map<String,String> getBasicAuthCredsFromReportFlags( TestKey testKey ) throws Exception
     {
         if( testKey==null )

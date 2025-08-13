@@ -1195,14 +1195,14 @@ public class BaseScoreFormatter
     }
 
 
-    public Object[] getStandardHeaderSection( boolean tog, boolean includeTop, String topNoteHtml, String introLangKey, String customMsg )
+    public Object[] getStandardHeaderSection( boolean tog, boolean includeTop, boolean testTakerOnly, String topNoteHtml, String introLangKey, String customMsg)
     {
         Object[] out = new Object[2];
 
         StringBuilder sb = new StringBuilder();
 
         String battName = null;
-        if( isBattery() )
+        if( !testTakerOnly && isBattery() )
         {
             Battery b = tk.getBattery();
 
@@ -1221,14 +1221,14 @@ public class BaseScoreFormatter
 
         if( includeTop )
         {
-            if( topNoteHtml != null && !topNoteHtml.isEmpty() )
-                sb.append( "<tr " + rowStyle0 + "><td colspan=\"7\" style=\"border-bottom:0px solid black;padding-bottom:8px\">" + topNoteHtml + "</td></tr>\n" );
+            if( topNoteHtml != null && !topNoteHtml.isBlank() )
+                sb.append("<tr " + rowStyle0 + "><td colspan=\"7\" style=\"border-bottom:0px solid black;padding-bottom:8px\">" + topNoteHtml + "</td></tr>\n" );
 
             String intro = customMsg;
 
-            if( (intro == null || intro.isEmpty()) && introLangKey != null && !introLangKey.isEmpty() )
+            if( (intro == null || intro.isBlank()) && introLangKey != null && !introLangKey.isBlank() )
             {
-                if( isBattery() && battName!=null )
+                if( !testTakerOnly &&  isBattery() && battName!=null )
                 {
                     String tn = params[0];
                     params[0]=battName;
@@ -1239,7 +1239,7 @@ public class BaseScoreFormatter
                     intro = lmsg(  introLangKey , params );
             }
 
-            if( intro != null && !intro.isEmpty() )
+            if( intro != null && !intro.isBlank() )
                 sb.append( "<tr " + rowStyle0 + "><td colspan=\"7\" style=\"border-bottom:0px solid black;padding:10px\">" + intro + "</td></tr>\n" );
         }
 
@@ -1324,7 +1324,7 @@ public class BaseScoreFormatter
                 }
             }
 
-            if( getUser().getHasIpCountry() )
+            if( !testTakerOnly && getUser().getHasIpCountry() )
             {
                 tog = !tog;
                 style = tog ? rowStyle1 : rowStyle2;
@@ -1333,7 +1333,7 @@ public class BaseScoreFormatter
                 if( value != null && value.length() > 0 )
                     sb.append( getRow( style, label, value, false ) );
             }
-            if( getUser().getHasIpState() )
+            if(  !testTakerOnly && getUser().getHasIpState() )
             {
                 tog = !tog;
                 style = tog ? rowStyle1 : rowStyle2;
@@ -1342,7 +1342,7 @@ public class BaseScoreFormatter
                 if( value != null && value.length() > 0 )
                     sb.append( getRow( style, label, value, false ) );
             }
-            if( getUser().getHasIpCity() )
+            if(  !testTakerOnly && getUser().getHasIpCity() )
             {
                 tog = !tog;
                 style = tog ? rowStyle1 : rowStyle2;
@@ -1357,7 +1357,7 @@ public class BaseScoreFormatter
             tog = !tog;
             style = tog ? rowStyle1 : rowStyle2;
             // value = params[0];
-            if( isBattery() )
+            if( !testTakerOnly && isBattery() )
             {
                 Battery b = tk.getBattery();
                 String nm = tk.getBatteryProduct().getName();
@@ -1456,7 +1456,7 @@ public class BaseScoreFormatter
 
             // LogService.logIt( "BaseScoreFormatter.getStandardHeaderSection() AAA isBattery()=" + isBattery() + ", bs=" + (getBatteryScore()!=null) + ", isIncludeOverall()=" + isIncludeOverall() );
 
-            if( isBattery() && getBatteryScore()!=null  )
+            if( !testTakerOnly &&  isBattery() && getBatteryScore()!=null  )
             {
                 if( isIncludeOverall() )
                 {
@@ -1750,7 +1750,7 @@ public class BaseScoreFormatter
                 // test taker - only email the report for this specific Report
                 else
                 {
-                    if( tes.getReport().getEmailTestTaker()==1 && tes.getReportId()==this.report.getReportId() && tes.getReportFilename()!=null && !tes.getReportFilename().equalsIgnoreCase("NoReport") )
+                    if( tes.getReport().getEmailTestTaker()==1 && tes.getReportId()==report.getReportId() && tes.getReportFilename()!=null && !tes.getReportFilename().equalsIgnoreCase("NoReport") && tes.getHasReport() )
                         tesList.add(tes);
                 }
             }

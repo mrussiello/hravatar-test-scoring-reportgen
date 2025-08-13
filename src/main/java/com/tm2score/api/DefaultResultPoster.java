@@ -75,22 +75,21 @@ public class DefaultResultPoster extends BaseResultPoster implements ResultPoste
             // The AssessmentStatusCreator uses includeScoreCode values asociated with AssessmentStatusRequest. Default is 2=Include everything.
             
             // include everything (score and PDFs)
-            int includeScoreCodeFinal = 2;
-            
-            String includeScoreCodeStr = testKey.getCustomParameterValue( "includeScoreCode" );
-            
-            if( includeScoreCodeStr!=null && !includeScoreCodeStr.isEmpty() )
-            {
-                int tempCode = Integer.parseInt( includeScoreCodeStr );
-                
+            int includeScoreCodeFinal = getDefaultIncludeScoreCode( testKey ); // 2;
+                        
+            //String includeScoreCodeStr = testKey.getCustomParameterValue( "includeScoreCode" );            
+            //if( includeScoreCodeStr!=null && !includeScoreCodeStr.isEmpty() )
+            //{
+           //    int tempCode = Integer.parseInt( includeScoreCodeStr );
+            //    
                 // include scores but no PDFs
-                if( tempCode == 1 )
-                    includeScoreCodeFinal = 1;
+            //    if( tempCode == 1 )
+            //        includeScoreCodeFinal = 1;
                 
                 // Inlude no score info
-                else if( tempCode == 4 )
-                    includeScoreCodeFinal = 0;                    
-            }
+            //    else if( tempCode == 4 )
+            //        includeScoreCodeFinal = 0;                    
+            //}
             
             payload = asc.getAssessmentResultFromTestKey(arr, testKey, includeScoreCodeFinal, null, null, null );
 

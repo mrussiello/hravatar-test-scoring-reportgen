@@ -841,7 +841,7 @@ public class SimletCompetencyScore
 
         scaledScore = scoreFormatType.getUnweightedScaledScore(competencyScoreType, rawScore, 0, null );
 
-        // if( ScoreManager.DEBUG_SCORING )
+        if( ScoreManager.DEBUG_SCORING )
             LogService.logIt( "SimletCompetencyScore.calculateScore() FINAL " + competencyScoreObj.getName() + ", totalPoints=" + totalPoints + ", fractionPoints=" + this.fractionOfPoints + ", totalCorrect=" + this.totalCorrect + ", fractionCorrect=" + this.fractionCorrect + ",  totalScorableItems=" + totalScorableItems + ", averagePoints=" + averagePoints + ", scaledScoreFloor=" + scaledScoreFloor + ", scaledScoreCeiling=" + scaledScoreCeiling  );
 
         combineMetaScores( irsUsedList ); // irList );

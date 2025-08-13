@@ -109,7 +109,7 @@ public class BaseDistManager {
                 return out;
             }
 
-            if( !tk.getTestKeyStatusType().equals( TestKeyStatusType.DISTRIBUTION_STARTED ) )
+            if( !tk.getTestKeyStatusType().equals( TestKeyStatusType.DISTRIBUTION_STARTED ) && !tk.getTestKeyStatusType().equals( TestKeyStatusType.API_DISTRIBUTION_COMPLETE ) )
             {
                 LogService.logIt("BaseDistManager.distributeTestKeyResults() AAA.0.a TestKey is not in proper status. Waiting and reloading. testKeyId=" + tk.getTestKeyId() + ", status=" + tk.getTestKeyStatusType().getName() );
                 Thread.sleep(1000+(long)(5000*Math.random()));
@@ -119,21 +119,31 @@ public class BaseDistManager {
                 tk = eventFacade.getTestKey(tk.getTestKeyId(), true );
             }
 
-            if( !tk.getTestKeyStatusType().equals( TestKeyStatusType.DISTRIBUTION_STARTED ) )
+            if( !tk.getTestKeyStatusType().equals( TestKeyStatusType.DISTRIBUTION_STARTED ) && !tk.getTestKeyStatusType().equals( TestKeyStatusType.API_DISTRIBUTION_COMPLETE ) )
             {
                 LogService.logIt("BaseDistManager.distributeTestKeyResults() AAA.0.b TestKey is not in proper status AFTER WAIT. testKeyId=" + tk.getTestKeyId() + ", status=" + tk.getTestKeyStatusType().getName() );
                 return out;
             }
             
-            
-            //LogService.logIt( "BaseDistManager.distributeTestKeyResults() BBB " );
-            Tracker.addDistributionStart();
-            //boolean init = false;
-
             if( eventFacade==null )
                 eventFacade=EventFacade.getInstance();            
 
             initTestKey( tk );
+
+            // Must come after init.
+            if( tk.getTestKeyStatusType().equals( TestKeyStatusType.API_DISTRIBUTION_COMPLETE ) && !isApiTestKeyReadyForFullDistribution( tk ) )
+            {
+                LogService.logIt( "DistManager.distributeTestKeyResults() Skipping API Dist test key because not ready for full dist. testKeyId=" + tk.getTestKeyId() );
+                return out;
+            }
+
+            boolean reportApiOnly = false;
+            if( tk.getTestKeyStatusType().equals( TestKeyStatusType.DISTRIBUTION_STARTED ) && tk.getTestKeySourceTypeId()==TestKeySourceType.API.getTestKeySourceTypeId() && tk.getResultPostUrl()!=null && !tk.getResultPostUrl().isBlank() )
+                reportApiOnly = !isApiTestKeyReadyForFullDistribution( tk );
+                        
+            //LogService.logIt( "BaseDistManager.distributeTestKeyResults() BBB " );
+            Tracker.addDistributionStart();
+            //boolean init = false;
             
             // load if needed.
             if( tk.getTestEventList() == null  )
@@ -265,7 +275,7 @@ public class BaseDistManager {
             {
                 boolean okToSend = okToSendTestKeyByMinScore( tk );
                 
-                if( okToSend )
+                if( okToSend && !reportApiOnly )
                 {
                     // LogService.logIt( "BaseDistManager.distributeTestKeyResults() tk.authUserId()=" + tk.getAuthorizingUserId()  );
                     String emto = tk.getEmailResultsTo();
@@ -399,7 +409,7 @@ public class BaseDistManager {
                 boolean suppressTestTakerEmails = !candFbkOnly && ReportUtils.getReportFlagBooleanValue("suppressemailfbkreports", tk, null, tk.getSuborg(), tk.getOrg(), null ); //  tempInteger!=null && tempInteger==1;
                 
                 // Email test reports to Test Takers.
-                if( !suppressTestTakerEmails && tk.getHasReportsToEmailTestTaker() )
+                if( !reportApiOnly && !suppressTestTakerEmails && tk.getHasReportsToEmailTestTaker() )
                 {
                     // LogService.logIt( "BaseDistManager.distributeTestKeyResults() CCC.2A Attempting to email test taker. testKeyId=" + tk.getTestKeyId() + ", fbkReportId=" + fbkReportId + ", candFbkOnly=" + candFbkOnly + ", out[2]=" + out[2] );
                     out[2] += emailReportsToTestTaker(tk, null, candFbkOnly, fbkReportId, testEventIdOnly, null );
@@ -407,10 +417,11 @@ public class BaseDistManager {
                     //if( emailReportsToTestTaker( tk ) )
                     //    out[2]++;
                 }
-                else if( tk.getHasReportsToEmailTestTaker() )
+                else if( !reportApiOnly && tk.getHasReportsToEmailTestTaker() )
                     LogService.logIt( "BaseDistManager.distributeTestKeyResults() CCC.3 Did NOT send to test taker because suppressTestTakerEmails=" + suppressTestTakerEmails + ", testKeyId=" + tk.getTestKeyId() + ", hasEmailTestTaker=" + tk.getHasReportsToEmailTestTaker() );
                 
 
+                
                 if( !candFbkOnly && 
                     ((tk.getResultPostUrl()!=null && !tk.getResultPostUrl().isEmpty()) ||
                     (tk.getTestKeySourceTypeId()==TestKeySourceType.API.getTestKeySourceTypeId() && tk.getApiType().requiresReportNotification()) 
@@ -421,7 +432,7 @@ public class BaseDistManager {
             }
 
             // Personal User Account
-            else if( !candFbkOnly )
+            else if( !reportApiOnly && !candFbkOnly )
             {
                 // LogService.logIt( "BaseDistManager.distributeTestKeyResults() Personal hasEmailTestTaker=" + tk.getHasReportsToEmailTestTaker() );
                 
@@ -440,9 +451,11 @@ public class BaseDistManager {
                 }
             }
 
-            tk.setTestKeyStatusTypeId( TestKeyStatusType.DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() );
+            tk.setTestKeyStatusTypeId( reportApiOnly ? TestKeyStatusType.API_DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() : TestKeyStatusType.DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId() );
             tk.setErrorCnt(0);
-            tk.setFirstDistComplete( 1 );
+            
+            if( !reportApiOnly )
+                tk.setFirstDistComplete( 1 );
 
             if( eventFacade == null ) 
                 eventFacade = EventFacade.getInstance();
@@ -452,7 +465,8 @@ public class BaseDistManager {
             Tracker.addResponseTime( "Distribute Test Key", new Date().getTime() - procStart.getTime() );
             Tracker.addDistributionFinish();
             
-            if( tk.getTestKeyArchiveId()<=0 )
+            // only archive for full dist.
+            if( !reportApiOnly && tk.getTestKeyArchiveId()<=0 )
             {
                 try
                 {
@@ -492,6 +506,46 @@ public class BaseDistManager {
             if( ScoreUtils.isExceptionPermanent(e) )
                 handleDistErrorInTestKey(tk, "BaseDistManager.distributeTestKeyResults() ZZZ.3 " + e.toString() + ", testKeyId=" + (tk==null ? "null" : tk.getTestKeyId())  );
             throw new STException( e );
+        }
+    }
+    
+    
+    protected boolean isApiTestKeyReadyForFullDistribution( TestKey tk ) throws Exception
+    {
+        // if test key waited, no need to check.
+        if( ScoreUtils.waitForPostProctorAnalysisForScoringAndReportGen( tk ) )
+        {
+            return true;
+        }
+        
+        // no remote proctoring? 
+        if( !tk.getOnlineProctoringType().getNeedsPostProcessing() )
+            return true;
+        
+        try
+        {
+            for( TestEvent te : tk.getTestEventList() )
+            {
+                if( te.getRemoteProctorEvent()==null )
+                {
+                    if( proctorFacade==null )
+                        proctorFacade=ProctorFacade.getInstance();
+                    te.setRemoteProctorEvent( proctorFacade.getRemoteProctorEventForTestEventId( te.getTestEventId()));
+                }
+                if( te.getRemoteProctorEvent()==null )
+                {
+                    LogService.logIt( "BaseDistManager.isApiTestKeyReadyForFullDistribution() No RemoteProctorEvent found for testKey. tk.onlineProctoringTypeId=" + tk.getOnlineProctoringTypeId() + ", testKeyId=" + tk.getTestKeyId() );
+                    continue;
+                }
+                if( !te.getRemoteProctorEvent().getRemoteProctorEventStatusType().getCompleteOrHigher() )
+                    return false;                
+            }
+            return true;
+        }
+        catch( Exception e )
+        {
+            LogService.logIt( e, "BaseDistManager.isApiTestKeyReadyForFullDistribution() testKeyId=" + tk.getTestKeyId() );
+            throw e;
         }
     }
     
@@ -927,7 +981,9 @@ public class BaseDistManager {
 
             EmailUtils emailUtils = EmailUtils.getInstance();
 
-            User adminUser = new User();
+            User adminUser; //new User();
+            // adminUser.setOrgId( tk.getOrgId() );
+            
 
             LimitedAccessLink limitedAccessLink;
             String contentToUse;
@@ -1004,10 +1060,17 @@ public class BaseDistManager {
                 // emailMap.put( EmailUtils.FROM, RuntimeConstants.getStringValue("support-email") + "|" + MessageFactory.getStringMessage( locale , "g.SupportEmailKey", null ) );
                 emailMap.put( EmailUtils.FROM, RuntimeConstants.getStringValue("support-email") );
 
+                if( userFacade==null )
+                    userFacade=UserFacade.getInstance();
+                adminUser = userFacade.getUserByEmailAndOrgId(email, tk.getOrgId() );
+                if( adminUser==null )
+                {
+                    adminUser=new User();
+                    adminUser.setEmail(email);
+                }
+                
                 if( userActionFacade==null)
                     userActionFacade = UserActionFacade.getInstance();
-
-                adminUser.setEmail(email);
 
                 userActionFacade.saveMessageAction(adminUser, subj, tk.getTestKeyId(), tk.getOrgAutoTestId(), UserActionType.SENT_EMAIL.getUserActionTypeId() );
 
@@ -1211,12 +1274,14 @@ public class BaseDistManager {
                 userActionFacade = UserActionFacade.getInstance();
 
             User u = new User();
+            User adminUser;
 
             boolean smsOk;
             
             List<String> ttl = new ArrayList<>();
             
             int tsent = 0;
+            
             
             for( String ph : textLst )
             {
@@ -1236,8 +1301,17 @@ public class BaseDistManager {
                         LogService.logIt("BaseDistManager.textTestResultsToAdministrator() texting to international number for this org is not allowed. tkid=" + tk.getTestKeyId() + ", tk.userId=" + tk.getUserId() + ", phone=" + ph );
                         continue;                        
                     }
+                            
+                    if( userFacade==null )
+                        userFacade=UserFacade.getInstance();
+                    adminUser = userFacade.getUniqueAccountUserByMobilePhoneAndOrgId(ph, tk.getOrgId() );
+                    if( adminUser==null )
+                    {
+                        adminUser=new User();
+                        adminUser.setPhonePrefix(ph);
+                    }
                     
-                    userActionFacade.saveMessageAction(tk.getUser(), sb.toString(), tk.getTestKeyId(), tk.getOrgAutoTestId(), UserActionType.SENT_TEXT.getUserActionTypeId() );
+                    userActionFacade.saveMessageAction(adminUser, sb.toString(), tk.getTestKeyId(), tk.getOrgAutoTestId(), UserActionType.SENT_TEXT.getUserActionTypeId() );
 
                     int sent = TwilioSmsUtils.sendTextMessageViaThread(ph, countryCode, locale, null, sb.toString() );
                                         
@@ -1317,9 +1391,9 @@ public class BaseDistManager {
             return 0;
         }
 
-        if( tk.getUser()==null || tk.getUser().getEmail()==null || tk.getUser().getEmail().isEmpty() )
+        if( tk.getUser()==null || tk.getUser().getEmail()==null || tk.getUser().getEmail().isBlank() )
         {
-            LogService.logIt( "BaseDistManager.emailReportsToTestTaker() BBB.5  Skipping because no user or no email. TestKeyId=" + tk.getTestKeyId() + ", user is " + (tk.getUser()==null ? "null" : "not null, email=" + tk.getUser().getEmail()) );
+            LogService.logIt( "BaseDistManager.emailReportsToTestTaker() BBB.5  Skipping because no user or no email or email is not valid. TestKeyId=" + tk.getTestKeyId() + ", user is " + (tk.getUser()==null ? "null" : "not null, email=" + (tk.getUser().getEmail()==null ? "null" : tk.getUser().getEmail())) );
             return 0;
         }
 

@@ -736,7 +736,7 @@ public class ReportManager extends BaseReportManager
         
         try
         {
-            // LogService.logIt("ReportManager.genRegenReportTestEvent() testEventId=" + testEventId + ", reportId=" + reportId + " Locale=" + (forceLocale == null ? "None" : forceLocale.toString() ) );
+            // LogService.logIt("ReportManager.genRegenReportTestEvent() testEventId=" + testEventId + ", reportId=" + reportId );
 
             if( eventFacade == null ) 
                 eventFacade = EventFacade.getInstance();
@@ -885,7 +885,8 @@ public class ReportManager extends BaseReportManager
                 // throw new Exception( "Test Event not found. " + testEventId );
             }
 
-            if(  te.getTestEventStatusTypeId()<TestEventStatusType.REPORT_COMPLETE.getTestEventStatusTypeId() || te.getTestEventStatusType().getIsError() )
+            // 8/13/2025 - ?? if(  te.getTestEventStatusTypeId()<TestEventStatusType.REPORT_COMPLETE.getTestEventStatusTypeId() || te.getTestEventStatusType().getIsError() )
+            if(  te.getTestEventStatusTypeId()<TestEventStatusType.SCORED.getTestEventStatusTypeId() || te.getTestEventStatusType().getIsError() )
             {
                 throw new ReportException( "Cannot generate report. Test Event is in invalid status: " + te.toString(), ReportException.PERMANENT, te, reportId, langStr );
                 // throw new Exception( "Cannot generate report. Test Event is in invalid status: " + te.toString() );
@@ -1001,8 +1002,6 @@ public class ReportManager extends BaseReportManager
             if( tk.getAiMetaScoreList()==null )
                 tk.setAiMetaScoreList( eventFacade.getReportableAiMetaScoreListForTestKey( tk.getTestKeyId()));
             
-            
-            
             ReportData rd = new ReportData( tk, te, r, tk.getUser(), tk.getOrg(), te.getProfile() );
 
             if( forceCalcSection )
@@ -1082,7 +1081,7 @@ public class ReportManager extends BaseReportManager
                 
                 // Only log if the languages are different.
                 else if( !I18nUtils.getLanguageFromLocale(rptLocale).equals( I18nUtils.getLanguageFromLocaleStr(te.getProduct().getLangStr()) ) )
-                    LogService.logIt("ReportManager.generateReportForTestEventAndLanguage() No target language equivalent Sim found for requested rptLocale=" + rptLocale.toString() + " where sim product locale is "  + te.getProduct().getLangStr()  );
+                    LogService.logIt("ReportManager.generateReportForTestEventAndLanguage() NONFATAL No target language equivalent Sim found for requested rptLocale=" + rptLocale.toString() + " where sim product locale is "  + te.getProduct().getLangStr()  );
                     
                 
                 // Did not generate a Language Equivalent Report

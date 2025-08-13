@@ -27,7 +27,7 @@ public class UMinnTestTakerHtmlScoreFormatter extends StandardTestTakerHtmlScore
     
 
     @Override
-    public Object[] getStandardHeaderSection( boolean tog, boolean includeTop, String topNoteHtml, String introLangKey, String customMsg )
+    public Object[] getStandardHeaderSection( boolean tog, boolean includeTop, boolean testTakerOnly, String topNoteHtml, String introLangKey, String customMsg)
     {
         Object[] out = new Object[2];
 
@@ -39,7 +39,7 @@ public class UMinnTestTakerHtmlScoreFormatter extends StandardTestTakerHtmlScore
             String value;
 
             if( includeTop && topNoteHtml != null && !topNoteHtml.isEmpty() )
-                sb.append( "<tr " + rowStyle0 + "><td colspan=\"5\" style=\"border-bottom:0px solid black;padding-bottom:8px\">" + topNoteHtml + "</td></tr>\n" );
+                sb.append("<tr " + rowStyle0 + "><td colspan=\"5\" style=\"border-bottom:0px solid black;padding-bottom:8px\">" + topNoteHtml + "</td></tr>\n" );
 
             String intro = customMsg;
 

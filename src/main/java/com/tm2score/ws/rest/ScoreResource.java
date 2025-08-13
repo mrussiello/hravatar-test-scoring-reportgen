@@ -145,8 +145,8 @@ public class ScoreResource extends BaseApiResource {
         if( !tk.getTestKeyStatusType().getIsCompleteOrHigher() )
             throw new Exception( "TestKey is not yet complete. status=" + tk.getTestKeyStatusType().getName() + " testKeyId=" + testKeyId );
             
-        if( tk.getOnlineProctoringType().getIsAnyBasic() || tk.getOnlineProctoringType().getIsPremiumAnyImages() )
-            throw new Exception( "TestKey requires proctoring post-processing. OnlineProctoringType=" + tk.getOnlineProctoringType().getKey() + ", testKeyId=" + testKeyId );
+        //if( tk.getOnlineProctoringType().getIsAnyBasic() || tk.getOnlineProctoringType().getIsPremiumAnyImages() )
+        //    throw new Exception( "TestKey requires proctoring post-processing. OnlineProctoringType=" + tk.getOnlineProctoringType().getKey() + ", testKeyId=" + testKeyId );
         
         boolean started = false;
         String message = "";

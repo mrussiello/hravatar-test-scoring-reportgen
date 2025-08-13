@@ -193,6 +193,8 @@ public class RuntimeConstants
         cache.put( "tm2score_rest_api_username", "" );
         cache.put( "tm2score_rest_api_password", "" );
         
+        cache.put( "org-affiliateids-for-full-resultpost", "midot");
+        
         
         //////////////////////////////////////////////////////////////////////////////
         // Pay-Per-Result Params

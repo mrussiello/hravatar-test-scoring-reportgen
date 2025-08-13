@@ -39,6 +39,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
     @NamedQuery ( name="User.findByUserId", query="SELECT o FROM User AS o  WHERE o.userId = :userId" ),
     @NamedQuery ( name="User.findByUsername", query="SELECT o FROM User AS o  WHERE o.username = :uname" ),
     @NamedQuery ( name="User.findUserByEmailAndOrgId", query="SELECT o FROM User AS o WHERE o.email = :uemail AND o.orgId=:orgId" ),
+    @NamedQuery ( name="User.findAccountUserByPhonePrefixAndOrgId", query="SELECT o FROM User AS o WHERE o.orgId=:orgId AND o.roleId>=20 AND o.phonePrefix = :phonePrefix" ),    
     @NamedQuery ( name="User.findByMinRoleAndOrgId", query="SELECT o FROM User AS o WHERE o.orgId=:orgId AND o.roleId>=:roleId" )
 })
 public class User implements Serializable

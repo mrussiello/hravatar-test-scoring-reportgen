@@ -41,7 +41,7 @@ public class CoreTestTestTakerHtmlScoreFormatter extends BaseScoreFormatter impl
             StringBuilder sb = new StringBuilder();
 
             // Header Section
-            Object[] out = getStandardHeaderSection( tog, includeTop, topNote, "g.CoreTestTestTakerScoringCompleteMsg", getCustomCandidateMsgText() );
+            Object[] out = getStandardHeaderSection(tog, includeTop, true, topNote, "g.CoreTestTestTakerScoringCompleteMsg", getCustomCandidateMsgText() );
             String temp = (String) out[0];
             if( !temp.isEmpty() )
             {

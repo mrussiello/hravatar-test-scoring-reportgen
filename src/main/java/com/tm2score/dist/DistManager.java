@@ -91,12 +91,16 @@ public class DistManager extends BaseDistManager
             List<Integer> orgIdsToSkip = RuntimeConstants.getIntList("OrgIdsToSkip",",");
             
             List<TestKey> tkl = eventFacade.getNextBatchOfTestKeysToScore(TestKeyStatusType.REPORTS_COMPLETE.getTestKeyStatusTypeId(), 0, withArchive, -1, orgIdsToSkip );
+            tkl.addAll( eventFacade.getNextBatchOfTestKeysToScore(TestKeyStatusType.API_DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId(), 0, withArchive, -1, orgIdsToSkip ) );
 
             //if( FIRST_BATCH && RuntimeConstants.getBooleanValue("seekStartedDistribsFirstBatch") )
             //    tkl.addAll(eventFacade.getNextBatchOfTestKeysToScore(TestKeyStatusType.DISTRIBUTION_STARTED.getTestKeyStatusTypeId(), -1, true, -1 ) );
 
             if( tkl.size() < Constants.DEFAULT_TESTKEY_BATCH_SIZE || withArchive || FIRST_BATCH )
+            {
                 tkl.addAll(eventFacade.getNextBatchOfTestKeyArchivesToScore(TestKeyStatusType.REPORTS_COMPLETE.getTestKeyStatusTypeId(), orgIdsToSkip, 0 ) );
+                tkl.addAll(eventFacade.getNextBatchOfTestKeyArchivesToScore(TestKeyStatusType.API_DISTRIBUTION_COMPLETE.getTestKeyStatusTypeId(), orgIdsToSkip, 0 ) );
+            }
 
             boolean useThread = !noThread;
 
@@ -136,12 +140,15 @@ public class DistManager extends BaseDistManager
                     // refresh just in case a parallel process got it while waiting.
                     tk = eventFacade.getTestKey(tk.getTestKeyId(), true );
 
-                    if( tk == null || !tk.getTestKeyStatusType().equals( TestKeyStatusType.REPORTS_COMPLETE ) )
+                    if( tk == null || (!tk.getTestKeyStatusType().equals( TestKeyStatusType.REPORTS_COMPLETE ) && !tk.getTestKeyStatusType().equals( TestKeyStatusType.API_DISTRIBUTION_COMPLETE ) ) )
                         continue;
+                    
+                    if( !tk.getTestKeyStatusType().equals( TestKeyStatusType.API_DISTRIBUTION_COMPLETE ) )
+                    {
+                        tk.setTestKeyStatusTypeId( TestKeyStatusType.DISTRIBUTION_STARTED.getTestKeyStatusTypeId() );
+                        eventFacade.saveTestKey(tk);
+                    }
 
-                    tk.setTestKeyStatusTypeId( TestKeyStatusType.DISTRIBUTION_STARTED.getTestKeyStatusTypeId() );
-
-                    eventFacade.saveTestKey(tk);
 
                     // LogService.logIt( "DistManager.doDistBatch() Distributing TK=" + tk.getTestKeyId()   );
 

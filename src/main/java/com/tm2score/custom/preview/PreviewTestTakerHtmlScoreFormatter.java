@@ -34,12 +34,12 @@ public class PreviewTestTakerHtmlScoreFormatter extends BaseScoreFormatter imple
 
 
             // Header Section
-            Object[] out = getStandardHeaderSection( tog, includeTop, topNote, "g.PreviewTestTakerScoringCompleteMsg", getCustomCandidateMsgText() );
+            Object[] out = getStandardHeaderSection(tog, includeTop, true, topNote, "g.PreviewTestTakerScoringCompleteMsg", getCustomCandidateMsgText() );
             String temp = (String) out[0];
             if( !temp.isEmpty() )
             {
                 sb.append( temp );
-                tog = ( (Boolean) out[1]).booleanValue();
+                tog = ( (Boolean) out[1]);
                 sb.append( getRowSpacer( rowStyle0 ) );
             }
 
@@ -49,7 +49,7 @@ public class PreviewTestTakerHtmlScoreFormatter extends BaseScoreFormatter imple
                 tog = !tog;
                 out = getStandardOverallScoreSection( tog );
                 sb.append( (String) out[0] );
-                tog = ( (Boolean) out[1]).booleanValue();
+                tog = ( (Boolean) out[1]);
                 sb.append( getRowSpacer( rowStyle0 ) );
             }
 
@@ -59,7 +59,7 @@ public class PreviewTestTakerHtmlScoreFormatter extends BaseScoreFormatter imple
             if( !temp.isEmpty() )
             {
                 sb.append( temp );
-                tog = ( (Boolean) out[1]).booleanValue();
+                tog = ( (Boolean) out[1]);
                 sb.append( getRowSpacer( rowStyle0 ) );
             }
 
@@ -69,7 +69,7 @@ public class PreviewTestTakerHtmlScoreFormatter extends BaseScoreFormatter imple
             if( !temp.isEmpty() )
             {
                 sb.append( temp );
-                tog = ( (Boolean) out[1]).booleanValue();
+                tog = ( (Boolean) out[1]);
                 sb.append( getRowSpacer( rowStyle0 ) );
             }
 
@@ -78,7 +78,7 @@ public class PreviewTestTakerHtmlScoreFormatter extends BaseScoreFormatter imple
             if( !temp.isEmpty() )
             {
                 sb.append( temp );
-                tog = ( (Boolean) out[1]).booleanValue();
+                tog = ( (Boolean) out[1]);
                 sb.append( getRowSpacer( rowStyle0 ) );
             }
 
@@ -88,7 +88,7 @@ public class PreviewTestTakerHtmlScoreFormatter extends BaseScoreFormatter imple
             if( !temp.isEmpty() )
             {
                 sb.append( temp );
-                tog = ( (Boolean) out[1]).booleanValue();
+                tog = ( (Boolean) out[1]);
                 sb.append( getRowSpacer( rowStyle0 ) );
             }
 
@@ -97,7 +97,7 @@ public class PreviewTestTakerHtmlScoreFormatter extends BaseScoreFormatter imple
             if( !temp.isEmpty() )
             {
                 sb.append( temp );
-                tog = ( (Boolean) out[1]).booleanValue();
+                tog = ( (Boolean) out[1]);
                 sb.append( getRowSpacer( rowStyle0 ) );
             }
 
@@ -108,7 +108,7 @@ public class PreviewTestTakerHtmlScoreFormatter extends BaseScoreFormatter imple
             if( !temp.isEmpty() )
             {
                 sb.append( temp );
-                tog = ( (Boolean) out[1]).booleanValue();
+                tog = ( (Boolean) out[1]);
                 sb.append( getRowSpacer( rowStyle0 ) );
             }
 
@@ -118,7 +118,7 @@ public class PreviewTestTakerHtmlScoreFormatter extends BaseScoreFormatter imple
             if( !temp.isEmpty() )
             {
                 sb.append( temp );
-                tog = ( (Boolean) out[1]).booleanValue();
+                tog = ( (Boolean) out[1]);
                 sb.append( getRowSpacer( rowStyle0 ) );
             }
 
@@ -128,7 +128,7 @@ public class PreviewTestTakerHtmlScoreFormatter extends BaseScoreFormatter imple
             if( !temp.isEmpty() )
             {
                 sb.append( temp );
-                tog = ( (Boolean) out[1]).booleanValue();
+                tog = (Boolean) out[1];
                 sb.append( getRowSpacer( rowStyle0 ) );
             }
 
@@ -138,7 +138,7 @@ public class PreviewTestTakerHtmlScoreFormatter extends BaseScoreFormatter imple
             if( !temp.isEmpty() )
             {
                 sb.append( temp );
-                tog = ( (Boolean) out[1]).booleanValue();
+                tog = (Boolean) out[1];
                 sb.append( getRowSpacer( rowStyle0 ) );
             }
 
@@ -148,7 +148,7 @@ public class PreviewTestTakerHtmlScoreFormatter extends BaseScoreFormatter imple
             if( !temp.isEmpty() )
             {
                 sb.append( temp );
-                tog = ( (Boolean) out[1]).booleanValue();
+                tog = (Boolean) out[1];
                 sb.append( getRowSpacer( rowStyle0 ) );
             }
 
@@ -158,7 +158,7 @@ public class PreviewTestTakerHtmlScoreFormatter extends BaseScoreFormatter imple
             if( !temp.isEmpty() )
             {
                 sb.append( temp );
-                tog = ( (Boolean) out[1]).booleanValue();
+                tog = (Boolean) out[1];
                 sb.append( getRowSpacer( rowStyle0 ) );
             }
 

@@ -583,6 +583,11 @@ public class TestKey implements Serializable, ErrorTxtObject {
         return getIntCustomParameterValue("anonimitytype");
     }
 
+    public int getOnlineProctoringTypeId()
+    {
+        return getIntCustomParameterValue("onlineproctortype");
+    }
+    
     public OnlineProctoringType getOnlineProctoringType()
     {
         return OnlineProctoringType.getValue(getIntCustomParameterValue("onlineproctortype"));

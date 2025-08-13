@@ -10558,6 +10558,15 @@ public abstract class BaseCT2ReportTemplate extends CT2ReportSettings implements
 
             if( rpe==null )
                 return;
+            
+            if( !rpe.getRemoteProctorEventStatusType().getCompleteOrHigher() )
+            {
+                if( ScoreUtils.waitForPostProctorAnalysisForScoringAndReportGen( reportData.getTestKey()))
+                    LogService.logIt( "BaseCT2ReportTemplate.addPremiumIdentityImageCaptureSection() NonFatal. RemoteProctorEvent is not in complete status and TestKey is set to wait. skipping this section. testEventId=" + rpe.getTestEventId() + ", testKeyId=" + rpe.getTestKeyId()   );
+                else
+                    LogService.logIt( "BaseCT2ReportTemplate.addPremiumIdentityImageCaptureSection() RemoteProctorEvent is not in complete status and TestKey is NOT set to wait. Skipping this section. testEventId=" + rpe.getTestEventId() + ", testKeyId=" + rpe.getTestKeyId()   );                    
+                return;
+            }
 
             // boolean imageComparisonsComplete = rpe.getRemoteProctorEventStatusTypeId()>=RemoteProctorEventStatusType.IMAGE_COMPARISONS_COMPLETE.getRemoteProctorEventStatusTypeId();
 

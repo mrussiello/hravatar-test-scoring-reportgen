@@ -466,7 +466,7 @@ public class BaseScoreManager {
                         LogService.logIt(m);
                         TestEventLogUtils.createTestKeyLogEntry(te.getTestKeyId(), te.getTestEventId(), 0, m, null, null);
                         // throw new ScoringException( "XX4 TestEvent.remoteProctoringEvent is null. onlineProctoringType=" + onlineProctoringType.getKey() + ",  testEventId=" + te.getTestEventId(), ScoringException.NON_PERMANENT, tk );
-                    } // indicates that this RemoteProctorEvent doesn't have it's audio/video or image processing complete yet.
+                    } // indicates that this RemoteProctorEvent doesn't have it's audio/video or image processing complete yet.                    
                     else if (!te.getRemoteProctorEvent().getRemoteProctorEventStatusType().getCompleteOrHigher())
                     {
                         if (te.getTestEventStatusType().getIsCompleteOrHigher())
@@ -505,6 +505,13 @@ public class BaseScoreManager {
                             if (te.getRemoteProctorEvent().getEventCompleteDate() != null && te.getRemoteProctorEvent().getEventCompleteDate().after(cal.getTime()))
                                 pending = true;
                         }
+
+                        if (pending && !ScoreUtils.waitForPostProctorAnalysisForScoringAndReportGen(tk))
+                        {
+                            LogService.logIt("BaseScoreManager.scoreTestKey() TestKey RemoteProctoring post-processing is not complete yet but continuing with scoring because testKey is set to not wait for proctor post processing. testKeyId=" + tk.getTestKeyId());
+                            pending = false;
+                        }
+
                         if (pending)
                         {
                             if (!tk.getTestKeyStatusType().getIsScorePending())
@@ -673,11 +680,11 @@ public class BaseScoreManager {
                 }
             }
 
-            if( tk.getTestKeyStatusType().getIsScoreComplete())
+            if (tk.getTestKeyStatusType().getIsScoreComplete())
             {
-                this.initiateAiMetaScores(tk, true );
+                this.initiateAiMetaScores(tk, true);
             }
-            
+
             // if we are inside thread and status is now scored, keep going to generate reports.
             if (!noThread && tk.getTestKeyStatusType().equals(TestKeyStatusType.SCORED))
             {
@@ -705,7 +712,7 @@ public class BaseScoreManager {
                     Collections.sort(tk.getTestEventList(), new TestEventProductInParam4Comparator());
 
                     // LogService.logIt( "BaseScoreManager.scoreTestKey() Starting Report Thread tkid=" + tk.getTestKeyId() );
-                    TestKeyReportThread tkrt = new TestKeyReportThread(tk, 0, false, true, RuntimeConstants.getBooleanValue("create_reports_init_as_archived" ));
+                    TestKeyReportThread tkrt = new TestKeyReportThread(tk, 0, false, true, RuntimeConstants.getBooleanValue("create_reports_init_as_archived"));
 
                     // !noThread indicates this method is already called from a thread, so don't spin a new thread. Just use this one.
                     tkrt.run();
@@ -742,16 +749,16 @@ public class BaseScoreManager {
 
     public void initiateAiMetaScores(TestKey tk, boolean forceRedo) throws Exception
     {
-        LogService.logIt("BaseScoreManager.initiateAiMetaScores() Start. testKeyId=" + tk.getTestKeyId() + ", testKeyStatusType=" + tk.getTestKeyStatusType().getName() + ", jobId=" + tk.getJobId() + ", jobDescripId=" + tk.getJobDescripId() + ", forceRedo=" + forceRedo );
+        // LogService.logIt("BaseScoreManager.initiateAiMetaScores() Start. testKeyId=" + tk.getTestKeyId() + ", testKeyStatusType=" + tk.getTestKeyStatusType().getName() + ", jobId=" + tk.getJobId() + ", jobDescripId=" + tk.getJobDescripId() + ", forceRedo=" + forceRedo);
         if (!tk.getTestKeyStatusType().getHasValidScore())
         {
-            LogService.logIt("BaseScoreManager.initiateAiMetaScores() TestKeyStatusType does not have a valid score. testKeyStatusType=" + tk.getTestKeyStatusType().getName() + " testKeyId=" + tk.getTestKeyId());
+            // LogService.logIt("BaseScoreManager.initiateAiMetaScores() TestKeyStatusType does not have a valid score. testKeyStatusType=" + tk.getTestKeyStatusType().getName() + " testKeyId=" + tk.getTestKeyId());
             return;
         }
 
         if (!RuntimeConstants.getBooleanValue("tm2ai_rest_api_ok") || !RuntimeConstants.getBooleanValue("tm2ai_evalplan_scoring_ok"))
         {
-            LogService.logIt("BaseScoreManager.initiateAiMetaScores() AI EvalPlan Scoring is not enabled. Ignoring. testKeyId=" + tk.getTestKeyId());
+            // LogService.logIt("BaseScoreManager.initiateAiMetaScores() AI EvalPlan Scoring is not enabled. Ignoring. testKeyId=" + tk.getTestKeyId());
             return;
         }
 
@@ -771,13 +778,13 @@ public class BaseScoreManager {
 
                 boolean useThread = evalPlan.getRcScriptId() > 0;
 
-                if( tk.getUser()==null )
+                if (tk.getUser() == null)
                 {
-                    if( userFacade==null )
-                        userFacade=UserFacade.getInstance();
-                    tk.setUser( userFacade.getUser( tk.getUserId()));
+                    if (userFacade == null)
+                        userFacade = UserFacade.getInstance();
+                    tk.setUser(userFacade.getUser(tk.getUserId()));
                 }
-                
+
                 EvalPlanSubmissionThread epst = new EvalPlanSubmissionThread(evalPlan.getEvalPlanId(), tk.getUser(), tk.getTestKeyId(), 0, forceRedo);
 
                 if (useThread)
@@ -809,16 +816,18 @@ public class BaseScoreManager {
                     }
 
                     reportRuleAiMetaScoreTypeIdStr = ReportUtils.getReportFlagStringValue("aimetascoretypeids", tk, tk.getProduct(), null, null, null);
-                    LogService.logIt("BaseScoreManager.initiateAiMetaScores() reportRuleAiMetaScoreIdStr from report rules=" + reportRuleAiMetaScoreTypeIdStr + ", productId=" + tk.getProductId() + ", reportRules=" + tk.getProduct().getStrParam11() + ", testKeyId=" + tk.getTestKeyId() + ", jobId=" + tk.getJobId() + ", jobDescripId=" + tk.getJobDescripId());
+                    
+                    if( reportRuleAiMetaScoreTypeIdStr!=null && !reportRuleAiMetaScoreTypeIdStr.isBlank() )
+                        LogService.logIt("BaseScoreManager.initiateAiMetaScores() reportRuleAiMetaScoreIdStr from report rules=" + reportRuleAiMetaScoreTypeIdStr + ", productId=" + tk.getProductId() + ", reportRules=" + tk.getProduct().getStrParam11() + ", testKeyId=" + tk.getTestKeyId() + ", jobId=" + tk.getJobId() + ", jobDescripId=" + tk.getJobDescripId());
                 }
 
-                LogService.logIt("BaseScoreManager.initiateAiMetaScores() reportRuleAiMetaScoreIdStr=" + reportRuleAiMetaScoreTypeIdStr + ", productId=" + tk.getProductId() + ", reportRules=" + ( tk.getProduct()==null ? "tk.product is null!" : tk.getProduct().getStrParam11()) + ", testKeyId=" + tk.getTestKeyId() + ", jobId=" + tk.getJobId() + ", jobDescripId=" + tk.getJobDescripId());
-                
                 if (reportRuleAiMetaScoreTypeIdStr == null || reportRuleAiMetaScoreTypeIdStr.isBlank())
                 {
                     return;
                 }
 
+                LogService.logIt("BaseScoreManager.initiateAiMetaScores() reportRuleAiMetaScoreIdStr=" + reportRuleAiMetaScoreTypeIdStr + ", productId=" + tk.getProductId() + ", reportRules=" + (tk.getProduct() == null ? "tk.product is null!" : tk.getProduct().getStrParam11()) + ", testKeyId=" + tk.getTestKeyId() + ", jobId=" + tk.getJobId() + ", jobDescripId=" + tk.getJobDescripId());
+                
                 List<AiMetaScoreType> aimstl = new ArrayList<>();
                 AiMetaScoreType mst;
                 List<Integer> jobDescripIdList = null;
@@ -830,7 +839,7 @@ public class BaseScoreManager {
                     mst = AiMetaScoreType.getValue(Integer.parseInt(ss.trim()));
                     if (mst == null || mst.equals(AiMetaScoreType.NONE))
                     {
-                        LogService.logIt("BaseScoreManager.initiateAiMetaScores() Invalid aiMetaScoreType=" + (mst==null ? "null" : mst.getName())  + ", testKeyId=" + tk.getTestKeyId() );
+                        LogService.logIt("BaseScoreManager.initiateAiMetaScores() Invalid aiMetaScoreType=" + (mst == null ? "null" : mst.getName()) + ", testKeyId=" + tk.getTestKeyId());
                         continue;
                     }
 
@@ -841,11 +850,11 @@ public class BaseScoreManager {
                         if (jobDescripIdStr == null)
                             jobDescripIdStr = ReportUtils.getReportFlagStringValue("aimetascorejobdescripids", tk, tk.getProduct(), null, null, null);
 
-                        LogService.logIt("BaseScoreManager.initiateAiMetaScores() jobDescripIdStr=" + jobDescripIdStr + ", testKeyId=" + tk.getTestKeyId() );
-                        
+                        LogService.logIt("BaseScoreManager.initiateAiMetaScores() jobDescripIdStr=" + jobDescripIdStr + ", testKeyId=" + tk.getTestKeyId());
+
                         if (jobDescripIdStr != null && !jobDescripIdStr.isBlank())
                             jobDescripIdList = StringUtils.getIntList(jobDescripIdStr);
-                        
+
                         else
                             continue;
                     }
@@ -857,13 +866,13 @@ public class BaseScoreManager {
 
                 LogService.logIt("BaseScoreManager.initiateAiMetaScores() Found " + aimstl.size() + " AiMetaScoreTypes from input string: " + reportRuleAiMetaScoreTypeIdStr + " jobDescripIdList.size=" + (jobDescripIdList == null ? "null" : jobDescripIdList.size()));
 
-                if( tk.getUser()==null )
+                if (tk.getUser() == null)
                 {
-                    if( userFacade==null )
-                        userFacade=UserFacade.getInstance();
-                    tk.setUser( userFacade.getUser( tk.getUserId() ));
+                    if (userFacade == null)
+                        userFacade = UserFacade.getInstance();
+                    tk.setUser(userFacade.getUser(tk.getUserId()));
                 }
-                
+
                 AiMetaScoreSubmissionThread aimst = new AiMetaScoreSubmissionThread(tk.getUser(), tk.getTestKeyId(), 0, forceRedo, aimstl, jobDescripIdList);
                 new Thread(aimst).start();
             }
@@ -1012,6 +1021,12 @@ public class BaseScoreManager {
 
                         if (te.getRemoteProctorEvent().getEventCompleteDate() != null && te.getRemoteProctorEvent().getEventCompleteDate().after(cal.getTime()))
                             pending = true;
+                    }
+
+                    if (pending && !ScoreUtils.waitForPostProctorAnalysisForScoringAndReportGen(tk))
+                    {
+                        LogService.logIt("BaseScoreManager.scorePartiallyCompleteBatteryTestEvent() TestKey RemoteProctoring post-processing is not complete yet but continuing with scoring because testKey is set to not wait for proctor post processing. testKeyId=" + tk.getTestKeyId());
+                        pending = false;
                     }
 
                     if (pending)
@@ -1163,6 +1178,9 @@ public class BaseScoreManager {
             if (tk == null)
                 tk = eventFacade.getTestKey(te.getTestKeyId(), true);
 
+            if (tk == null)
+                throw new ScoringException("Cannot find TestKey for testKeyId=" + te.getTestKeyId() + ", testEventId=" + te.getTestEventId(), ScoringException.PERMANENT, te);
+
             te.setTestKey(tk);
             // LogService.logIt("ScoreManager.scoreTestEvent() loaded TestKey.testKeyId=" + (tk==null ? "null" : tk.getTestKeyId() ) + ", te.testEventId=" + te.getTestEventId() );
 
@@ -1182,10 +1200,13 @@ public class BaseScoreManager {
                     // throw new ScoringException( "RemoteProctorEvent not found. ", ScoringException.PERMANENT, te );
                 } else if (!te.getRemoteProctorEvent().getRemoteProctorEventStatusType().getCompleteOrHigher())
                 {
-                    if (tk.getOnlineProctoringType().getIsAnyBasic() || tk.getOnlineProctoringType().getIsPremiumImagesOnly())
+                    if (!ScoreUtils.waitForPostProctorAnalysisForScoringAndReportGen(tk))
+                    {
+                        LogService.logIt("ScoreManager.scoreTestEvent() TestEvent.remoteProctorEvent is not complete, but TestKey set to not wait for scoring. te.testEventId=" + te.getTestEventId());
+                    } else if (tk.getOnlineProctoringType().getIsAnyBasic() || tk.getOnlineProctoringType().getIsPremiumImagesOnly())
                         throw new ScoringException("RemoteProctorEvent is not ready for scoring to take place. ", ScoringException.NON_PERMANENT, te);
 
-                    if (tk.getOnlineProctoringType().getRecordsVideo()) // || tk.getOnlineProctoringType().getRecordsAudioOnly() )
+                    else if (tk.getOnlineProctoringType().getRecordsVideo()) // || tk.getOnlineProctoringType().getRecordsAudioOnly() )
                     {
                         Calendar cal = new GregorianCalendar();
                         cal.add(Calendar.MINUTE, -1 * MIN_PREMIUMVIDEORECORD_WAIT_MINS);
@@ -1276,7 +1297,7 @@ public class BaseScoreManager {
 
                 eventFacade.saveTestEvent(te);
 
-                if (tk != null && tk.getUserId() != u.getUserId())
+                if (tk.getUserId() != u.getUserId())
                 {
                     tk.setUserId(u.getUserId());
                     eventFacade.saveTestKey(tk);
@@ -1356,7 +1377,7 @@ public class BaseScoreManager {
         } // unforseen exceptions are permanent. Disable this TestEvent until fixed.
         catch (Exception e)
         {
-            LogService.logIt(e, "ScoreManager.scoreTestEvent() " + te.toString());
+            LogService.logIt(e, "ScoreManager.scoreTestEvent() " + (te==null ? "te is null" : te.toString()));
 
             if (te != null)
                 TestEventLogUtils.createTestEventLogEntry(te.getTestEventId(), "ScoreManager.scoreTestEvent()  Exception Scoring Test Event. " + e.toString());

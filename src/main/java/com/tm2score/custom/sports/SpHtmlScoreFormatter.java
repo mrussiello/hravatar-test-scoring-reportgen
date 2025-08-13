@@ -63,7 +63,7 @@ public class SpHtmlScoreFormatter extends CT2HtmlScoreFormatter implements Score
             if( !temp.isEmpty() )
             {
                 sb.append( temp );
-                tog = ( (Boolean) out[1]).booleanValue();
+                tog = (Boolean) out[1];
                 sb.append( getRowSpacer( rowStyle0 ) );
             }
 
@@ -97,7 +97,7 @@ public class SpHtmlScoreFormatter extends CT2HtmlScoreFormatter implements Score
                     tog = !tog;
                     out = getStandardOverallScoreSection( tog );
                     sb.append( (String) out[0] );
-                    tog = ( (Boolean) out[1]).booleanValue();
+                    tog = (Boolean) out[1];
                     if( !isBatt )
                         sb.append( getRowSpacer( rowStyle0 ) );
                 }
@@ -110,7 +110,7 @@ public class SpHtmlScoreFormatter extends CT2HtmlScoreFormatter implements Score
                     if( !temp.isEmpty() )
                     {
                         sb.append( temp );
-                        tog = ( (Boolean) out[1]).booleanValue();
+                        tog = (Boolean) out[1];
                         if( !isBatt )
                             sb.append( getRowSpacer( rowStyle0 ) );
                     }
@@ -127,7 +127,7 @@ public class SpHtmlScoreFormatter extends CT2HtmlScoreFormatter implements Score
                     if( !temp.isEmpty() )
                     {
                         sb.append( temp );
-                        tog = ( (Boolean) out[1]).booleanValue();
+                        tog = (Boolean) out[1];
                         if( !isBatt )
                             sb.append( getRowSpacer( rowStyle0 ) );
                     }
@@ -142,7 +142,7 @@ public class SpHtmlScoreFormatter extends CT2HtmlScoreFormatter implements Score
                 if( !temp.isEmpty() )
                 {
                     sb.append( temp );
-                    tog = ( (Boolean) out[1]).booleanValue();
+                    tog = (Boolean) out[1];
                     if( !isBatt )
                         sb.append( getRowSpacer( rowStyle0 ) );
                 }
@@ -153,7 +153,7 @@ public class SpHtmlScoreFormatter extends CT2HtmlScoreFormatter implements Score
                 if( !temp.isEmpty() )
                 {
                     sb.append( temp );
-                    tog = ( (Boolean) out[1]).booleanValue();
+                    tog = (Boolean) out[1];
                     if( !isBatt )
                         sb.append( getRowSpacer( rowStyle0 ) );
                 }
@@ -166,7 +166,7 @@ public class SpHtmlScoreFormatter extends CT2HtmlScoreFormatter implements Score
                 if( !temp.isEmpty() )
                 {
                     sb.append( temp );
-                    tog = ( (Boolean) out[1]).booleanValue();
+                    tog = (Boolean) out[1];
                     if( !isBatt )
                         sb.append( getRowSpacer( rowStyle0 ) );
                 }
@@ -178,7 +178,7 @@ public class SpHtmlScoreFormatter extends CT2HtmlScoreFormatter implements Score
                 if( !temp.isEmpty() )
                 {
                     sb.append( temp );
-                    tog = ( (Boolean) out[1]).booleanValue();
+                    tog = (Boolean) out[1];
                     if( !isBatt )
                         sb.append( getRowSpacer( rowStyle0 ) );
                 }
@@ -189,7 +189,7 @@ public class SpHtmlScoreFormatter extends CT2HtmlScoreFormatter implements Score
                 if( !temp.isEmpty() )
                 {
                     sb.append( temp );
-                    tog = ( (Boolean) out[1]).booleanValue();
+                    tog = (Boolean) out[1];
                     if( !isBatt )
                         sb.append( getRowSpacer( rowStyle0 ) );
                 }
@@ -200,7 +200,7 @@ public class SpHtmlScoreFormatter extends CT2HtmlScoreFormatter implements Score
                 if( !temp.isEmpty() )
                 {
                     sb.append( temp );
-                    tog = ( (Boolean) out[1]).booleanValue();
+                    tog = (Boolean) out[1];
                     if( !isBatt )
                         sb.append( getRowSpacer( rowStyle0 ) );
                 }
@@ -211,7 +211,7 @@ public class SpHtmlScoreFormatter extends CT2HtmlScoreFormatter implements Score
                 if( !temp.isEmpty() )
                 {
                     sb.append( temp );
-                    tog = ( (Boolean) out[1]).booleanValue();
+                    tog = (Boolean) out[1];
                     if( !isBatt )
                         sb.append( getRowSpacer( rowStyle0 ) );
                 }
@@ -222,7 +222,7 @@ public class SpHtmlScoreFormatter extends CT2HtmlScoreFormatter implements Score
                 if( !temp.isEmpty() )
                 {
                     sb.append( temp );
-                    tog = ( (Boolean) out[1]).booleanValue();
+                    tog = (Boolean) out[1];
                     if( !isBatt )
                         sb.append( getRowSpacer( rowStyle0 ) );
                 }
@@ -231,7 +231,7 @@ public class SpHtmlScoreFormatter extends CT2HtmlScoreFormatter implements Score
                 {
                     out = getTrailingRiskFactorsSection( tog );
                     sb.append( (String) out[0] );
-                    tog = ( (Boolean) out[1]).booleanValue();
+                    tog = (Boolean) out[1];
                     if( !isBatt )
                         sb.append( getRowSpacer( rowStyle0 ) );
                 }
@@ -242,7 +242,7 @@ public class SpHtmlScoreFormatter extends CT2HtmlScoreFormatter implements Score
                 if( !temp.isEmpty() )
                 {
                     sb.append( temp );
-                    tog = ( (Boolean) out[1]).booleanValue();
+                    tog = (Boolean) out[1];
                     if( !isBatt )
                         sb.append( getRowSpacer( rowStyle0 ) );
                 }
@@ -256,7 +256,7 @@ public class SpHtmlScoreFormatter extends CT2HtmlScoreFormatter implements Score
                 if( !temp.isEmpty() )
                 {
                     sb.append( temp );
-                    tog = ( (Boolean) out[1]).booleanValue();
+                    tog = (Boolean) out[1];
                     if( !isBatt )
                         sb.append( getRowSpacer( rowStyle0 ) );
                 }

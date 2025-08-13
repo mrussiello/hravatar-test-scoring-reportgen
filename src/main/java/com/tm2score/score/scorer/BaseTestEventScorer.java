@@ -14,8 +14,6 @@ import com.tm2score.interview.InterviewQuestion;
 import com.tm2score.service.LogService;
 import com.tm2score.sim.NonCompetencyItemType;
 import com.tm2builder.sim.xml.SimJ;
-import com.tm2score.ai.AiMetaScoreSubmissionThread;
-import com.tm2score.ai.AiMetaScoreType;
 import com.tm2score.corp.CorpFacade;
 import com.tm2score.custom.coretest2.cefr.CefrScoreType;
 import com.tm2score.custom.coretest2.cefr.CefrType;
@@ -26,7 +24,6 @@ import com.tm2score.entity.event.Percentile;
 import com.tm2score.entity.event.TestEventArchive;
 import com.tm2score.entity.event.TestEventScore;
 import com.tm2score.entity.event.TestKey;
-import com.tm2score.entity.job.EvalPlan;
 import com.tm2score.entity.proctor.RemoteProctorEvent;
 import com.tm2score.entity.proctor.SuspiciousActivity;
 import com.tm2score.entity.report.Report;
@@ -46,9 +43,6 @@ import com.tm2score.global.NumberUtils;
 import com.tm2score.global.RuntimeConstants;
 import com.tm2score.global.UserRankComparator;
 import com.tm2score.global.WeightedObjectComparator;
-import com.tm2score.job.EvalPlanFacade;
-import com.tm2score.job.EvalPlanStatusType;
-import com.tm2score.job.EvalPlanSubmissionThread;
 import com.tm2score.proctor.ProctorFacade;
 import com.tm2score.proctor.ProctorHelpUtils;
 import com.tm2score.proctor.ProctorUtils;
@@ -60,7 +54,6 @@ import com.tm2score.score.ComboSimCompetencyScoreUtils;
 import com.tm2score.score.MergableScoreObject;
 import com.tm2score.score.MergableScoreObjectCombiner;
 import com.tm2score.report.ReportRules;
-import com.tm2score.report.ReportUtils;
 import com.tm2score.score.CaveatScore;
 import com.tm2score.score.iactnresp.ScorableResponse;
 import com.tm2score.score.ScoreManager;
@@ -3122,7 +3115,8 @@ public class BaseTestEventScorer
         String nameMatchEng = suppScs.getNameEnglish()==null || !suppScs.getNameEnglish().contains("(") || !suppScs.getNameEnglish().endsWith(")") ? null : 
                 suppScs.getNameEnglish().substring(0, suppScs.getNameEnglish().lastIndexOf(" (") ).trim();
         
-        LogService.logIt( "BaseTestEventScorer.getParentForSupplementalSimCompetency() supp=" + suppScs.getName() + ", seeking: " + (nameMatch==null ? "null" : nameMatch) + ", seeking english=" + (nameMatchEng==null ? "null" : nameMatchEng) );
+        if( ScoreManager.DEBUG_SCORING )
+            LogService.logIt( "BaseTestEventScorer.getParentForSupplementalSimCompetency() supp=" + suppScs.getName() + ", seeking: " + (nameMatch==null ? "null" : nameMatch) + ", seeking english=" + (nameMatchEng==null ? "null" : nameMatchEng) );
         
         if( nameMatch==null && nameMatchEng==null )
             return null;

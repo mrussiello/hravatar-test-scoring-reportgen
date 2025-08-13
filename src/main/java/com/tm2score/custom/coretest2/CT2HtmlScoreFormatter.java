@@ -125,7 +125,7 @@ public class CT2HtmlScoreFormatter extends BaseScoreFormatter implements ScoreFo
 
 
             // Header Section
-            Object[] out = getStandardHeaderSection( tog, includeTop, topNoteHtml, isBatt ? "g.CoreTestAdminScoringCompleteMsgBattery" : "g.CoreTestAdminScoringCompleteMsg", null );
+            Object[] out = getStandardHeaderSection(tog, includeTop, false, topNoteHtml, isBatt ? "g.CoreTestAdminScoringCompleteMsgBattery" : "g.CoreTestAdminScoringCompleteMsg", null );
             String temp = (String) out[0];
             if( !temp.isEmpty() )
             {
@@ -442,7 +442,7 @@ public class CT2HtmlScoreFormatter extends BaseScoreFormatter implements ScoreFo
                 //if( !temp.isEmpty() )
                 //{
                 //    sb.append( temp );
-                //    tog = ( (Boolean) out[1]).booleanValue();
+                //    tog = (Boolean) out[1];
                 //    if( !isBatt )
                 //        sb.append( getRowSpacer( rowStyle0 ) );
                 //}
