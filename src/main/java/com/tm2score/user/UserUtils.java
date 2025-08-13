@@ -1970,7 +1970,7 @@ public class UserUtils extends FacesUtils {
                 return "/index.xhtml";
             }
 
-            LogService.logIt("UserUtils.processRedistributeTestKeyId() AAA testKeyId=" + userBean.getTestKeyId3());
+            LogService.logIt("UserUtils.processRedistributeTestKeyId() AAA testKeyIds=" + userBean.getTestKeyIdsStr2());
 
             if (eventFacade == null)
                 eventFacade = EventFacade.getInstance();
@@ -1998,7 +1998,7 @@ public class UserUtils extends FacesUtils {
                 tkidSet.add(tkid);
             }
 
-            LogService.logIt("UserUtils.processRedistributeTestKeyIds() Found " + tkidSet.size() + " unique TestKeyIds to distribute.");
+            LogService.logIt("UserUtils.processRedistributeTestKeyIds() Found " + tkidSet.size() + " unique TestKeyIds to distribute. resendResultsPost=" + resendResultsPost );
 
             redistributeTestKeyIds(tkidSet, resendResultsPost);
 
@@ -2019,7 +2019,7 @@ public class UserUtils extends FacesUtils {
         try
         {
 
-            LogService.logIt("UserUtils.redistributeTestKeyIds() Have " + tkidSet.size() + " unique TestKeyIds to distribute.");
+            LogService.logIt("UserUtils.redistributeTestKeyIds() Have " + tkidSet.size() + " unique TestKeyIds to distribute. resendResultsPost=" + resendResultsPost);
 
             if (eventFacade == null)
                 eventFacade = EventFacade.getInstance();
@@ -2212,7 +2212,7 @@ public class UserUtils extends FacesUtils {
             if (teids == null || teids.isBlank())
                 throw new Exception("TestEventIds not found. TestEventIds should be delimited by commas");
 
-            boolean resendResultsPost = userBean.isResendResultsPost();
+            boolean resendResultsPost = userBean.isResendResultsPost2();
             
             Set<Long> tkidSet = new HashSet<>();
             Set<Long> teidSet = new HashSet<>();
@@ -2241,7 +2241,7 @@ public class UserUtils extends FacesUtils {
                 tkidSet.add(tkid);
             }
 
-            LogService.logIt("UserUtils.processRedistributeTestEventIds() Found " + tkidSet.size() + " unique TestKeyIds to distribute for " + teidSet.size() + " unique testEventIds.");
+            LogService.logIt("UserUtils.processRedistributeTestEventIds() Found " + tkidSet.size() + " unique TestKeyIds to distribute for " + teidSet.size() + " unique testEventIds. resendResultsPost=" + resendResultsPost );
 
             redistributeTestKeyIds(tkidSet, resendResultsPost);
 

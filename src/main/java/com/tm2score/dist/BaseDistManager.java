@@ -423,9 +423,8 @@ public class BaseDistManager {
 
                 
                 if( !candFbkOnly && 
-                    ((tk.getResultPostUrl()!=null && !tk.getResultPostUrl().isEmpty()) ||
-                    (tk.getTestKeySourceTypeId()==TestKeySourceType.API.getTestKeySourceTypeId() && tk.getApiType().requiresReportNotification()) && 
-                    !tk.getTestKeyStatusType().equals(TestKeyStatusType.API_DISTRIBUTION_COMPLETE) 
+                    ( ((tk.getResultPostUrl()!=null && !tk.getResultPostUrl().isEmpty()) ||  (tk.getTestKeySourceTypeId()==TestKeySourceType.API.getTestKeySourceTypeId() && tk.getApiType().requiresReportNotification())) && 
+                      !tk.getTestKeyStatusType().equals(TestKeyStatusType.API_DISTRIBUTION_COMPLETE) && tk.getFirstDistComplete()<=0
                     ) )
                 {
                     postTestResults( tk );

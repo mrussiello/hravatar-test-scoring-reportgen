@@ -83,8 +83,8 @@ public class UserBean implements Serializable
     private boolean sendResendCandidateReportEmails2 = false;
     private boolean sendResendCandidateReportEmails3 = false;
     
-    private boolean resendResultsPost = false;
-    private boolean resendResultsPost2 = false;
+    private boolean resendResultsPost = true;
+    private boolean resendResultsPost2 = true;
         
     private boolean skipVersionCheck = false;
     
