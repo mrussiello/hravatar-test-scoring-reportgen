@@ -207,6 +207,9 @@ public class AssessmentStatusCreator {
                 if( user.getExtRef()!=null && !user.getExtRef().isEmpty() )
                     aoauSid.getIdValue().add( this.createIdValue( "userreferenceid" , user.getExtRef() ) );
 
+                if( user.getIpCountry()!=null && !user.getIpCountry().isBlank() )
+                    aoauSid.getIdValue().add( createIdValue( "ipcountry" , user.getIpCountry() ) );
+                                
                 aoau.setSubjectId(aoauSid);
 
                 aoauNm.setGivenName( user.getFirstName() );

@@ -194,6 +194,7 @@ public class RuntimeConstants
         cache.put( "tm2score_rest_api_password", "" );
         
         cache.put( "org-affiliateids-for-full-resultpost", "midot");
+        cache.put( "resultpostdomains-for-full-resultpost", "ats.mesaar.com");
         
         
         //////////////////////////////////////////////////////////////////////////////

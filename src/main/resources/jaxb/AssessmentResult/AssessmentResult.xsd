@@ -38,6 +38,7 @@
                                         <!-- customfield3 - Optional information provided when the test key is created. Can be used as metadata to track aspects of this test event that are not used by HR Avatar. -->
                                         <!-- userreferenceid - a unique identifier for this test taker on the 3rd party system. -->
                                         <!-- userid - a unique identifier for this test taker on the HR avatar system (encrypted). -->
+                                        <!-- ipcountry - The IP Country associated with this user during this event. -->
                                         <xs:element name="IdValue" type="IdValue" minOccurs="0" maxOccurs="unbounded"/>
                                     </xs:sequence>
                                 </xs:complexType>
@@ -97,6 +98,9 @@
                                         <xs:element name="CompanyName" type="xs:string" minOccurs="0" maxOccurs="1"/>
                                         <xs:element name="CandidateDuties" type="xs:string" minOccurs="0" maxOccurs="1"/>
                                         <xs:element name="InternetWebAddress" type="xs:string" minOccurs="0" maxOccurs="1"/>
+
+                                        <!-- ipcountry - The IP Country associated with this user during this event. -->
+                                        <xs:element name="IdValue" type="IdValue" minOccurs="0" maxOccurs="unbounded"/>
                                     </xs:sequence>
 
                                     <xs:attribute name="CompleteDate" type="xs:dateTime"/>

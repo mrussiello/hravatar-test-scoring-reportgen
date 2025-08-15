@@ -18,12 +18,31 @@ import java.util.Map;
  */
 public class BaseResultPoster 
 {
+    static String[] FULL_POST_AFFILIATEIDS;
+    static String[] FULL_POST_DOMAINS;
+    
+    
+    protected static synchronized void init()
+    {
+        if( FULL_POST_AFFILIATEIDS!=null )
+            return;
+        
+        String temp = RuntimeConstants.getStringValue("resultpostdomains-for-full-resultpost" );
+        FULL_POST_DOMAINS = temp==null || temp.isBlank() ? new String[0] : temp.toLowerCase().split(",");
+        
+        temp = RuntimeConstants.getStringValue("org-affiliateids-for-full-resultpost" );
+        FULL_POST_AFFILIATEIDS = temp==null || temp.isBlank() ? new String[0] : temp.split(",");
+    }
+    
     UserFacade userFacade;
     
     protected int getDefaultIncludeScoreCode( TestKey tk  )
     {
         if( tk.getOmitPdfReportFromResultsPost() )
             return 1;
+        
+        if( FULL_POST_AFFILIATEIDS==null )
+            BaseResultPoster.init();
         
         String includeScoreCodeStr = tk.getCustomParameterValue( "includeScoreCode" );
         if( includeScoreCodeStr!=null && !includeScoreCodeStr.isBlank() )
@@ -53,24 +72,35 @@ public class BaseResultPoster
             }
         }
         
+        if( tk.getResultPostUrl()!=null && !tk.getResultPostUrl().isBlank() )
+        {
+            String rpu = tk.getResultPostUrl().toLowerCase();
+            
+            for( String s : FULL_POST_DOMAINS)
+            {
+                if( s.isBlank() )
+                    continue;
+
+                // include score and PDFs
+                if( rpu.contains(s))
+                    return 2;
+            }
+        }
+        
         if( tk.getOrg()!=null && tk.getOrg().getAffiliateId()!=null && !tk.getOrg().getAffiliateId().isBlank() )
         {
-            String includePdfAffiliateIds = RuntimeConstants.getStringValue("org-affiliateids-for-full-resultpost" );
-            
-            if( includePdfAffiliateIds!=null )
+            for( String s : FULL_POST_AFFILIATEIDS)
             {
-                for( String s : includePdfAffiliateIds.split(","))
-                {
-                    if( s.isBlank() )
-                        continue;
-                    
-                    if( tk.getOrg().getAffiliateId().equals(s))
-                        return 2;
-                }
-            }            
+                if( s.isBlank() )
+                    continue;
+
+                // include score and PDFs
+                if( tk.getOrg().getAffiliateId().equals(s))
+                    return 2;
+            }
         }
                
-        // default
+        // default scores but no PDFs
         return 1;
     }
     
