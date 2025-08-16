@@ -93,7 +93,7 @@ public class DefaultResultPoster extends BaseResultPoster implements ResultPoste
             
             payload = asc.getAssessmentResultFromTestKey(arr, testKey, includeScoreCodeFinal, null, null, null );
 
-            // LogService.logIt( "DefaultResultPoster.postTestResults() have payload size=" + payload.length() + ", testKeyId=" + testKey.getTestKeyId() + ", url=" + url + ", includeScoreCodeFinal=" + includeScoreCodeFinal );
+            LogService.logIt( "DefaultResultPoster.postTestResults() have payload size=" + (payload==null ? "null" : payload.length()) + ", testKeyId=" + (testKey==null ? "null" : testKey.getTestKeyId()) + ", url=" + url + ", includeScoreCodeFinal=" + includeScoreCodeFinal );
 
             // CloseableHttpResponse r = null;
 

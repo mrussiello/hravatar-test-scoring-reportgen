@@ -43,7 +43,7 @@ public static String convertWordToTextFile(File wordFile)
             }
             fis.close();
         } 
-        catch(IOException e) 
+        catch(IndexOutOfBoundsException | IOException e) 
         {
             LogService.logIt( "MsWordUtils.convertWordToTextFile() " + e.toString() +", " + (wordFile==null ? "null" : wordFile.getName() + ", " + wordFile.getAbsolutePath()) );
             return null;
